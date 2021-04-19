@@ -51,7 +51,6 @@ For more details regarding the architecture and SNN HFO detector see https://arx
 ### **Input Data**: 
 The data has to be structured in the following way:
 ```
-%%
 iEEG_data = {}
 iEEG_data['chb']: matrix of iEEG signal, each column is the iEEG signal from each recorded channel.
 iEEG_data['t']: array containing the time vector of the recorded signal
