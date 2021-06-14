@@ -2,6 +2,8 @@ from brian2 import *
 import scipy.io as sio
 
 # IMPORT FUNCTIONS
+import sys
+sys.path.append('../')
 from SNN_HFO_iEEG.Functions.Filter_functions import *
 from SNN_HFO_iEEG.Functions.Dynapse_biases_functions import *
 from SNN_HFO_iEEG.Functions.Signal_to_spike_functions import *
@@ -15,7 +17,7 @@ from teili.models.builder.synapse_equation_builder import SynapseEquationBuilder
 
 
 # Specify paths
-repository_path = '/Users/...'
+repository_path = '/Users/karla/Repositories/SNN_HFO_iEEG'#'/Users/...'
 data_path = 'Data/'
 parameters_path = 'Parameters/'
 snn_models_path = 'Models/'
@@ -161,13 +163,13 @@ for ch in range(num_channels):
     #-----------% SNN hidden layer neurons %-----------# 
     Hidden_neurons = Network_parameters['hidden_neurons'][0][0]
     builder_object1 = NeuronEquationBuilder.import_eq(neuron_model_path, num_inputs=1)
-    Hidden_layer = Neurons(Hidden_neurons, equation_builder = builder_object1, name = 'Hidden_layer') 
+    Hidden_layer = Neurons(Hidden_neurons, equation_builder = builder_object1, name = 'Hidden_layer',dt = 100*us) 
     Hidden_layer.refP = Network_parameters['neuron_refractory'][0][0] * second
     Hidden_layer.Itau = getTauCurrent(Network_parameters['neuron_taus'][0][0]*1e-3, False) * amp
 
     #-----------% SNN Synapse %-----------#
     builder_object2 = SynapseEquationBuilder.import_eq(synapse_model_path)
-    Input_Hidden_layer = Connections(Input, Hidden_layer, equation_builder = builder_object2, name="Input_Hidden_layer", verbose=False)
+    Input_Hidden_layer = Connections(Input, Hidden_layer, equation_builder = builder_object2, name="Input_Hidden_layer", verbose=False,dt = 100*us)
 
     Input_Hidden_layer.connect()
     Input_Hidden_layer.weight = Network_parameters['synapse_weights'][0]
