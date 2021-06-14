@@ -2,14 +2,15 @@ from brian2.units import *
 Neuron_model = {'model':
 '''
             dImem/dt = (((Ith_clip / Itau_clip) * (Iin_clip  + Ia_clip - Ishunt_clip - Iahp_clip)) - Ith_clip - ((1 + ((Ishunt_clip + Iahp_clip - Ia_clip) / Itau_clip)) * Imem)) / (tau * ((Ith_clip/(Imem + Io)) + 1)) : amp (unless refractory)
-            dIahp/dt = (- Ithahp_clip - Iahp + 2*Io*(Iahp<=Io)) / (tauahp * (Ithahp_clip / Iahp + 1)) : amp # adaptation current
-            Ia = Iagain / (1 + exp(-(Imem - Iath) / Ianorm)) : amp  # postive feedback current
-            Iahp_clip = Iahp*(Imem>Io) + Io*(Imem<=Io)  : amp
-            
+
+          dIahp/dt = (- Ithahp_clip - Iahp + 2*Io*(Iahp<=Io)) / (tauahp * (Ithahp_clip / Iahp + 1)) : amp # adaptation current
+        Ia = Iagain / (1 + exp(-(Imem - Iath) / Ianorm)) : amp  # postive feedback current
+          Iahp_clip = Iahp*(Imem>Io) + Io*(Imem<=Io)  : amp
+
             Itau_clip = Itau*(Imem>Io) + Io*(Imem<=Io)  : amp
             Ith_clip = Ith*(Imem>Io) + Io*(Imem<=Io)    : amp
             Iin_clip = clip(Iin+Iconst,Io, 1*amp) : amp
-            Ia_clip = Ia*(Imem>Io) + 2*Io*(Imem<=Io)    : amp
+        Ia_clip = Ia*(Imem>Io) + 2*Io*(Imem<=Io)    : amp
             Ithahp_clip = Ithahp*(Iahp>Io) + Io*(Iahp<=Io) : amp
             Ishunt_clip = clip(Ishunt, Io, Imem) : amp
 
@@ -18,14 +19,14 @@ Neuron_model = {'model':
 
             Inoise  : amp                                    # Noise due to mismatch
 
-            kn      : 1 (shared, constant)                   # subthreshold slope factor for nFETs
-            kp      : 1 (shared, constant)                   # subthreshold slope factor for pFETs
-            Ut      : volt (shared, constant)                # Thermal voltage
-            Io      : amp (shared, constant)                 # Dark current
-            Cmem    : farad (shared, constant)               # Membrane capacitance
+            kn      : 1 (constant)                   # subthreshold slope factor for nFETs
+            kp      : 1 (constant)                   # subthreshold slope factor for pFETs
+            Ut      : volt (constant)                # Thermal voltage
+            Io      : amp (constant)                 # Dark current
+            Cmem    : farad (constant)               # Membrane capacitance
             Ispkthr : amp (constant)                         # Spiking threshold
-            Ireset  : amp (shared, constant)                 # Reset current
-            refP    : second    (shared, constant)           # refractory period (It is still possible to set it to False)
+            Ireset  : amp (constant)                 # Reset current
+            refP    : second    (constant)           # refractory period (It is still possible to set it to False)
             Ith     : amp (constant)                         # DPI threshold (low pass filter).
             Itau    : amp (constant)                         # Leakage current
             Iconst  : amp (constant)                         # Additional input current similar to constant current injection
@@ -34,38 +35,32 @@ Neuron_model = {'model':
          
 
 
-            tauahp = (Cahp * Ut) / (kappa * Itauahp) : second # time constant of adaptation
-            Iahpmax = (Ica / Itauahp) * Ithahp_clip : amp     # Ratio of currents through diffpair and adaptation block
-            Ithahp : amp (constant)
-            Itauahp : amp (constant)
-            Cahp : farad (constant)
+          tauahp = (Cahp * Ut) / (kappa * Itauahp) : second # time constant of adaptation
+          Iahpmax = (Ica / Itauahp) * Ithahp_clip : amp     # Ratio of currents through diffpair and adaptation block
+          Ithahp : amp (constant)
+          Itauahp : amp (constant)
+          Cahp : farad (constant)
          
 
 
-            Iagain : amp (constant)
-            Iath : amp (constant)
-            Ianorm : amp (constant)
+        Iagain : amp (constant)
+        Iath : amp (constant)
+        Ianorm : amp (constant)
 
-            dA/dt = -A/taufr : 1
-            taufr : second
+         
+           x : 1         (constant)        # x location on 2d grid (only set it if you need it)
+           y : 1         (constant)        # y location on 2d grid
+           
 
-            polarity : 1
-            x : 1         (constant)        # x location on 2d grid (only set it if you need it)
-            y : 1         (constant)        # y location on 2d grid
-            Iin = Ie0+Ii0 : amp # input currents
-            Ie0 : amp
-            Ii0 : amp
+Iin = Iin0 : amp # input currents
+        Iin0 : amp
 ''',
 'threshold':
 '''Imem > Ispkthr''',
 'reset':
-'''
-Imem = Ireset;
+'''Imem = Ireset;
                   Iahp += Iahpmax;
-                  A += 1;
-                  
-''',
-'refractory': 'refP',
+                  ''',
 'parameters':
 {
 'Inoise' : '0.5 * pamp',
@@ -82,6 +77,7 @@ Imem = Ireset;
 'Itauahp' : '1. * pamp',
 'Ithahp' : '1. * pamp',
 'Cahp' : '1. * pfarad',
+'Iahp' : '0.5 * pamp',
 'Ishunt' : '0.5 * pamp',
 'Ispkthr' : '1. * namp',
 'Ireset' : '0.6 * pamp',
