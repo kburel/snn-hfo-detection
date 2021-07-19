@@ -40,7 +40,6 @@ def getTauCurrent(tau, vector = False):
         currents[zeros] = 0
         
     return currents
-    return (C_p*U_t)/(k*tau)
 
 def get_mean_std_currents(mean_tau, std_tau):
 
