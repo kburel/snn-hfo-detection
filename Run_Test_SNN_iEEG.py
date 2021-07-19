@@ -2,8 +2,6 @@ from brian2 import *
 import scipy.io as sio
 
 # IMPORT FUNCTIONS
-import sys
-sys.path.append('../')
 from SNN_HFO_iEEG.Functions.Filter_functions import *
 from SNN_HFO_iEEG.Functions.Dynapse_biases_functions import *
 from SNN_HFO_iEEG.Functions.Signal_to_spike_functions import *
