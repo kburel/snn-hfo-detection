@@ -61,11 +61,11 @@ def get_mean_std_currents(mean_tau, std_tau):
 
 def updateCurrent(index_coarse,fine):
 
-    """
+    '''
     Convert caer bias I_TAU into current value:
     index_coarse: coarse value in range(8)
     fine: fine value in range(255)
-    """   
+    '''   
     coarse = ['24u', '3.2u', '0.4u', '50n', '6.5n', '820p', '105p', '15p']
     unit = coarse[index_coarse]
     maxCurrent = float(unit.split(unit[-1])[0])
