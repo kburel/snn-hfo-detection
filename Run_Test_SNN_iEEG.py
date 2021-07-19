@@ -17,7 +17,6 @@ from teili.models.builder.synapse_equation_builder import SynapseEquationBuilder
 
 
 # Specify paths
-repository_path = '/Users/karla/Repositories/SNN_HFO_iEEG'#'/Users/...'
 data_path = 'Data/'
 parameters_path = 'Parameters/'
 snn_models_path = 'Models/'
