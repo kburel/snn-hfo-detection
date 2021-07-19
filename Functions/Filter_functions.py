@@ -15,12 +15,6 @@ filtering for Butterworth filters.
 :return b, a (float): filtering coefficients that will be applied on the wideband signal
 
 '''
-#def butter_lowpass(cutOff, fs, order=5):
-#    nyq = 0.5 * fs
-#    #normalCutoff = cutOff / nyq
-#    normalCutoff = 2 * cutOff / fs
-#    b, a = butter(order, normalCutoff, btype='low', analog = True)
-#    return b, a
 
 def butter_lowpass(cutOff, fs, order=5):
     normalCutoff = 2 * cutOff / fs
