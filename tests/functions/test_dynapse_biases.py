@@ -27,3 +27,8 @@ def test_get_tau_raises_error_on_zero_current():
 def test_get_tau_current(tau, expected_current):
     actual_current = getTauCurrent(tau)
     assert expected_current == pytest.approx(actual_current)
+
+def test_get_tau_current_raises_error_when_vector_is_specified():
+    with pytest.raises(TypeError):
+         getTauCurrent(1, vector=True)
+         
