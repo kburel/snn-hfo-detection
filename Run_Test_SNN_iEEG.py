@@ -21,11 +21,13 @@ from teili.core.groups import Neurons, Connections
 from teili.models.builder.neuron_equation_builder import NeuronEquationBuilder
 from teili.models.builder.synapse_equation_builder import SynapseEquationBuilder
 
+
 def parse_arguments():
     parser = argparse.ArgumentParser(description='Perform an HFO test run')
     parser.add_argument('--data-path', type=str, nargs='?', default='Data/',
                         help='Specifies the path to the directory containing the test data. Default is ./Data/')
     return parser.parse_args()
+
 
 __PACKAGE_NAME = 'SNN_HFO_iEEG'
 # Specify paths
