@@ -1,6 +1,6 @@
-from brian2.units import * 
+from brian2.units import *
 Neuron_model = {'model':
-'''
+                '''
             dImem/dt = (((Ith_clip / Itau_clip) * (Iin_clip  + Ia_clip - Ishunt_clip - Iahp_clip)) - Ith_clip - ((1 + ((Ishunt_clip + Iahp_clip - Ia_clip) / Itau_clip)) * Imem)) / (tau * ((Ith_clip/(Imem + Io)) + 1)) : amp (unless refractory)
 
           dIahp/dt = (- Ithahp_clip - Iahp + 2*Io*(Iahp<=Io)) / (tauahp * (Ithahp_clip / Iahp + 1)) : amp # adaptation current
@@ -55,34 +55,34 @@ Neuron_model = {'model':
 Iin = Iin0 : amp # input currents
         Iin0 : amp
 ''',
-'threshold':
-'''Imem > Ispkthr''',
-'reset':
-'''Imem = Ireset;
+                'threshold':
+                '''Imem > Ispkthr''',
+                'reset':
+                '''Imem = Ireset;
                   Iahp += Iahpmax;
                   ''',
-'parameters':
-{
-'Inoise' : '0.5 * pamp',
-'Iconst' : '0.5 * pamp',
-'kn' : '0.75',
-'kp' : '0.66',
-'Ut' : '25. * mvolt',
-'Io' : '0.5 * pamp',
-'Cmem' : '1.5 * pfarad',
-'Iath' : '0.5 * namp',
-'Iagain' : '50. * pamp',
-'Ianorm' : '10. * pamp',
-'Ica' : '2. * pamp',
-'Itauahp' : '1. * pamp',
-'Ithahp' : '1. * pamp',
-'Cahp' : '1. * pfarad',
-'Iahp' : '0.5 * pamp',
-'Ishunt' : '0.5 * pamp',
-'Ispkthr' : '1. * namp',
-'Ireset' : '0.6 * pamp',
-'Ith' : '0.9 * pamp',
-'Itau' : '8. * pamp',
-'refP' : '1. * msecond',
-}
-}
+                'parameters':
+                {
+                    'Inoise': '0.5 * pamp',
+                    'Iconst': '0.5 * pamp',
+                    'kn': '0.75',
+                    'kp': '0.66',
+                    'Ut': '25. * mvolt',
+                    'Io': '0.5 * pamp',
+                    'Cmem': '1.5 * pfarad',
+                    'Iath': '0.5 * namp',
+                    'Iagain': '50. * pamp',
+                    'Ianorm': '10. * pamp',
+                    'Ica': '2. * pamp',
+                    'Itauahp': '1. * pamp',
+                    'Ithahp': '1. * pamp',
+                    'Cahp': '1. * pfarad',
+                    'Iahp': '0.5 * pamp',
+                    'Ishunt': '0.5 * pamp',
+                    'Ispkthr': '1. * namp',
+                    'Ireset': '0.6 * pamp',
+                    'Ith': '0.9 * pamp',
+                    'Itau': '8. * pamp',
+                    'refP': '1. * msecond',
+                }
+                }
