@@ -1,13 +1,6 @@
 import pytest
 from SNN_HFO_iEEG.Functions.Dynapse_biases_functions import *
 
-@pytest.fixture
-def current():
-    return [1]
-
-@pytest.fixture
-def tau():
-    return [1]
 @pytest.mark.parametrize(
     "current,expected_tau",
     [(1, 5.35e-14),
