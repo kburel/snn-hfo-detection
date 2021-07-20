@@ -35,12 +35,3 @@ def test_get_tau_current(tau, expected_current):
 def test_get_tau_current_raises_error_when_vector_is_specified():
     with pytest.raises(TypeError):
         getTauCurrent(1, vector=True)
-
-
-@pytest.mark.parametrize(
-    "mean_tau,std_tau,expected_means",
-    [(0, 0, (2.390625e-5, 0, 2.390625e-5, 2.390625e-5)),
-     (1, 1, (5.357142857142858e-11, 1.1953111607142857e-05,
-      2.678571428571429e-11, 2.390625e-05)),
-     ]
-)
