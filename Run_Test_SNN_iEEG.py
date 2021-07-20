@@ -7,6 +7,7 @@ from SNN_HFO_iEEG.Functions.Dynapse_biases_functions import *
 from SNN_HFO_iEEG.Functions.Filter_functions import *
 from brian2 import *
 import scipy.io as sio
+import argparse
 
 # IMPORT FUNCTIONS
 from SNN_HFO_iEEG.Functions.Filter_functions import *
@@ -16,11 +17,20 @@ from SNN_HFO_iEEG.Functions.HFO_detection_functions import *
 
 
 # IMPORT  Teili functions
+from teili.core.groups import Neurons, Connections
+from teili.models.builder.neuron_equation_builder import NeuronEquationBuilder
+from teili.models.builder.synapse_equation_builder import SynapseEquationBuilder
+
+def parse_arguments():
+    parser = argparse.ArgumentParser(description='Perform an HFO test run')
+    parser.add_argument('--data-path', type=str, nargs='?', default='Data/',
+                        help='Specifies the path to the directory containing the test data. Default is ./Data/')
+    return parser.parse_args()
 
 __PACKAGE_NAME = 'SNN_HFO_iEEG'
 # Specify paths
-repository_path = '/Users/karla/Repositories/SNN_HFO_iEEG'  # '/Users/...'
-data_path = 'Data/'
+repository_path = '/Users/karla/Repositories/SNN_HFO_iEEG'#'/Users/...'
+data_path = parse_arguments().data_path + '/'
 parameters_path = f'{__PACKAGE_NAME}/Parameters/'
 snn_models_path = f'{__PACKAGE_NAME}/Models/'
 
