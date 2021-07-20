@@ -5,14 +5,20 @@ from SNN_HFO_iEEG.Functions.Filter_functions import *
 
 @pytest.mark.parametrize(
     "lowcut, highcut, fs, expected_coefficients",
-    [(0.4, 0.4, 1, ([0, 0, 0, 0, 0, 0, 0, 0], [0]))]
+    [(0.4, 0.4, 1, ([0., 0., 0., 0., 0., 0., 0., 0.,  0., 0., 0.], [1., 8.09016994, 31.18033989, 74.72135955, 122.81152949,
+                                                                    144.35254916, 122.81152949, 74.72135955, 31.18033989, 8.09016994,
+                                                                    1.])),
+     (0.4, 0.3, 0.9, ([-0.0203585, -0., 0.10179248, -0., -0.20358497, -0.,
+                       0.20358497, -0., -0.10179248, -0., 0.0203585], [1., 9.9849667, 47.59005786, 141.67098624, 290.88049757,
+                                                                       429.8709108,  463.05607749, 359.26791433, 192.32998508, 64.1980211,
+                                                                       10.15815918]))]
 )
 def test_butter_bandpass(lowcut, highcut, fs, expected_coefficients):
     actual_a, actual_b = butter_bandpass(lowcut, highcut, fs)
 
     def to_np_array(arr): return np.array([pytest.approx(_) for _ in arr])
     expected_a, expected_b = to_np_array(expected_coefficients)
-    print(expected_a)
+    print(actual_a)
     assert np.all(expected_a == actual_a)
     print(actual_b)
     assert np.all(expected_b == actual_b)
