@@ -32,6 +32,17 @@ def test_get_tau_current(tau, expected_current):
     assert expected_current == pytest.approx(actual_current)
 
 
-def test_get_tau_current_raises_error_when_vector_is_specified():
+def test_get_tau_current_raises_error_when_vector_is_specified_without_passing_vector():
     with pytest.raises(TypeError):
         getTauCurrent(1, vector=True)
+
+
+@pytest.mark.parametrize(
+    "tau,expected_current",
+    [(np.array([1, 1e-4]), [5.35e-14, 5.35e-10]),
+     (np.array([1.5e-4, -1]), [3.57e-10, -5.35e-14])
+     ]
+)
+def test_get_tau_current_with_vector(tau, expected_current):
+    actual_current = getTauCurrent(tau, vector=True)
+    assert expected_current == pytest.approx(actual_current)
