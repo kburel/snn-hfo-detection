@@ -29,7 +29,6 @@ def parse_arguments():
 
 __PACKAGE_NAME = 'SNN_HFO_iEEG'
 # Specify paths
-repository_path = '/Users/karla/Repositories/SNN_HFO_iEEG'#'/Users/...'
 data_path = parse_arguments().data_path + '/'
 parameters_path = f'{__PACKAGE_NAME}/Parameters/'
 snn_models_path = f'{__PACKAGE_NAME}/Models/'
