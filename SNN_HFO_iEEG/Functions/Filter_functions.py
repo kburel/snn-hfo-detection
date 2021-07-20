@@ -16,17 +16,6 @@ filtering for Butterworth filters.
 
 '''
 
-def butter_lowpass(cutOff, fs, order=5):
-    normalCutoff = 2 * cutOff / fs
-    b, a = butter(order, normalCutoff)
-    return b, a
-
-def butter_highpass(cutoff, fs, order=5):
-    nyq = 0.5 * fs
-    normal_cutoff = cutoff / nyq
-    b, a = butter(order, normal_cutoff, btype='high', analog=False)
-    return b, a
-
 def butter_bandpass(lowcut, highcut, fs, order=5):
     nyq = 0.5 * fs
     low = lowcut / nyq
@@ -48,16 +37,6 @@ These functions apply the filtering coefficients calculated above to the wideban
 :return y (array): vector with amplitude of the filtered signal
 
 '''
-def butter_lowpass_filter(data, cutOff, fs, order=4):
-    b, a = butter_lowpass(cutOff, fs, order=order)
-    y = lfilter(b, a, data)
-    return y
-
-def butter_highpass_filter(data, cutoff, fs, order=5):
-    b, a = butter_highpass(cutoff, fs, order=order)
-    y = filtfilt(b, a, data)
-    return y
-
 def butter_bandpass_filter(data, lowcut, highcut, fs, order=5):
     b, a = butter_bandpass(lowcut, highcut, fs, order=order)
     y = lfilter(b, a, data)
