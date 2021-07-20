@@ -1,9 +1,9 @@
 import numpy as np
 from scipy.signal import butter, lfilter,  filtfilt
 
-#========================================================================================
+# ========================================================================================
 # Butterworth filter coefficients
-#========================================================================================   
+# ========================================================================================
 '''
 These functions are used to generate the coefficients for lowpass, highpass and bandpass
 filtering for Butterworth filters.
@@ -16,6 +16,7 @@ filtering for Butterworth filters.
 
 '''
 
+
 def butter_bandpass(lowcut, highcut, fs, order=5):
     nyq = 0.5 * fs
     low = lowcut / nyq
@@ -23,9 +24,10 @@ def butter_bandpass(lowcut, highcut, fs, order=5):
     b, a = butter(order, [low, high], btype='band')
     return b, a
 
-#========================================================================================
+
+# ========================================================================================
 # Butterworth filters
-#========================================================================================   
+# ========================================================================================
 '''
 These functions apply the filtering coefficients calculated above to the wideband signal.
 
@@ -41,4 +43,3 @@ def butter_bandpass_filter(data, lowcut, highcut, fs, order=5):
     b, a = butter_bandpass(lowcut, highcut, fs, order=order)
     y = lfilter(b, a, data)
     return y
-
