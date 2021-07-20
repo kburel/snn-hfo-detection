@@ -167,7 +167,7 @@ for ch in range(num_channels):
 
     #-----------% SNN Synapse %-----------#
     builder_object2 = SynapseEquationBuilder.import_eq(synapse_model_path)
-    Input_Hidden_layer = Connections(Input, Hidden_layer, equation_builder = builder_object2, name="Input_Hidden_layer", verbose=False,dt = 100*us)
+    Input_Hidden_layer = Connections(Input, Hidden_layer, equation_builder = builder_object2, name='Input_Hidden_layer', verbose=False,dt = 100*us)
 
     Input_Hidden_layer.connect()
     Input_Hidden_layer.weight = Network_parameters['synapse_weights'][0]
