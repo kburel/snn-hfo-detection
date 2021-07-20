@@ -6,8 +6,24 @@ from SNN_HFO_iEEG.Functions.Dynapse_biases_functions import *
     [(1, 5.35e-14),
     (1e-4, 5.35e-10),
     (1.5e-4, 3.57e-10),
-    pytest.param(0, None, marks=pytest.mark.xfail),
-    pytest.param(-1, None, marks=pytest.mark.xfail)],
+    (-1, -5.35e-14)]
 )
-def test_tau_is_collected(current, expected_tau):
-    assert expected_tau == pytest.approx(getTau(current))
+def test_get_tau(current, expected_tau):
+    actual_tau = getTau(current)
+    assert expected_tau == pytest.approx(actual_tau)
+
+def test_get_tau_raises_error_on_zero_current():
+    with pytest.raises(ZeroDivisionError):
+         getTau(0)
+
+@pytest.mark.parametrize(
+    "tau,expected_current",
+    [(1, 5.35e-14),
+    (1e-4, 5.35e-10),
+    (1.5e-4, 3.57e-10),
+    (-1, -5.35e-14),
+    (0, 2.390625e-05)]
+)
+def test_get_tau_current(tau, expected_current):
+    actual_current = getTauCurrent(tau)
+    assert expected_current == pytest.approx(actual_current)
