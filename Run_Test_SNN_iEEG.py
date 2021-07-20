@@ -9,18 +9,20 @@ from brian2 import *
 import scipy.io as sio
 
 # IMPORT FUNCTIONS
-import sys
-sys.path.append('../')
+from SNN_HFO_iEEG.Functions.Filter_functions import *
+from SNN_HFO_iEEG.Functions.Dynapse_biases_functions import *
+from SNN_HFO_iEEG.Functions.Signal_to_spike_functions import *
+from SNN_HFO_iEEG.Functions.HFO_detection_functions import *
 
 
 # IMPORT  Teili functions
 
-
+__PACKAGE_NAME = 'SNN_HFO_iEEG'
 # Specify paths
 repository_path = '/Users/karla/Repositories/SNN_HFO_iEEG'  # '/Users/...'
 data_path = 'Data/'
-parameters_path = 'Parameters/'
-snn_models_path = 'Models/'
+parameters_path = f'{__PACKAGE_NAME}/Parameters/'
+snn_models_path = f'{__PACKAGE_NAME}/Models/'
 
 # Load SNN parameters, neuron and synapse models
 neuron_model_path = snn_models_path + 'Neuron_model'
