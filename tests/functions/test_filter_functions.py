@@ -1,4 +1,3 @@
-from decimal import DivisionByZero
 import pytest
 from SNN_HFO_iEEG.Functions.Filter_functions import *
 
@@ -58,3 +57,21 @@ def test_butter_bandpass_passes_when_cut_to_fs_ratio_is_okay(fs):
     cut = fs * IN_BOUNDS_RATIO
 
     butter_bandpass(lowcut=cut, highcut=cut, fs=fs)
+
+
+@pytest.mark.parametrize(
+    "data, lowcut, highcut, fs, expected_amplitude",
+    [([0, 0, 0], 0.4, 0.4, 1, [0, 0, 0]),
+     ([1, 2, 3], 0.4, 0.4, 1, [0, 0, 0]),
+     ([0.5, 0.5, 0.5], 0.4, 0.4, 0.9, [0, 0, 0]),
+     ([340, 1354, 50], 0.4, 0.2, 0.9,
+      [-2140.50350966,  17514.88189302, -81064.75793357]),
+     ([1, 1, -1], 0.2, 0.4, 0.9,
+      [0.0332362,  -0.08709809, -0.08528257]),
+     ]
+)
+def test_butter_bandpass_filter(data, lowcut, highcut, fs, expected_amplitude):
+    actual_amplitude = butter_bandpass_filter(data, lowcut, highcut, fs)
+    print(actual_amplitude)
+    expected_amplitude = [pytest.approx(_) for _ in expected_amplitude]
+    assert np.all(expected_amplitude == actual_amplitude)
