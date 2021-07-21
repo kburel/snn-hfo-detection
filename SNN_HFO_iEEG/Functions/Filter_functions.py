@@ -39,6 +39,8 @@ These functions apply the filtering coefficients calculated above to the wideban
 :return y (array): vector with amplitude of the filtered signal
 
 '''
+
+
 def butter_bandpass_filter(data, lowcut, highcut, fs, order=5):
     b, a = butter_bandpass(lowcut, highcut, fs, order=order)
     y = lfilter(b, a, data)
