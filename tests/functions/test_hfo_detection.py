@@ -1,5 +1,7 @@
 from SNN_HFO_iEEG.Functions.HFO_detection_functions import *
 import pytest
+from tests.utility import *
+
 
 @pytest.mark.parametrize(
     "trial_duration, spike_monitor, original_time_vector, step_size, window_size, expected_hfo_detection",
@@ -17,12 +19,11 @@ def test_hfo_detection(trial_duration, spike_monitor, original_time_vector, step
                                original_time_vector, step_size, window_size)
     assert expected_hfo_detection['total_HFO'] == pytest.approx(
         hfo_detection['total_HFO'])
-    assert np.all(expected_hfo_detection['time'] == [pytest.approx(_) for _ in
-                                                     hfo_detection['time']])
-    assert np.all(expected_hfo_detection['signal'] == [pytest.approx(_) for _ in
-                                                       hfo_detection['signal']])
-    assert np.all(expected_hfo_detection['periods_HFO'] == [pytest.approx(_) for _ in
-                                                            hfo_detection['periods_HFO']])
+
+    def are_values_same(key): return are_lists_approximately_equal(
+        expected_hfo_detection[key], hfo_detection[key])
+    for key in ['time', 'signal', 'periods_HFO']:
+        assert are_values_same(key)
 
 
 def test_hfo_detection_fails_when_step_size_is_bigger_than_window():

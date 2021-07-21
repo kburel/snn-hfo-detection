@@ -1,5 +1,6 @@
 from SNN_HFO_iEEG.Functions.Signal_to_spike_functions import *
 import pytest
+from tests.utility import *
 
 
 @pytest.mark.parametrize(
@@ -29,10 +30,8 @@ def test_signal_to_spike_refractory(interpfact, time, amplitude, thr_up, thr_dn,
     spike_up, spike_dn = signal_to_spike_refractory(
         interpfact, time, amplitude, thr_up, thr_dn, refractory_period)
     expected_spike_up, expected_spike_dn = expected_thresholds
-    print(spike_up)
-    print(spike_dn)
-    assert np.all(expected_spike_up == [pytest.approx(_) for _ in spike_up])
-    assert np.all(expected_spike_dn == [pytest.approx(_) for _ in spike_dn])
+    assert are_lists_approximately_equal(spike_up, expected_spike_up)
+    assert are_lists_approximately_equal(spike_dn, expected_spike_dn)
 
 
 @pytest.mark.parametrize(
@@ -42,7 +41,5 @@ def test_signal_to_spike_refractory(interpfact, time, amplitude, thr_up, thr_dn,
 def test_concatenate_spikes(spikes_list, expected_concatenation):
     spike_times, neuron_ids = concatenate_spikes(spikes_list)
     expected_spike_times, expected_neuron_ids = expected_concatenation
-    assert np.all(expected_spike_times == [
-                  pytest.approx(_) for _ in spike_times])
-    assert np.all(expected_neuron_ids == [
-                  pytest.approx(_) for _ in neuron_ids])
+    assert are_lists_approximately_equal(spike_times, expected_spike_times)
+    assert are_lists_approximately_equal(neuron_ids, expected_neuron_ids)
