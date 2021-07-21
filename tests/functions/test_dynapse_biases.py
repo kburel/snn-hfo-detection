@@ -1,5 +1,6 @@
 import pytest
 from SNN_HFO_iEEG.Functions.Dynapse_biases_functions import *
+from tests.utility import *
 
 
 @pytest.mark.parametrize(
@@ -47,5 +48,4 @@ def test_get_tau_current_raises_error_when_vector_is_specified_without_passing_v
 @pytest.mark.filterwarnings('ignore::DeprecationWarning')
 def test_get_tau_current_with_vector(tau, expected_current):
     actual_current = getTauCurrent(tau, vector=True)
-    actual_current = [pytest.approx(_) for _ in actual_current]
-    assert expected_current == actual_current
+    assert are_lists_approximately_equal(actual_current, expected_current)
