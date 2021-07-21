@@ -20,14 +20,14 @@ jobs:
           poetry-version: 1.1.7
       - name: Cache virtualenv
         if: runner.os == 'macOS'
-        id: cache-virtualenv
+        id: cache-virtualenv-macos
         uses: actions/cache@v2
         with:
           path: ~/Library/Caches/pypoetry/virtualenvs
           key: ${{ runner.os }}-virtualenvs
       - name: Cache virtualenv
         if: runner.os == 'Windows'
-        id: cache-virtualenv
+        id: cache-virtualenv-windows
         uses: actions/cache@v2
         with:
           path: C:\Users\runneradmin\AppData\Local\pypoetry\Cache\virtualenvs
