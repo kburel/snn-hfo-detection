@@ -210,12 +210,12 @@ def run_hfo_detection(data_path, hfo_callback):
         Test_Results['SNN']['number_HFO'][ch] = detected_HFO
         Test_Results['SNN']['rate_HFO'][ch] = detected_HFO/duration
 
-        hfo_callback(detected_HFO)
-
         print('Found HFO', detected_HFO)
         print('Rate of HFO (event/min)',
               np.around((detected_HFO/duration)*60, decimals=2))
         print(' ')
+
+        hfo_callback(HFO_detection)
 
 
 def _parse_arguments():
