@@ -4,7 +4,7 @@ from tests.utility import *
 
 
 @pytest.mark.parametrize(
-    "lowcut, highcut, fs, expected_coefficients",
+    'lowcut, highcut, fs, expected_coefficients',
     [(0.4, 0.4, 1, ([0., 0., 0., 0., 0., 0., 0., 0.,  0., 0., 0.], [1., 8.09016994, 31.18033989, 74.72135955, 122.81152949,
                                                                     144.35254916, 122.81152949, 74.72135955, 31.18033989, 8.09016994,
                                                                     1.])),
@@ -34,7 +34,7 @@ _CUT_TO_FS_RATIO_LIMIT = 0.5
 
 
 @pytest.mark.parametrize(
-    "fs",
+    'fs',
     [-1, -0.5, -0.1, 0.1, 0.5, 1]
 )
 def test_butter_bandpass_raises_error_when_cut_to_fs_ratio_is_too_big(fs):
@@ -46,7 +46,7 @@ def test_butter_bandpass_raises_error_when_cut_to_fs_ratio_is_too_big(fs):
 
 
 @pytest.mark.parametrize(
-    "fs",
+    'fs',
     [-1, -0.5, -0.1, 0.1, 0.5, 1]
 )
 def test_butter_bandpass_passes_when_cut_to_fs_ratio_is_okay(fs):
@@ -57,7 +57,7 @@ def test_butter_bandpass_passes_when_cut_to_fs_ratio_is_okay(fs):
 
 
 @pytest.mark.parametrize(
-    "data, lowcut, highcut, fs, expected_amplitude",
+    'data, lowcut, highcut, fs, expected_amplitude',
     [([0, 0, 0], 0.4, 0.4, 1, [0, 0, 0]),
      ([1, 2, 3], 0.4, 0.4, 1, [0, 0, 0]),
      ([0.5, 0.5, 0.5], 0.4, 0.4, 0.9, [0, 0, 0]),

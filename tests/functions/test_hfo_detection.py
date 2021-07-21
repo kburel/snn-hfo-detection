@@ -4,7 +4,7 @@ from tests.utility import *
 
 
 @pytest.mark.parametrize(
-    "trial_duration, spike_monitor, original_time_vector, step_size, window_size, expected_hfo_detection",
+    'trial_duration, spike_monitor, original_time_vector, step_size, window_size, expected_hfo_detection',
     [(0, [0], [0], 0.1, 0.1, {'total_HFO': 0,
       'time': [0], 'signal': [0], 'periods_HFO': [0, 0]}),
      (1, [0.5], [0.5], 0.1, 0.5, {'total_HFO': 0,

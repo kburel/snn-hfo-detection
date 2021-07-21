@@ -4,7 +4,7 @@ from tests.utility import *
 
 
 @pytest.mark.parametrize(
-    "current,expected_tau",
+    'current,expected_tau',
     [(1, 5.35e-14),
      (1e-4, 5.35e-10),
      (1.5e-4, 3.57e-10),
@@ -21,7 +21,7 @@ def test_get_tau_raises_error_on_zero_current():
 
 
 @pytest.mark.parametrize(
-    "tau,expected_current",
+    'tau,expected_current',
     [(1, 5.35e-14),
      (1e-4, 5.35e-10),
      (1.5e-4, 3.57e-10),
@@ -40,7 +40,7 @@ def test_get_tau_current_raises_error_when_vector_is_specified_without_passing_v
 
 
 @pytest.mark.parametrize(
-    "tau,expected_current",
+    'tau,expected_current',
     [(np.array([1, 1e-4]), [5.35e-14, 5.35e-10]),
      (np.array([1.5e-4, -1]), [3.57e-10, -5.35e-14])
      ]

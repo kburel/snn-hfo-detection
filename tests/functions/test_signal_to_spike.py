@@ -4,7 +4,7 @@ from tests.utility import *
 
 
 @pytest.mark.parametrize(
-    "signal, time, window, step_size, chosen_samples, scaling_factor, expected_mean_threshold",
+    'signal, time, window, step_size, chosen_samples, scaling_factor, expected_mean_threshold',
     [(np.array([0, 1]),
       np.array([0, 1]), 1, 1, 1, 0.1, 0.1),
      (np.array([-0.6, -2, -5, 10, 20, 0, -3, 0.4]),
@@ -19,7 +19,7 @@ def test_find_thresholds(signal, time, window, step_size, chosen_samples, scalin
 
 
 @pytest.mark.parametrize(
-    "interpfact, time, amplitude, thr_up, thr_dn, refractory_period, expected_thresholds",
+    'interpfact, time, amplitude, thr_up, thr_dn, refractory_period, expected_thresholds',
     [(1, [0, 1], [1, 0], 3, 0.5, 0.01, ([], [])),
      (10, [0, 1, 2], [0, 10, -20], 3, 0.5, 0.01, ([0.3157894736842105, 0.631578947368421, 0.9473684210526315], [1.0526315789473684, 1.1578947368421053,
       1.263157894736842, 1.3684210526315788, 1.4736842105263157, 1.5789473684210527, 1.6842105263157894, 1.789473684210526, 1.894736842105263, 2.0])),
@@ -35,7 +35,7 @@ def test_signal_to_spike_refractory(interpfact, time, amplitude, thr_up, thr_dn,
 
 
 @pytest.mark.parametrize(
-    "spikes_list, expected_concatenation",
+    'spikes_list, expected_concatenation',
     [({'0': np.array([1, 2, 3])}, ([1, 2, 3], [0, 0, 0])),
      ({'0': np.array([1, 2, 3]), '1': np.array([4, 5, 6])}, ([1, 2, 3, 4, 5, 6], [0, 0, 0, 1, 1, 1]))])
 def test_concatenate_spikes(spikes_list, expected_concatenation):
