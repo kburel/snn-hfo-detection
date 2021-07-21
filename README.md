@@ -1,6 +1,8 @@
 
 # HFO detection with a Spiking Neural Network 
 **This code is still in development and as such welcomes suggestions.**
+
+[![Continuous Integration](https://github.com/kburel/SNN_HFO_iEEG/actions/workflows/continuous-integration.yml/badge.svg)](https://github.com/kburel/SNN_HFO_iEEG/actions/workflows/continuous-integration.yml)
 [![DOI](https://zenodo.org/badge/359535894.svg)](https://zenodo.org/badge/latestdoi/359535894)
 ---
 This code is intended to be used for the detection of High Frequency Oscillations (HFO) in the following data:
