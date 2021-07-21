@@ -1,39 +1,33 @@
-from teili.models.builder.synapse_equation_builder import SynapseEquationBuilder
-from teili.models.builder.neuron_equation_builder import NeuronEquationBuilder
-from teili.core.groups import Neurons, Connections
-from SNN_HFO_iEEG.Functions.HFO_detection_functions import *
-from SNN_HFO_iEEG.Functions.Signal_to_spike_functions import *
-from SNN_HFO_iEEG.Functions.Dynapse_biases_functions import *
-from SNN_HFO_iEEG.Functions.Filter_functions import *
+import warnings
+warnings.filterwarnings("ignore", category=DeprecationWarning)
 from brian2 import *
 import scipy.io as sio
 import argparse
-
-# IMPORT FUNCTIONS
-from SNN_HFO_iEEG.Functions.Filter_functions import *
-from SNN_HFO_iEEG.Functions.Dynapse_biases_functions import *
-from SNN_HFO_iEEG.Functions.Signal_to_spike_functions import *
+import os
 from SNN_HFO_iEEG.Functions.HFO_detection_functions import *
-
-# IMPORT  Teili functions
-from teili.core.groups import Neurons, Connections
-from teili.models.builder.neuron_equation_builder import NeuronEquationBuilder
+from SNN_HFO_iEEG.Functions.Signal_to_spike_functions import *
+from SNN_HFO_iEEG.Functions.Dynapse_biases_functions import *
+from SNN_HFO_iEEG.Functions.Filter_functions import *
 from teili.models.builder.synapse_equation_builder import SynapseEquationBuilder
+from teili.models.builder.neuron_equation_builder import NeuronEquationBuilder
+from teili.core.groups import Neurons, Connections
 
 _PACKAGE_NAME = 'SNN_HFO_iEEG'
 
 
 def run_hfo_detection(data_path, hfo_callback):
-    parameters_path = f'{_PACKAGE_NAME}/Parameters/'
-    snn_models_path = f'{_PACKAGE_NAME}/Models/'
+    warnings.filterwarnings("ignore", category=DeprecationWarning)
+    parameters_path = os.path.join(_PACKAGE_NAME, 'Parameters')
+    snn_models_path = os.path.join(_PACKAGE_NAME, 'Models')
 
     # Load SNN parameters, neuron and synapse models
-    neuron_model_path = snn_models_path + 'Neuron_model'
-    synapse_model_path = snn_models_path + 'Synapse_model'
+    neuron_model_path = os.path.join(snn_models_path, 'Neuron_model')
+    synapse_model_path = os.path.join(snn_models_path, 'Synapse_model')
 
-    ADM_parameters = sio.loadmat(parameters_path + 'ADM_parameters.mat')
+    ADM_parameters = sio.loadmat(os.path.join(
+        parameters_path, 'ADM_parameters.mat'))
     Network_parameters = sio.loadmat(
-        parameters_path + 'Network_parameters.mat')
+        os.path.join(parameters_path, 'Network_parameters.mat'))
 
     sampling_frequency = 2000
 
@@ -42,8 +36,8 @@ def run_hfo_detection(data_path, hfo_callback):
     # Interval
     current_interval = 1
 
-    Interval = sio.loadmat(data_path + 'P%s/P%sI%s' %
-                           (patient, patient, current_interval) + '.mat')
+    Interval = sio.loadmat(os.path.join(data_path, 'P%s/P%sI%s' %
+                           (patient, patient, current_interval) + '.mat'))
 
     num_channels = Interval['chb'].shape[0]
     for ch in range(num_channels):
@@ -232,5 +226,5 @@ def _parse_arguments():
 
 
 if __name__ == '__main__':
-    data_path = _parse_arguments().data_path + '/'
+    data_path = _parse_arguments().data_path
     run_hfo_detection(data_path, lambda _: {})
