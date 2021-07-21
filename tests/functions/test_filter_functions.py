@@ -1,5 +1,6 @@
 import pytest
 from SNN_HFO_iEEG.Functions.Filter_functions import *
+from tests.utility import *
 
 
 @pytest.mark.parametrize(
@@ -14,13 +15,9 @@ from SNN_HFO_iEEG.Functions.Filter_functions import *
 )
 def test_butter_bandpass(lowcut, highcut, fs, expected_coefficients):
     actual_a, actual_b = butter_bandpass(lowcut, highcut, fs)
-
-    def to_np_array(arr): return np.array([pytest.approx(_) for _ in arr])
-    expected_a, expected_b = to_np_array(expected_coefficients)
-    print(actual_a)
-    assert np.all(expected_a == actual_a)
-    print(actual_b)
-    assert np.all(expected_b == actual_b)
+    expected_a, expected_b = expected_coefficients
+    assert are_lists_approximately_equal(actual_a, expected_a)
+    assert are_lists_approximately_equal(actual_b, expected_b)
 
 
 def test_butter_bandpass_raises_error_when_fs_is_zero():
@@ -72,6 +69,4 @@ def test_butter_bandpass_passes_when_cut_to_fs_ratio_is_okay(fs):
 )
 def test_butter_bandpass_filter(data, lowcut, highcut, fs, expected_amplitude):
     actual_amplitude = butter_bandpass_filter(data, lowcut, highcut, fs)
-    print(actual_amplitude)
-    expected_amplitude = [pytest.approx(_) for _ in expected_amplitude]
-    assert np.all(expected_amplitude == actual_amplitude)
+    assert are_lists_approximately_equal(actual_amplitude, expected_amplitude)
