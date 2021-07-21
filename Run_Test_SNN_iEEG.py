@@ -116,9 +116,6 @@ for ch in range(num_channels):
                                           step_size=1,
                                           chosen_samples=50,
                                           scaling_factor=ADM_parameters['Ripple_sf'][0][0]))
-    print(f'signal: {R_signal}')
-    scaling_factor = ADM_parameters['Ripple_sf'][0][0]
-    print(f'scaling_factor: {scaling_factor}')
 
     FR_threshold = np.ceil(find_thresholds(signal=FR_signal,
                                            time=signal_time,
