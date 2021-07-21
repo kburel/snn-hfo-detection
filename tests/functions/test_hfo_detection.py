@@ -1,7 +1,6 @@
 from SNN_HFO_iEEG.Functions.HFO_detection_functions import *
 import pytest
 
-
 @pytest.mark.parametrize(
     "trial_duration, spike_monitor, original_time_vector, step_size, window_size, expected_hfo_detection",
     [(0, [0], [0], 0.1, 0.1, {'total_HFO': 0,
