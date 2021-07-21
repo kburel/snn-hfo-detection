@@ -1,5 +1,7 @@
 
 # HFO detection with a Spiking Neural Network 
+[![Continuous Integration](https://github.com/kburel/SNN_HFO_iEEG/actions/workflows/continuous-integration.yml/badge.svg)](https://github.com/kburel/SNN_HFO_iEEG/actions/workflows/continuous-integration.yml)
+
 **This code is still in development and as such welcomes suggestions.**
 [![DOI](https://zenodo.org/badge/359535894.svg)](https://zenodo.org/badge/latestdoi/359535894)
 ---
