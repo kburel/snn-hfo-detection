@@ -32,6 +32,7 @@ def test_get_tau_current(tau, expected_current):
     assert expected_current == pytest.approx(actual_current)
 
 
+@pytest.mark.filterwarnings('ignore::DeprecationWarning')
 def test_get_tau_current_raises_error_when_vector_is_specified_without_passing_vector():
     with pytest.raises(TypeError):
         getTauCurrent(1, vector=True)
@@ -43,6 +44,8 @@ def test_get_tau_current_raises_error_when_vector_is_specified_without_passing_v
      (np.array([1.5e-4, -1]), [3.57e-10, -5.35e-14])
      ]
 )
+@pytest.mark.filterwarnings('ignore::DeprecationWarning')
 def test_get_tau_current_with_vector(tau, expected_current):
     actual_current = getTauCurrent(tau, vector=True)
-    assert expected_current == pytest.approx(actual_current)
+    actual_current = [pytest.approx(_) for _ in actual_current]
+    assert expected_current == actual_current
