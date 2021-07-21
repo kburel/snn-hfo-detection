@@ -33,3 +33,16 @@ def test_signal_to_spike_refractory(interpfact, time, amplitude, thr_up, thr_dn,
     print(spike_dn)
     assert np.all(expected_spike_up == [pytest.approx(_) for _ in spike_up])
     assert np.all(expected_spike_dn == [pytest.approx(_) for _ in spike_dn])
+
+
+@pytest.mark.parametrize(
+    "spikes_list, expected_concatenation",
+    [({'0': np.array([1, 2, 3])}, ([1, 2, 3], [0, 0, 0])),
+     ({'0': np.array([1, 2, 3]), '1': np.array([4, 5, 6])}, ([1, 2, 3, 4, 5, 6], [0, 0, 0, 1, 1, 1]))])
+def test_concatenate_spikes(spikes_list, expected_concatenation):
+    spike_times, neuron_ids = concatenate_spikes(spikes_list)
+    expected_spike_times, expected_neuron_ids = expected_concatenation
+    assert np.all(expected_spike_times == [
+                  pytest.approx(_) for _ in spike_times])
+    assert np.all(expected_neuron_ids == [
+                  pytest.approx(_) for _ in neuron_ids])
