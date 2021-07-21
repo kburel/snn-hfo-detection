@@ -19,6 +19,9 @@ jobs:
         uses: abatilo/actions-poetry@v2.0.0
         with:
           poetry-version: ${{ matrix.poetry-version }}
+      - name: Install system dependencies
+        if: runner.os == 'Linux'
+        run: sudo apt-get install libqt5x11extras5
       - name: Install dependencies
         run: poetry install
       - name: Run tests
