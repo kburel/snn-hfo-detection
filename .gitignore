@@ -129,3 +129,9 @@ dmypy.json
 
 # Pyre type checker
 .pyre/
+
+# Default dataset path
+Data/
+
+# Type stubs
+typings/
