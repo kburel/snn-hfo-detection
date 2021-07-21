@@ -15,25 +15,15 @@ from SNN_HFO_iEEG.Functions.Dynapse_biases_functions import *
 from SNN_HFO_iEEG.Functions.Signal_to_spike_functions import *
 from SNN_HFO_iEEG.Functions.HFO_detection_functions import *
 
-
 # IMPORT  Teili functions
 from teili.core.groups import Neurons, Connections
 from teili.models.builder.neuron_equation_builder import NeuronEquationBuilder
 from teili.models.builder.synapse_equation_builder import SynapseEquationBuilder
 
-
-def _parse_arguments():
-    parser = argparse.ArgumentParser(description='Perform an HFO test run')
-    parser.add_argument('--data-path', type=str, nargs='?', default='Data/',
-                        help='Specifies the path to the directory containing the test data. Default is ./Data/')
-    return parser.parse_args()
-
-
 _PACKAGE_NAME = 'SNN_HFO_iEEG'
 
-if __name__ == '__main__':
-    # Specify paths
-    data_path = _parse_arguments().data_path + '/'
+
+def run_hfo_detection(data_path, hfo_callback):
     parameters_path = f'{_PACKAGE_NAME}/Parameters/'
     snn_models_path = f'{_PACKAGE_NAME}/Models/'
 
@@ -226,7 +216,21 @@ if __name__ == '__main__':
         Test_Results['SNN']['number_HFO'][ch] = detected_HFO
         Test_Results['SNN']['rate_HFO'][ch] = detected_HFO/duration
 
+        hfo_callback(detected_HFO)
+
         print('Found HFO', detected_HFO)
         print('Rate of HFO (event/min)',
               np.around((detected_HFO/duration)*60, decimals=2))
         print(' ')
+
+
+def _parse_arguments():
+    parser = argparse.ArgumentParser(description='Perform an HFO test run')
+    parser.add_argument('--data-path', type=str, nargs='?', default='Data/',
+                        help='Specifies the path to the directory containing the test data. Default is ./Data/')
+    return parser.parse_args()
+
+
+if __name__ == '__main__':
+    data_path = _parse_arguments().data_path + '/'
+    run_hfo_detection(data_path, lambda _: {})
