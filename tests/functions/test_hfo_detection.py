@@ -16,14 +16,7 @@ from tests.utility import *
 def test_hfo_detection(trial_duration, spike_monitor, original_time_vector, step_size, window_size, expected_hfo_detection):
     hfo_detection = detect_HFO(trial_duration, spike_monitor,
                                original_time_vector, step_size, window_size)
-    assert expected_hfo_detection['total_HFO'] == pytest.approx(
-        hfo_detection['total_HFO'])
-
-    def are_values_same(key): return are_lists_approximately_equal(
-        expected_hfo_detection[key], hfo_detection[key])
-    for key in ['time', 'signal', 'periods_HFO']:
-        assert are_values_same(key)
-
+    assert are_hfo_detections_equal(expected_hfo_detection, hfo_detection)
 
 def test_hfo_detection_fails_when_step_size_is_bigger_than_window():
     with pytest.raises(AssertionError):

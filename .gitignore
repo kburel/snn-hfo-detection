@@ -131,7 +131,7 @@ dmypy.json
 .pyre/
 
 # Default dataset path
-Data/
+/Data/
 
 # Type stubs
 typings/
