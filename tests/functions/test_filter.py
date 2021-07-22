@@ -37,8 +37,8 @@ def test_butter_bandpass_raises_error_when_cut_is_zero():
     [-1, -0.5, -0.1, 0.1, 0.5, 1]
 )
 def test_butter_bandpass_raises_error_when_cut_to_fs_ratio_is_too_big(fs):
-    OUT_OF_BOUNDS_RATIO = _CUT_TO_FS_RATIO_LIMIT + 1e-3
-    cut = fs * OUT_OF_BOUNDS_RATIO
+    out_of_bounds_ratio = _CUT_TO_FS_RATIO_LIMIT + 1e-3
+    cut = fs * out_of_bounds_ratio
 
     with pytest.raises(ValueError):
         butter_bandpass(lowcut=cut, highcut=cut, fs=fs)
@@ -49,8 +49,8 @@ def test_butter_bandpass_raises_error_when_cut_to_fs_ratio_is_too_big(fs):
     [-1, -0.5, -0.1, 0.1, 0.5, 1]
 )
 def test_butter_bandpass_passes_when_cut_to_fs_ratio_is_okay(fs):
-    IN_BOUNDS_RATIO = _CUT_TO_FS_RATIO_LIMIT - 1e-3
-    cut = fs * IN_BOUNDS_RATIO
+    in_bounds_ratio = _CUT_TO_FS_RATIO_LIMIT - 1e-3
+    cut = fs * in_bounds_ratio
 
     butter_bandpass(lowcut=cut, highcut=cut, fs=fs)
 

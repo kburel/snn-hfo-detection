@@ -60,11 +60,11 @@ def signal_to_spike_refractory(interpfact, time, amplitude, thr_up, thr_dn, refr
     spike_up = []
     spike_dn = []
 
-    f = sc.interpolate.interp1d(time, amplitude)
+    intepolated_time = sc.interpolate.interp1d(time, amplitude)
     rangeint = np.round((np.max(time) - np.min(time))*interpfact)
     xnew = np.linspace(np.min(time), np.max(
         time), num=int(rangeint), endpoint=True)
-    data = np.reshape([xnew, f(xnew)], (2, len(xnew))).T
+    data = np.reshape([xnew, intepolated_time(xnew)], (2, len(xnew))).T
 
     i = 0
     while i < (len(data)):

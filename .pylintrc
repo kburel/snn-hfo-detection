@@ -163,7 +163,6 @@ disable=print-statement,
         too-many-locals,
         redefined-outer-name,
         redefined-builtin,
-        invalid-name,
         too-many-statements,
         too-many-arguments,
         wrong-import-order
