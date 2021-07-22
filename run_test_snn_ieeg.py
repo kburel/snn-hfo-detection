@@ -9,8 +9,6 @@ import os
 import argparse
 import scipy.io as sio
 from brian2 import *
-import warnings
-warnings.filterwarnings("ignore", category=DeprecationWarning)
 
 _PACKAGE_NAME = 'snn_hfo_ieeg'
 
@@ -166,7 +164,7 @@ def run_hfo_detection(data_path, hfo_callback):
         Hidden_layer = Neurons(
             Hidden_neurons, equation_builder=builder_object1, name='Hidden_layer', dt=100*us)
         Hidden_layer.refP = Network_parameters['neuron_refractory'][0][0] * second
-        Hidden_layer.Itau = getTauCurrent(
+        Hidden_layer.Itau = get_tau_current(
             Network_parameters['neuron_taus'][0][0]*1e-3, False) * amp
 
         #-----------% SNN Synapse %-----------#
@@ -176,7 +174,7 @@ def run_hfo_detection(data_path, hfo_callback):
 
         Input_Hidden_layer.connect()
         Input_Hidden_layer.weight = Network_parameters['synapse_weights'][0]
-        Input_Hidden_layer.I_tau = getTauCurrent(
+        Input_Hidden_layer.I_tau = get_tau_current(
             Network_parameters['synapse_taus'][0]*1e-3, True) * amp
         Input_Hidden_layer.baseweight = 1 * pamp
 
