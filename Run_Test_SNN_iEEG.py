@@ -10,7 +10,6 @@ import argparse
 import scipy.io as sio
 from brian2 import *
 import warnings
-warnings.filterwarnings("ignore", category=DeprecationWarning)
 
 _PACKAGE_NAME = 'SNN_HFO_iEEG'
 
