@@ -15,16 +15,16 @@ from tests.utility import *
                                                                'time': [0.2, 0.3], 'signal': [0, 0], 'periods_HFO': [0, 0]})]
 )
 def test_hfo_detection(trial_duration, spike_monitor, original_time_vector, step_size, window_size, expected_hfo_detection):
-    hfo_detection = detect_HFO(trial_duration, spike_monitor,
+    hfo_detection = detect_hfo(trial_duration, spike_monitor,
                                original_time_vector, step_size, window_size)
     assert are_hfo_detections_equal(expected_hfo_detection, hfo_detection)
 
 
 def test_hfo_detection_fails_when_step_size_is_bigger_than_window():
     with pytest.raises(AssertionError):
-        detect_HFO(0, [0], [0], 1, 0.5)
+        detect_hfo(0, [0], [0], 1, 0.5)
 
 
 def test_hfo_detection_fails_when_step_size_is_zero():
     with pytest.raises(ZeroDivisionError):
-        detect_HFO(0, [0], [0], 0, 0)
+        detect_hfo(0, [0], [0], 0, 0)

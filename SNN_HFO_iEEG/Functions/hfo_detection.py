@@ -5,7 +5,7 @@ import numpy as np
 # ========================================================================================
 
 
-def detect_HFO(trial_duration, spike_monitor, original_time_vector, step_size, window_size):
+def detect_hfo(trial_duration, spike_monitor, original_time_vector, step_size, window_size):
     periods_of_HFO = np.array([[0, 0]])
     # ==============================================================================
     # Detect HFO
