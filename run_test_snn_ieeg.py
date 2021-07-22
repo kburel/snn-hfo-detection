@@ -35,14 +35,14 @@ def run_hfo_detection(data_path, hfo_callback):
     # interval
     current_interval = 1
 
-    interval = sio.loadmat(os.path.join(data_path, 'P%s/P%sI%s' %
-                                        (patient, patient, current_interval) + '.mat'))
+    file_name = f'P{patient}/P{patient}I{current_interval}.mat'
+    interval = sio.loadmat(os.path.join(data_path, file_name))
 
     num_channels = interval['chb'].shape[0]
     for ch in range(num_channels):
 
-        print('Running test for Patient %s, interval %s and channel %s' %
-              (patient, current_interval, ch))
+        print(
+            f'Running test for Patient {patient}, interval {current_interval} and channel {ch}')
 
         # Prepare dictionaries to return results
         if ch == 0:
@@ -128,14 +128,15 @@ def run_hfo_detection(data_path, hfo_callback):
                                                   amplitude=fr_signal,
                                                   thr_up=fr_threshold, thr_dn=fr_threshold,
                                                   refractory_period=adm_parameters['refractory'][0][0])
-
-        spikes['ripple']['ch_%s' % ch] = {}
-        spikes['ripple']['ch_%s' % ch]['up'] = r_up
-        spikes['ripple']['ch_%s' % ch]['dn'] = r_dn
-
-        spikes['fr']['ch_%s' % ch] = {}
-        spikes['fr']['ch_%s' % ch]['up'] = fr_up
-        spikes['fr']['ch_%s' % ch]['dn'] = fr_dn
+        channel_key = f'ch_{ch}'
+        spikes['ripple'][channel_key] = {
+            'up': r_up,
+            'dn': r_dn
+        }
+        spikes['fr'][channel_key] = {
+            'up': fr_up,
+            'dn': fr_dn
+        }
 
         # ==================================
         # SNN stage
