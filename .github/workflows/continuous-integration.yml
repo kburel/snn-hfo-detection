@@ -38,7 +38,5 @@ jobs:
           key: ${{ runner.os }}-virtualenvs
       - name: Install dependencies
         run: poetry install
-      - name: Get number of CPU cores
-        uses: SimenB/github-actions-cpu-cores@v1
       - name: Run tests
-        run: poetry run pytest -n ${{ steps.cpu-cores.outputs.count }}
+        run: poetry run pytest -n 4
