@@ -1,5 +1,5 @@
 import pytest
-from SNN_HFO_iEEG.functions.dynapse_biases import *
+from snn_hfo_ieeg.functions.dynapse_biases import *
 from tests.utility import *
 
 

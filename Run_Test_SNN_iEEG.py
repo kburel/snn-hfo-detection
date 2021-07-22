@@ -1,10 +1,10 @@
 from teili.core.groups import Neurons, Connections
 from teili.models.builder.neuron_equation_builder import NeuronEquationBuilder
 from teili.models.builder.synapse_equation_builder import SynapseEquationBuilder
-from SNN_HFO_iEEG.functions.filter import *
-from SNN_HFO_iEEG.functions.dynapse_biases import *
-from SNN_HFO_iEEG.functions.signal_to_spike import *
-from SNN_HFO_iEEG.functions.hfo_detection import *
+from snn_hfo_ieeg.functions.filter import *
+from snn_hfo_ieeg.functions.dynapse_biases import *
+from snn_hfo_ieeg.functions.signal_to_spike import *
+from snn_hfo_ieeg.functions.hfo_detection import *
 import os
 import argparse
 import scipy.io as sio
@@ -12,13 +12,13 @@ from brian2 import *
 import warnings
 warnings.filterwarnings("ignore", category=DeprecationWarning)
 
-_PACKAGE_NAME = 'SNN_HFO_iEEG'
+_PACKAGE_NAME = 'snn_hfo_ieeg'
 
 
 def run_hfo_detection(data_path, hfo_callback):
     warnings.filterwarnings("ignore", category=DeprecationWarning)
-    parameters_path = os.path.join(_PACKAGE_NAME, 'Parameters')
-    snn_models_path = os.path.join(_PACKAGE_NAME, 'Models')
+    parameters_path = os.path.join(_PACKAGE_NAME, 'parameters')
+    snn_models_path = os.path.join(_PACKAGE_NAME, 'models')
 
     # Load SNN parameters, neuron and synapse models
     neuron_model_path = os.path.join(snn_models_path, 'neuron')

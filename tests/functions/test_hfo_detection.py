@@ -1,4 +1,4 @@
-from SNN_HFO_iEEG.functions.hfo_detection import *
+from snn_hfo_ieeg.functions.hfo_detection import *
 import pytest
 from tests.utility import *
 
