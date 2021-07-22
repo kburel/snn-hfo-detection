@@ -55,12 +55,12 @@ def run_hfo_detection(data_path, hfo_callback):
         r_signal = butter_bandpass_filter(data=wideband_signal,
                                           lowcut=80,
                                           highcut=250,
-                                          fs=sampling_frequency,
+                                          sampling_frequency=sampling_frequency,
                                           order=2)
         fr_signal = butter_bandpass_filter(data=wideband_signal,
                                            lowcut=250,
                                            highcut=500,
-                                           fs=sampling_frequency,
+                                           sampling_frequency=sampling_frequency,
                                            order=2)
 
         # ==================================
