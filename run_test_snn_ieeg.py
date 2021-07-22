@@ -9,6 +9,7 @@ import os
 import argparse
 import scipy.io as sio
 from brian2 import *
+import warnings
 
 _PACKAGE_NAME = 'snn_hfo_ieeg'
 
