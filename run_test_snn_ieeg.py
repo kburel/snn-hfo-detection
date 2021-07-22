@@ -219,8 +219,8 @@ def run_hfo_detection(data_path, hfo_callback):
 
 def _parse_arguments():
     parser = argparse.ArgumentParser(description='Perform an hfo test run')
-    parser.add_argument('--data-path', type=str, nargs='?', default='Data/',
-                        help='Specifies the path to the directory containing the test data. Default is ./Data/')
+    parser.add_argument('--data-path', type=str, nargs='?', default='data/',
+                        help='Specifies the path to the directory containing the test data. Default is ./data/')
     return parser.parse_args()
 
 
