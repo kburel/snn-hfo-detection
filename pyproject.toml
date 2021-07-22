@@ -13,7 +13,7 @@ seaborn = "^0.11.1"
 teili = { git="https://gitlab.com/neuroinf/teili.git", branch="dev" }
 
 [tool.poetry.dev-dependencies]
-pytest = "^3.4"
+pytest-xdist = "^2.3.0"
 
 [build-system]
 requires = ["poetry-core>=1.0.0"]
