@@ -1,16 +1,16 @@
 import os
+import warnings
 import argparse
 import scipy.io as sio
-import warnings
 from teili.core.groups import Neurons, Connections
 from teili.models.builder.neuron_equation_builder import NeuronEquationBuilder
 from teili.models.builder.synapse_equation_builder import SynapseEquationBuilder
+from brian2 import start_scope, run, SpikeGeneratorGroup, SpikeMonitor
+from brian2.units import second, us, amp, pamp
 from snn_hfo_ieeg.functions.filter import *
 from snn_hfo_ieeg.functions.dynapse_biases import *
 from snn_hfo_ieeg.functions.signal_to_spike import *
 from snn_hfo_ieeg.functions.hfo_detection import *
-from brian2 import start_scope, run, SpikeGeneratorGroup, SpikeMonitor
-from brian2.units import second, us, amp, pamp
 
 _PACKAGE_NAME = 'snn_hfo_ieeg'
 

@@ -1,5 +1,5 @@
-from snn_hfo_ieeg.functions.signal_to_spike import *
 import pytest
+from snn_hfo_ieeg.functions.signal_to_spike import *
 from tests.utility import *
 
 

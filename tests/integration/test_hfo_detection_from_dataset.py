@@ -1,7 +1,7 @@
 import os
+from pathlib import Path
 import pytest
 from run_test_snn_ieeg import run_hfo_detection
-from pathlib import Path
 from tests.utility import are_hfo_detections_equal
 
 
