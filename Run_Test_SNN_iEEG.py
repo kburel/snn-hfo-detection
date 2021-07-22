@@ -55,8 +55,8 @@ def run_hfo_detection(data_path, hfo_callback):
             Test_Results = {}
             Test_Results['Info'] = Test_info
             Test_Results['SNN'] = {}
-            Test_Results['SNN']['number_HFO'] = np.zeros(num_channels)
-            Test_Results['SNN']['rate_HFO'] = np.zeros(num_channels)
+            Test_Results['SNN']['number_hfo'] = np.zeros(num_channels)
+            Test_Results['SNN']['rate_hfo'] = np.zeros(num_channels)
 
         # ==================================
         # Filtering stage
@@ -194,32 +194,32 @@ def run_hfo_detection(data_path, hfo_callback):
         # ==================================
         # Readout stage
         # ==================================
-        print('Running HFO detection')
-        HFO_detection_step_size = 0.01
-        HFO_detection_window_size = 0.05
-        HFO_detection = detect_HFO(trial_duration=duration,
+        print('Running hfo detection')
+        hfo_detection_step_size = 0.01
+        hfo_detection_window_size = 0.05
+        hfo_detection = detect_hfo(trial_duration=duration,
                                    spike_monitor=(
                                        Spike_Monitor_Hidden.t/second),
                                    original_time_vector=signal_time,
-                                   step_size=HFO_detection_step_size,
-                                   window_size=HFO_detection_window_size)
+                                   step_size=hfo_detection_step_size,
+                                   window_size=hfo_detection_window_size)
 
-        detected_HFO = HFO_detection['total_HFO']
+        detected_hfo = hfo_detection['total_hfo']
 
         # Save HFO results
-        Test_Results['SNN']['number_HFO'][ch] = detected_HFO
-        Test_Results['SNN']['rate_HFO'][ch] = detected_HFO/duration
+        Test_Results['SNN']['number_hfo'][ch] = detected_hfo
+        Test_Results['SNN']['rate_hfo'][ch] = detected_hfo/duration
 
-        print('Found HFO', detected_HFO)
-        print('Rate of HFO (event/min)',
-              np.around((detected_HFO/duration)*60, decimals=2))
+        print('Found hfo', detected_hfo)
+        print('Rate of hfo (event/min)',
+              np.around((detected_hfo/duration)*60, decimals=2))
         print(' ')
 
-        hfo_callback(HFO_detection)
+        hfo_callback(hfo_detection)
 
 
 def _parse_arguments():
-    parser = argparse.ArgumentParser(description='Perform an HFO test run')
+    parser = argparse.ArgumentParser(description='Perform an hfo test run')
     parser.add_argument('--data-path', type=str, nargs='?', default='Data/',
                         help='Specifies the path to the directory containing the test data. Default is ./Data/')
     return parser.parse_args()
