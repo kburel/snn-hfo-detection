@@ -1,7 +1,7 @@
 import numpy as np
 
 
-def getTau(i):
+def get_tau(i):
     '''
     Compute DPI time constant tau in seconds for a given current value:
     c_p : DPI capacitance [F]
@@ -16,7 +16,7 @@ def getTau(i):
     return (c_p*u_t)/(k*i)
 
 
-def getTauCurrent(tau, vector=False):
+def get_tau_current(tau, vector=False):
     '''
     Compute the current in Amperes necessary to get a desired time constant:
     tau : Time constant, must be given in [sec]
