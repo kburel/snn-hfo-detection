@@ -21,8 +21,8 @@ def run_hfo_detection(data_path, hfo_callback):
     snn_models_path = os.path.join(_PACKAGE_NAME, 'Models')
 
     # Load SNN parameters, neuron and synapse models
-    neuron_model_path = os.path.join(snn_models_path, 'Neuron_model')
-    synapse_model_path = os.path.join(snn_models_path, 'Synapse_model')
+    neuron_model_path = os.path.join(snn_models_path, 'neuron')
+    synapse_model_path = os.path.join(snn_models_path, 'synapse')
 
     ADM_parameters = sio.loadmat(os.path.join(
         parameters_path, 'ADM_parameters.mat'))
