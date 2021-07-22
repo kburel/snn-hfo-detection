@@ -4,6 +4,7 @@ from tests.utility import *
 
 _CUT_TO_FS_RATIO_LIMIT = 0.5
 
+
 @pytest.mark.parametrize(
     'lowcut, highcut, fs, expected_coefficients',
     [(0.4, 0.4, 1, ([0., 0., 0., 0., 0., 0., 0., 0.,  0., 0., 0.], [1., 8.09016994, 31.18033989, 74.72135955, 122.81152949,
@@ -20,6 +21,7 @@ def test_butter_bandpass(lowcut, highcut, fs, expected_coefficients):
     assert are_lists_approximately_equal(actual_a, expected_a)
     assert are_lists_approximately_equal(actual_b, expected_b)
 
+
 def test_butter_bandpass_raises_error_when_fs_is_zero():
     with pytest.raises(ZeroDivisionError):
         butter_bandpass(lowcut=1, highcut=1, fs=0)
@@ -28,6 +30,7 @@ def test_butter_bandpass_raises_error_when_fs_is_zero():
 def test_butter_bandpass_raises_error_when_cut_is_zero():
     with pytest.raises(ValueError):
         butter_bandpass(lowcut=0, highcut=1, fs=1)
+
 
 @pytest.mark.parametrize(
     'fs',
@@ -40,6 +43,7 @@ def test_butter_bandpass_raises_error_when_cut_to_fs_ratio_is_too_big(fs):
     with pytest.raises(ValueError):
         butter_bandpass(lowcut=cut, highcut=cut, fs=fs)
 
+
 @pytest.mark.parametrize(
     'fs',
     [-1, -0.5, -0.1, 0.1, 0.5, 1]
@@ -49,6 +53,7 @@ def test_butter_bandpass_passes_when_cut_to_fs_ratio_is_okay(fs):
     cut = fs * IN_BOUNDS_RATIO
 
     butter_bandpass(lowcut=cut, highcut=cut, fs=fs)
+
 
 @pytest.mark.parametrize(
     'data, lowcut, highcut, fs, expected_amplitude',
