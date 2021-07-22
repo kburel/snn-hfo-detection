@@ -9,7 +9,7 @@ from snn_hfo_ieeg.functions.filter import *
 from snn_hfo_ieeg.functions.dynapse_biases import *
 from snn_hfo_ieeg.functions.signal_to_spike import *
 from snn_hfo_ieeg.functions.hfo_detection import *
-from brian2 import start_scope, run, SpikeGeneratorGroup, SpikeMonitor, StateMonitor
+from brian2 import start_scope, run, SpikeGeneratorGroup, SpikeMonitor
 from brian2.units import second, us, amp, pamp
 
 _PACKAGE_NAME = 'snn_hfo_ieeg'
@@ -41,22 +41,8 @@ def run_hfo_detection(data_path, hfo_callback):
 
     num_channels = interval['chb'].shape[0]
     for ch in range(num_channels):
-
         print(
             f'Running test for Patient {patient}, interval {current_interval} and channel {ch}')
-
-        # Prepare dictionaries to return results
-        if ch == 0:
-            test_info = {}
-            test_info['Patient'] = patient
-            test_info['interval'] = current_interval
-            test_info['Channels'] = num_channels
-
-            test_results = {}
-            test_results['Info'] = test_info
-            test_results['SNN'] = {}
-            test_results['SNN']['number_hfo'] = np.zeros(num_channels)
-            test_results['SNN']['rate_hfo'] = np.zeros(num_channels)
 
         # ==================================
         # Filtering stage
@@ -64,19 +50,6 @@ def run_hfo_detection(data_path, hfo_callback):
         # Get the data for the current channel
         Wideband_signal = interval['chb'][ch]
         signal_time = interval['t'][0]
-
-        # Prepare dictionaries to return data
-        if ch == 0:
-            signal = {}
-            signal['time'] = signal_time
-            signal['ripple'] = np.zeros((num_channels, signal_time.size))
-            signal['fr'] = np.zeros((num_channels, signal_time.size))
-
-            spikes = {}
-            spikes['ripple'] = {}
-            spikes['ripple']['thresholds'] = np.zeros(num_channels)
-            spikes['fr'] = {}
-            spikes['fr']['thresholds'] = np.zeros(num_channels)
 
         # Filter the Wideband in ripple and fr bands
         r_signal = butter_bandpass_filter(data=Wideband_signal,
@@ -89,9 +62,6 @@ def run_hfo_detection(data_path, hfo_callback):
                                            highcut=500,
                                            fs=sampling_frequency,
                                            order=2)
-
-        signal['ripple'][ch, :] = r_signal
-        signal['fr'][ch, :] = fr_signal
 
         # ==================================
         # Baseline detection stage
@@ -111,9 +81,6 @@ def run_hfo_detection(data_path, hfo_callback):
                                                chosen_samples=50,
                                                scaling_factor=adm_parameters['FR_sf'][0][0]))
 
-        spikes['ripple']['thresholds'] = r_threshold
-        spikes['fr']['thresholds'] = fr_threshold
-
         # ==================================
         # ADM stage
         # ==================================
@@ -129,15 +96,6 @@ def run_hfo_detection(data_path, hfo_callback):
                                                   amplitude=fr_signal,
                                                   thr_up=fr_threshold, thr_dn=fr_threshold,
                                                   refractory_period=adm_parameters['refractory'][0][0])
-        channel_key = f'ch_{ch}'
-        spikes['ripple'][channel_key] = {
-            'up': r_up,
-            'dn': r_dn
-        }
-        spikes['fr'][channel_key] = {
-            'up': fr_up,
-            'dn': fr_dn
-        }
 
         # ==================================
         # SNN stage
@@ -204,10 +162,6 @@ def run_hfo_detection(data_path, hfo_callback):
                                    window_size=hfo_detection_window_size)
 
         detected_hfo = hfo_detection['total_hfo']
-
-        # Save HFO results
-        test_results['SNN']['number_hfo'][ch] = detected_hfo
-        test_results['SNN']['rate_hfo'][ch] = detected_hfo/duration
 
         print('Found hfo', detected_hfo)
         print('Rate of hfo (event/min)',
