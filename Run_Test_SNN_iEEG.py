@@ -1,16 +1,16 @@
+from teili.core.groups import Neurons, Connections
+from teili.models.builder.neuron_equation_builder import NeuronEquationBuilder
+from teili.models.builder.synapse_equation_builder import SynapseEquationBuilder
+from SNN_HFO_iEEG.Functions.Filter_functions import *
+from SNN_HFO_iEEG.Functions.Dynapse_biases_functions import *
+from SNN_HFO_iEEG.Functions.Signal_to_spike_functions import *
+from SNN_HFO_iEEG.Functions.HFO_detection_functions import *
+import os
+import argparse
+import scipy.io as sio
+from brian2 import *
 import warnings
 warnings.filterwarnings("ignore", category=DeprecationWarning)
-from brian2 import *
-import scipy.io as sio
-import argparse
-import os
-from SNN_HFO_iEEG.Functions.HFO_detection_functions import *
-from SNN_HFO_iEEG.Functions.Signal_to_spike_functions import *
-from SNN_HFO_iEEG.Functions.Dynapse_biases_functions import *
-from SNN_HFO_iEEG.Functions.Filter_functions import *
-from teili.models.builder.synapse_equation_builder import SynapseEquationBuilder
-from teili.models.builder.neuron_equation_builder import NeuronEquationBuilder
-from teili.core.groups import Neurons, Connections
 
 _PACKAGE_NAME = 'SNN_HFO_iEEG'
 
@@ -42,8 +42,8 @@ def run_hfo_detection(data_path, hfo_callback):
     num_channels = Interval['chb'].shape[0]
     for ch in range(num_channels):
 
-        print('Running test for Patient %s, interval %s and channel %s' %
-              (patient, current_interval, ch))
+        print(
+            f'Running test for Patient {patient}, interval {current_interval} and channel {ch}')
 
         # Prepare dictionaries to return results
         if ch == 0:
@@ -130,13 +130,16 @@ def run_hfo_detection(data_path, hfo_callback):
                                                   thr_up=FR_threshold, thr_dn=FR_threshold,
                                                   refractory_period=ADM_parameters['refractory'][0][0])
 
-        Spikes['Ripple']['ch_%s' % ch] = {}
-        Spikes['Ripple']['ch_%s' % ch]['UP'] = R_up
-        Spikes['Ripple']['ch_%s' % ch]['DN'] = R_dn
+        channel_key = f'ch_{ch}'
+        Spikes['Ripple'][channel_key] = {
+            'UP': R_up,
+            'DN': R_dn
+        }
 
-        Spikes['FR']['ch_%s' % ch] = {}
-        Spikes['FR']['ch_%s' % ch]['UP'] = FR_up
-        Spikes['FR']['ch_%s' % ch]['DN'] = FR_dn
+        Spikes['FR'][channel_key] = {
+            'UP': FR_up,
+            'DN': FR_dn
+        }
 
         # ==================================
         # SNN stage
