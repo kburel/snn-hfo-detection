@@ -25,9 +25,9 @@ def run_hfo_detection(data_path, hfo_callback):
     synapse_model_path = os.path.join(snn_models_path, 'synapse')
 
     ADM_parameters = sio.loadmat(os.path.join(
-        parameters_path, 'ADM_parameters.mat'))
+        parameters_path, 'adm.mat'))
     Network_parameters = sio.loadmat(
-        os.path.join(parameters_path, 'Network_parameters.mat'))
+        os.path.join(parameters_path, 'network.mat'))
 
     sampling_frequency = 2000
 
