@@ -58,9 +58,9 @@ iEEG_data = {}
 iEEG_data['chb']: matrix of iEEG signal, each column is the iEEG signal from each recorded channel.
 iEEG_data['t']: array containing the time vector of the recorded signal
 ```
-The SNN HFO detector will run for all the channel from a single recorded interval and it will save the results in the dictionary "Test_Results".
+The SNN HFO detector will run for all the channel from a single recorded interval and it will save the results in the dictionary "test_results".
 
-The Filtered signal as well as the generated UP and DN spikes can be accessed trough the dictionaries "Signal"  and  "Spikes" respectively.
+The Filtered signal as well as the generated UP and DN spikes can be accessed trough the dictionaries "signal"  and  "spikes" respectively.
 
 
 ## How to use the code:
