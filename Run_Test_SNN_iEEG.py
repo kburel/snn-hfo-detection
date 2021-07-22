@@ -35,13 +35,8 @@ def run_hfo_detection(data_path, hfo_callback):
     # Interval
     current_interval = 1
 
-<<<<<<< HEAD
     file_name = f'P{patient}/P{patient}I{current_interval}.mat'
     Interval = sio.loadmat(os.path.join(data_path, file_name))
-=======
-    Interval = sio.loadmat(os.path.join(data_path, 'P%s/P%sI%s' %
-                                        (patient, patient, current_interval) + '.mat'))
->>>>>>> main
 
     num_channels = Interval['chb'].shape[0]
     for ch in range(num_channels):
