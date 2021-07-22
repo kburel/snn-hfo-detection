@@ -15,7 +15,7 @@ from snn_hfo_ieeg.functions.hfo_detection import *
 _PACKAGE_NAME = 'snn_hfo_ieeg'
 
 
-def run_hfo_detection(data_path, hfo_callback):
+def run_hfo_detection(data_path, hfo_cb):
     warnings.filterwarnings("ignore", category=DeprecationWarning)
     parameters_path = os.path.join(_PACKAGE_NAME, 'parameters')
     snn_models_path = os.path.join(_PACKAGE_NAME, 'models')
@@ -168,7 +168,7 @@ def run_hfo_detection(data_path, hfo_callback):
               np.around((detected_hfo/duration)*60, decimals=2))
         print(' ')
 
-        hfo_callback(hfo_detection)
+        hfo_cb(hfo_detection)
 
 
 def _parse_arguments():
