@@ -40,15 +40,15 @@ def run_hfo_detection(data_path, hfo_callback):
     interval = sio.loadmat(os.path.join(data_path, file_name))
 
     num_channels = interval['chb'].shape[0]
-    for ch in range(num_channels):
+    for channel in range(num_channels):
         print(
-            f'Running test for Patient {patient}, interval {current_interval} and channel {ch}')
+            f'Running test for Patient {patient}, interval {current_interval} and channel {channel}')
 
         # ==================================
         # Filtering stage
         # ==================================
         # Get the data for the current channel
-        wideband_signal = interval['chb'][ch]
+        wideband_signal = interval['chb'][channel]
         signal_time = interval['t'][0]
 
         # Filter the Wideband in ripple and fr bands
@@ -106,7 +106,7 @@ def run_hfo_detection(data_path, hfo_callback):
         spikes_list['r_dn'] = r_dn
         spikes_list['fr_up'] = fr_up
         spikes_list['fr_dn'] = fr_dn
-        input_spiketimes, input_neurons_ID = concatenate_spikes(spikes_list)
+        input_spiketimes, input_neurons_id = concatenate_spikes(spikes_list)
 
         extra_simulation_time = 0.050
         #-----------% SNN input %-----------#
@@ -114,7 +114,7 @@ def run_hfo_detection(data_path, hfo_callback):
 
         input_channels = network_parameters['input_neurons'][0][0]
         input = SpikeGeneratorGroup(input_channels,
-                                    input_neurons_ID,
+                                    input_neurons_id,
                                     input_spiketimes*second,
                                     dt=100*us, name='input')
 
@@ -140,7 +140,7 @@ def run_hfo_detection(data_path, hfo_callback):
         input_hidden_layer.baseweight = 1 * pamp
 
         #-----------% SNN Monitors %-----------#
-        spike_Monitor_hidden = SpikeMonitor(hidden_layer)
+        spike_monitor_hidden = SpikeMonitor(hidden_layer)
 
         # Run SNN simulation
         duration = np.max(signal_time) + extra_simulation_time
@@ -156,7 +156,7 @@ def run_hfo_detection(data_path, hfo_callback):
         hfo_detection_window_size = 0.05
         hfo_detection = detect_hfo(trial_duration=duration,
                                    spike_monitor=(
-                                       spike_Monitor_hidden.t/second),
+                                       spike_monitor_hidden.t/second),
                                    original_time_vector=signal_time,
                                    step_size=hfo_detection_step_size,
                                    window_size=hfo_detection_window_size)
