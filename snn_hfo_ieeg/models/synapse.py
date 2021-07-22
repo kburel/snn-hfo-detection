@@ -1,6 +1,5 @@
-from brian2.units import *
-Synapse_model = {'model':
-                 '''
+synapse = {'model':
+           '''
         dI_syn/dt =  (- I_syn - I_gain + 2*Io_syn*(I_syn<=Io_syn))/(tausyn*((I_gain/I_syn)+1)) : amp (clock-driven)
 
 
@@ -30,27 +29,27 @@ Synapse_model = {'model':
         Io_syn       : amp (constant)
         Csyn         : farad (constant)
           ''',
-                 'on_pre':
-                 '''
+           'on_pre':
+           '''
 
         I_syn += Iw * w_plast * I_gain / (Itau_syn * ((I_gain/I_syn)+1))
 
           ''',
-                 'on_post':
-                 '''
+           'on_post':
+           '''
    
 ''',
-                 'parameters':
-                 {
-                     'Io_syn': '0.5 * pamp',
-                     'kn_syn': '0.75',
-                     'kp_syn': '0.66',
-                     'Ut_syn': '25. * mvolt',
-                     'Csyn': '1.5 * pfarad',
-                     'I_tau': '10. * pamp',
-                     'I_th': '10. * pamp',
-                     'I_syn': '0.5 * pamp',
-                     'w_plast': '1',
-                     'baseweight': '7. * pamp',
-                 }
-                 }
+           'parameters':
+           {
+               'Io_syn': '0.5 * pamp',
+               'kn_syn': '0.75',
+               'kp_syn': '0.66',
+               'Ut_syn': '25. * mvolt',
+               'Csyn': '1.5 * pfarad',
+               'I_tau': '10. * pamp',
+               'I_th': '10. * pamp',
+               'I_syn': '0.5 * pamp',
+               'w_plast': '1',
+               'baseweight': '7. * pamp',
+           }
+           }

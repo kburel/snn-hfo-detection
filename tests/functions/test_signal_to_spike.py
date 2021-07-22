@@ -1,4 +1,4 @@
-from SNN_HFO_iEEG.Functions.Signal_to_spike_functions import *
+from snn_hfo_ieeg.functions.signal_to_spike import *
 import pytest
 from tests.utility import *
 
