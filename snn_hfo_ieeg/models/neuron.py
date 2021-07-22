@@ -1,5 +1,5 @@
 neuron = {'model':
-                '''
+          '''
             dImem/dt = (((Ith_clip / Itau_clip) * (Iin_clip  + Ia_clip - Ishunt_clip - Iahp_clip)) - Ith_clip - ((1 + ((Ishunt_clip + Iahp_clip - Ia_clip) / Itau_clip)) * Imem)) / (tau * ((Ith_clip/(Imem + Io)) + 1)) : amp (unless refractory)
 
           dIahp/dt = (- Ithahp_clip - Iahp + 2*Io*(Iahp<=Io)) / (tauahp * (Ithahp_clip / Iahp + 1)) : amp # adaptation current
@@ -31,7 +31,7 @@ neuron = {'model':
             Iconst  : amp (constant)                         # Additional input current similar to constant current injection
             Ishunt  : amp (constant)                         # Shunting inhibitory current (directly affects soma)
             Ica     : amp (constant)
-         
+
 
 
           tauahp = (Cahp * Ut) / (kappa * Itauahp) : second # time constant of adaptation
@@ -39,14 +39,14 @@ neuron = {'model':
           Ithahp : amp (constant)
           Itauahp : amp (constant)
           Cahp : farad (constant)
-         
+
 
 
         Iagain : amp (constant)
         Iath : amp (constant)
         Ianorm : amp (constant)
 
-         
+
            x : 1         (constant)        # x location on 2d grid (only set it if you need it)
            y : 1         (constant)        # y location on 2d grid
            
@@ -54,17 +54,17 @@ neuron = {'model':
 Iin = Iin0 : amp # input currents
         Iin0 : amp
 ''',
-                'threshold':
-                '''Imem > Ispkthr''',
-                'reset':
-                '''Imem = Ireset;
+          'threshold':
+          '''Imem > Ispkthr''',
+          'reset':
+          '''Imem = Ireset;
                   Iahp += Iahpmax;
                   ''',
-                'parameters':
-                {
-                    'Inoise': '0.5 * pamp',
-                    'Iconst': '0.5 * pamp',
-                    'kn': '0.75',
+          'parameters':
+          {
+              'Inoise': '0.5 * pamp',
+              'Iconst': '0.5 * pamp',
+              'kn': '0.75',
                     'kp': '0.66',
                     'Ut': '25. * mvolt',
                     'Io': '0.5 * pamp',
@@ -83,5 +83,5 @@ Iin = Iin0 : amp # input currents
                     'Ith': '0.9 * pamp',
                     'Itau': '8. * pamp',
                     'refP': '1. * msecond',
-                }
-                }
+          }
+          }
