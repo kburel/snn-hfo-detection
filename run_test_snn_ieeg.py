@@ -187,7 +187,7 @@ def run_hfo_detection(data_path, hfo_callback):
 
         # Run SNN simulation
         duration = np.max(signal_time) + extra_simulation_time
-        duration = 0.001
+        # duration = 0.001
         print('SNN simulation will run for ', duration, ' seconds')
         run(duration * second)
 
