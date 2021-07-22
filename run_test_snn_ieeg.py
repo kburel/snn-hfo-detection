@@ -183,8 +183,6 @@ def run_hfo_detection(data_path, hfo_callback):
 
         #-----------% SNN Monitors %-----------#
         spike_Monitor_hidden = SpikeMonitor(hidden_layer)
-        hidden_Monitor = StateMonitor(hidden_layer, variables=['Iin'], record=[
-            0], name='test_hidden_Monitor')
 
         # Run SNN simulation
         duration = np.max(signal_time) + extra_simulation_time
