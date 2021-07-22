@@ -61,7 +61,7 @@ def run_hfo_detection(data_path, hfo_callback):
         # Filtering stage
         # ==================================
         # Get the data for the current channel
-        Wideband_signal = interval['chb'][ch]
+        wideband_signal = interval['chb'][ch]
         signal_time = interval['t'][0]
 
         # Prepare dictionaries to return data
@@ -77,13 +77,13 @@ def run_hfo_detection(data_path, hfo_callback):
             spikes['fr'] = {}
             spikes['fr']['thresholds'] = np.zeros(num_channels)
 
-        # Filter the Wideband in ripple and fr bands
-        r_signal = butter_bandpass_filter(data=Wideband_signal,
+        # Filter the wideband in ripple and fr bands
+        r_signal = butter_bandpass_filter(data=wideband_signal,
                                           lowcut=80,
                                           highcut=250,
                                           fs=sampling_frequency,
                                           order=2)
-        fr_signal = butter_bandpass_filter(data=Wideband_signal,
+        fr_signal = butter_bandpass_filter(data=wideband_signal,
                                            lowcut=250,
                                            highcut=500,
                                            fs=sampling_frequency,
