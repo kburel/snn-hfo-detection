@@ -108,11 +108,11 @@ def concatenate_spikes(spikes_list):
     channel_nr = 0
     for key in spikes_list:
         if channel_nr == 0:
-            all_spiketimes = spikes_list['%s' % key]
+            all_spiketimes = spikes_list[key]
             all_neuron_ids = np.ones_like(all_spiketimes) * channel_nr
             channel_nr += 1
         else:
-            new_spiketimes = spikes_list['%s' % key]
+            new_spiketimes = spikes_list[key]
             all_spiketimes = np.concatenate(
                 (all_spiketimes, new_spiketimes), axis=0)
             all_neuron_ids = np.concatenate((all_neuron_ids,
