@@ -1,38 +1,38 @@
 import numpy as np
 
 
-def getTau(I):
+def get_tau(i):
     '''
     Compute DPI time constant tau in seconds for a given current value:
-    C_p : DPI capacitance [F]
-    U_t : Thermal voltage [V]
-    I : Current, must be given in [A]
-    tau : (C_p*U_t)/(k*I) [sec]
+    c_p : DPI capacitance [F]
+    u_t : Thermal voltage [V]
+    i : Current, must be given in [A]
+    tau : (c_p*u_t)/(k*i) [sec]
     '''
-    C_p = 1.5*1e-12  # Farads
-    U_t = 25*1e-3  # V
+    c_p = 1.5*1e-12  # Farads
+    u_t = 25*1e-3  # V
     k = 0.7
 
-    return (C_p*U_t)/(k*I)
+    return (c_p*u_t)/(k*i)
 
 
-def getTauCurrent(tau, vector=False):
+def get_tau_current(tau, vector=False):
     '''
     Compute the current in Amperes necessary to get a desired time constant:
     tau : Time constant, must be given in [sec]
-    C_p : DPI capacitance [F]
-    U_t : Thermal voltage [V]
-    I : (C_p*U_t)/(k*tau) [A]
+    c_p : DPI capacitance [F]
+    u_t : Thermal voltage [V]
+    i : (c_p*u_t)/(k*tau) [A]
     '''
-    C_p = 1.5*1e-12  # Farads
-    U_t = 25*1e-3  # V
+    c_p = 1.5*1e-12  # Farads
+    u_t = 25*1e-3  # V
     k = 0.7
 
     if vector == False:
         if tau == 0:
             return 2.390625e-05
 
-    currents = (C_p*U_t)/(k*tau)
+    currents = (c_p*u_t)/(k*tau)
 
     if vector == True:
         zeros = np.where(tau == 0)

@@ -47,8 +47,8 @@ frequency oscillations (HFOs) in intracranial EEG. NatCom (accepted) (2021)
 ## How the detector works:
 ### **Input Parameters**: 
 The parameters are read from two pre-created "**.mat**" files. 
-The "ADM_parameters.mat" file contains the parameters used for the signal to spike converison phase of the SNN HFO detector. 
-The "Network_parameters.mat" file contains the parameters used for the SNN architecture.
+The "parameters/adm.mat" file contains the parameters used for the signal to spike converison phase of the SNN HFO detector. 
+The "parameters/network.mat" file contains the parameters used for the SNN architecture.
 For more details regarding the architecture and SNN HFO detector see https://arxiv.org/abs/2009.11245
 
 ### **Input Data**: 
@@ -58,9 +58,9 @@ iEEG_data = {}
 iEEG_data['chb']: matrix of iEEG signal, each column is the iEEG signal from each recorded channel.
 iEEG_data['t']: array containing the time vector of the recorded signal
 ```
-The SNN HFO detector will run for all the channel from a single recorded interval and it will save the results in the dictionary "Test_Results".
+The SNN HFO detector will run for all the channel from a single recorded interval and it will save the results in the dictionary "test_results".
 
-The Filtered signal as well as the generated UP and DN spikes can be accessed trough the dictionaries "Signal"  and  "Spikes" respectively.
+The Filtered signal as well as the generated UP and DN spikes can be accessed trough the dictionaries "signal"  and  "spikes" respectively.
 
 
 ## How to use the code:
