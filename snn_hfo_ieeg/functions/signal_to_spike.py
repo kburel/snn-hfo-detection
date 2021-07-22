@@ -4,6 +4,8 @@ import numpy as np
 # ========================================================================================
 # Threshold calculation based on the noise floor
 # ========================================================================================
+
+
 def find_thresholds(signal, time, window, step_size, chosen_samples, scaling_factor):
     '''
     This functions retuns the mean threshold for your signal, based on the calculated
@@ -45,8 +47,8 @@ def find_thresholds(signal, time, window, step_size, chosen_samples, scaling_fac
 # ========================================================================================
 def signal_to_spike_refractory(interpfact, time, amplitude, thr_up, thr_dn, refractory_period):
     '''
-    This functions retuns two spike trains, when the signal crosses the specified threshold in 
-    a rising direction (UP spikes) and when it crosses the specified threshold in a falling 
+    This functions retuns two spike trains, when the signal crosses the specified threshold in
+    a rising direction (UP spikes) and when it crosses the specified threshold in a falling
     direction (DOWN spikes)
 
     :time (array): time vector

@@ -49,7 +49,7 @@ neuron = {'model':
 
            x : 1         (constant)        # x location on 2d grid (only set it if you need it)
            y : 1         (constant)        # y location on 2d grid
-           
+
 
 Iin = Iin0 : amp # input currents
         Iin0 : amp

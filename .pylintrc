@@ -155,7 +155,6 @@ disable=print-statement,
         comprehension-escape,
         # There should ideally not be disabled
         line-too-long,
-        trailing-whitespace,
         missing-module-docstring,
         missing-function-docstring,
         wildcard-import,
