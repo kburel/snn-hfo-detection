@@ -1,10 +1,10 @@
 from teili.core.groups import Neurons, Connections
 from teili.models.builder.neuron_equation_builder import NeuronEquationBuilder
 from teili.models.builder.synapse_equation_builder import SynapseEquationBuilder
-from SNN_HFO_iEEG.Functions.filter import *
-from SNN_HFO_iEEG.Functions.dynapse_biases import *
-from SNN_HFO_iEEG.Functions.signal_to_spike import *
-from SNN_HFO_iEEG.Functions.hfo_detection import *
+from SNN_HFO_iEEG.functions.filter import *
+from SNN_HFO_iEEG.functions.dynapse_biases import *
+from SNN_HFO_iEEG.functions.signal_to_spike import *
+from SNN_HFO_iEEG.functions.hfo_detection import *
 import os
 import argparse
 import scipy.io as sio

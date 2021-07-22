@@ -47,8 +47,8 @@ frequency oscillations (HFOs) in intracranial EEG. NatCom (accepted) (2021)
 ## How the detector works:
 ### **Input Parameters**: 
 The parameters are read from two pre-created "**.mat**" files. 
-The "ADM_parameters.mat" file contains the parameters used for the signal to spike converison phase of the SNN HFO detector. 
-The "Network_parameters.mat" file contains the parameters used for the SNN architecture.
+The "parameters/adm.mat" file contains the parameters used for the signal to spike converison phase of the SNN HFO detector. 
+The "parameters/network.mat" file contains the parameters used for the SNN architecture.
 For more details regarding the architecture and SNN HFO detector see https://arxiv.org/abs/2009.11245
 
 ### **Input Data**: 
