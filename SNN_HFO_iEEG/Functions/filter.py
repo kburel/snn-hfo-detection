@@ -1,5 +1,4 @@
-import numpy as np
-from scipy.signal import butter, lfilter,  filtfilt
+from scipy.signal import butter, lfilter
 
 # ========================================================================================
 # Butterworth filter coefficients
