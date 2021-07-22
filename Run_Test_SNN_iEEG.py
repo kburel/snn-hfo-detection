@@ -1,16 +1,16 @@
+from teili.core.groups import Neurons, Connections
+from teili.models.builder.neuron_equation_builder import NeuronEquationBuilder
+from teili.models.builder.synapse_equation_builder import SynapseEquationBuilder
+from SNN_HFO_iEEG.Functions.Filter_functions import *
+from SNN_HFO_iEEG.Functions.Dynapse_biases_functions import *
+from SNN_HFO_iEEG.Functions.Signal_to_spike_functions import *
+from SNN_HFO_iEEG.Functions.HFO_detection_functions import *
+import os
+import argparse
+import scipy.io as sio
+from brian2 import *
 import warnings
 warnings.filterwarnings("ignore", category=DeprecationWarning)
-from brian2 import *
-import scipy.io as sio
-import argparse
-import os
-from SNN_HFO_iEEG.Functions.HFO_detection_functions import *
-from SNN_HFO_iEEG.Functions.Signal_to_spike_functions import *
-from SNN_HFO_iEEG.Functions.Dynapse_biases_functions import *
-from SNN_HFO_iEEG.Functions.Filter_functions import *
-from teili.models.builder.synapse_equation_builder import SynapseEquationBuilder
-from teili.models.builder.neuron_equation_builder import NeuronEquationBuilder
-from teili.core.groups import Neurons, Connections
 
 _PACKAGE_NAME = 'SNN_HFO_iEEG'
 
@@ -37,7 +37,7 @@ def run_hfo_detection(data_path, hfo_callback):
     current_interval = 1
 
     Interval = sio.loadmat(os.path.join(data_path, 'P%s/P%sI%s' %
-                           (patient, patient, current_interval) + '.mat'))
+                                        (patient, patient, current_interval) + '.mat'))
 
     num_channels = Interval['chb'].shape[0]
     for ch in range(num_channels):
