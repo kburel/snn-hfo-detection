@@ -20,6 +20,7 @@ def test_get_tau_raises_error_on_zero_current():
         get_tau(0)
 
 
+
 @pytest.mark.parametrize(
     'tau,expected_current',
     [(1, 5.35e-14),
@@ -37,6 +38,7 @@ def test_get_tau_current(tau, expected_current):
 def test_get_tau_current_raises_error_when_vector_is_specified_without_passing_vector():
     with pytest.raises(TypeError):
         get_tau_current(1, vector=True)
+
 
 
 @pytest.mark.parametrize(
