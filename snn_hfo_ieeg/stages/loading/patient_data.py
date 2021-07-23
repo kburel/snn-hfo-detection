@@ -5,11 +5,17 @@ import scipy.io as sio
 
 
 class PatientData(NamedTuple):
+    '''
+    Patient measurements
+    '''
     wideband_signals: np.array
     signal_time: np.array
 
 
 class ChannelData(NamedTuple):
+    '''
+    Patient measurements for a specific channel
+    '''
     wideband_signal: np.array
     signal_time: np.array
 
