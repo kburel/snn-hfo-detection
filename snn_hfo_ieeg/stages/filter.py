@@ -4,6 +4,7 @@ import numpy as np
 from snn_hfo_ieeg.functions.filter import butter_bandpass_filter
 from snn_hfo_ieeg.functions.signal_to_spike import find_thresholds, signal_to_spike_refractory
 
+
 SAMPLING_FREQUENCY = 2000
 
 class Ripple(NamedTuple):
