@@ -1,3 +1,4 @@
+from typing import NamedTuple
 import os
 import warnings
 import argparse
@@ -14,6 +15,75 @@ from snn_hfo_ieeg.functions.hfo_detection import *
 
 _PACKAGE_NAME = 'snn_hfo_ieeg'
 
+_SAMPLING_FREQUENCY = 2000
+
+
+class Ripple(NamedTuple):
+    up: np.array
+    down: np.array
+
+
+class FastRipple(NamedTuple):
+    up: np.array
+    down: np.array
+
+
+class FilteredSpikes(NamedTuple):
+    ripple: Ripple
+    fast_ripple: FastRipple
+
+
+def filter_stage(wideband_signal, sampling_frequency, signal_time, adm_parameters):
+    # Filter the Wideband in ripple and fr bands
+    r_signal = butter_bandpass_filter(data=wideband_signal,
+                                      lowcut=80,
+                                      highcut=250,
+                                      sampling_frequency=sampling_frequency,
+                                      order=2)
+    fr_signal = butter_bandpass_filter(data=wideband_signal,
+                                       lowcut=250,
+                                       highcut=500,
+                                       sampling_frequency=sampling_frequency,
+                                       order=2)
+
+    # ==================================
+    # Baseline detection stage
+    # ==================================
+    # Based on the noise floor find the signal-to-spike thresholds
+    r_threshold = np.ceil(find_thresholds(signal=r_signal,
+                                          time=signal_time,
+                                          window=1,
+                                          step_size=1,
+                                          chosen_samples=50,
+                                          scaling_factor=adm_parameters['Ripple_sf'][0][0]))
+
+    fr_threshold = np.ceil(find_thresholds(signal=fr_signal,
+                                           time=signal_time,
+                                           window=1,
+                                           step_size=1,
+                                           chosen_samples=50,
+                                           scaling_factor=adm_parameters['FR_sf'][0][0]))
+
+    # ==================================
+    # ADM stage
+    # ==================================
+    # Convert each signal into a stream of up and DOWN spikes
+    r_up, r_dn = signal_to_spike_refractory(interpfact=adm_parameters['interpfact'][0][0],
+                                            time=signal_time,
+                                            amplitude=r_signal,
+                                            thr_up=r_threshold, thr_dn=r_threshold,
+                                            refractory_period=adm_parameters['refractory'][0][0])
+    ripple = Ripple(up=r_up, down=r_dn)
+
+    fr_up, fr_dn = signal_to_spike_refractory(interpfact=adm_parameters['interpfact'][0][0],
+                                              time=signal_time,
+                                              amplitude=fr_signal,
+                                              thr_up=fr_threshold, thr_dn=fr_threshold,
+                                              refractory_period=adm_parameters['refractory'][0][0])
+    fast_ripple = FastRipple(up=fr_up, down=fr_dn)
+
+    return FilteredSpikes(ripple=ripple, fast_ripple=fast_ripple)
+
 
 def run_hfo_detection(data_path, hfo_cb):
     warnings.filterwarnings("ignore", category=DeprecationWarning)
@@ -29,8 +99,6 @@ def run_hfo_detection(data_path, hfo_cb):
     network_parameters = sio.loadmat(
         os.path.join(parameters_path, 'network.mat'))
 
-    sampling_frequency = 2000
-
     # Select Data from a single patient
     patient = 1
     # interval
@@ -44,68 +112,21 @@ def run_hfo_detection(data_path, hfo_cb):
         print(
             f'Running test for Patient {patient}, interval {current_interval} and channel {channel}')
 
-        # ==================================
-        # Filtering stage
-        # ==================================
-        # Get the data for the current channel
         wideband_signal = interval['chb'][channel]
         signal_time = interval['t'][0]
 
-        # Filter the Wideband in ripple and fr bands
-        r_signal = butter_bandpass_filter(data=wideband_signal,
-                                          lowcut=80,
-                                          highcut=250,
-                                          sampling_frequency=sampling_frequency,
-                                          order=2)
-        fr_signal = butter_bandpass_filter(data=wideband_signal,
-                                           lowcut=250,
-                                           highcut=500,
-                                           sampling_frequency=sampling_frequency,
-                                           order=2)
-
-        # ==================================
-        # Baseline detection stage
-        # ==================================
-        # Based on the noise floor find the signal-to-spike thresholds
-        r_threshold = np.ceil(find_thresholds(signal=r_signal,
-                                              time=signal_time,
-                                              window=1,
-                                              step_size=1,
-                                              chosen_samples=50,
-                                              scaling_factor=adm_parameters['Ripple_sf'][0][0]))
-
-        fr_threshold = np.ceil(find_thresholds(signal=fr_signal,
-                                               time=signal_time,
-                                               window=1,
-                                               step_size=1,
-                                               chosen_samples=50,
-                                               scaling_factor=adm_parameters['FR_sf'][0][0]))
-
-        # ==================================
-        # ADM stage
-        # ==================================
-        # Convert each signal into a stream of up and DOWN spikes
-        r_up, r_dn = signal_to_spike_refractory(interpfact=adm_parameters['interpfact'][0][0],
-                                                time=signal_time,
-                                                amplitude=r_signal,
-                                                thr_up=r_threshold, thr_dn=r_threshold,
-                                                refractory_period=adm_parameters['refractory'][0][0])
-
-        fr_up, fr_dn = signal_to_spike_refractory(interpfact=adm_parameters['interpfact'][0][0],
-                                                  time=signal_time,
-                                                  amplitude=fr_signal,
-                                                  thr_up=fr_threshold, thr_dn=fr_threshold,
-                                                  refractory_period=adm_parameters['refractory'][0][0])
+        filtered_spikes = filter_stage(
+            wideband_signal, _SAMPLING_FREQUENCY, signal_time, adm_parameters)
 
         # ==================================
         # SNN stage
         # ==================================
         # spikes in SNN format
         spikes_list = {}
-        spikes_list['r_up'] = r_up
-        spikes_list['r_dn'] = r_dn
-        spikes_list['fr_up'] = fr_up
-        spikes_list['fr_dn'] = fr_dn
+        spikes_list['r_up'] = filtered_spikes.ripple.up
+        spikes_list['r_dn'] = filtered_spikes.ripple.down
+        spikes_list['fr_up'] = filtered_spikes.fast_ripple.up
+        spikes_list['fr_dn'] = filtered_spikes.fast_ripple.down
         input_spiketimes, input_neurons_id = concatenate_spikes(spikes_list)
 
         extra_simulation_time = 0.050
