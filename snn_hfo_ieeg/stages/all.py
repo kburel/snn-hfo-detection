@@ -2,7 +2,6 @@ from brian2.units import second
 from snn_hfo_ieeg.stages.filter import filter_stage
 from snn_hfo_ieeg.stages.snn import snn_stage
 from snn_hfo_ieeg.functions.hfo_detection import detect_hfo
-from snn_hfo_ieeg.stages.loading.patient_data import ChannelData
 
 HFO_DETECTION_STEP_SIZE = 0.01
 HFO_DETECTION_WINDOW_SIZE = 0.05
