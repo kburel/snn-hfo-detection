@@ -16,8 +16,6 @@ def run_hfo_detection(wideband_signal, signal_time, duration, network_parameters
 
     spike_monitor_hidden = snn_stage(filtered_spikes=filtered_spikes,
                                      network_parameters=network_parameters,
-                                     neuron_model_path=network_parameters.neuron_model_path,
-                                     synapse_model_path=network_parameters.synapse_model_path,
                                      duration=duration)
 
     return detect_hfo(trial_duration=duration,

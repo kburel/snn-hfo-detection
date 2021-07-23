@@ -30,6 +30,7 @@ def run_hfo_detection_for_all_channels(data_path, hfo_cb):
         print(
             f'Running test for Patient {patient}, interval {current_interval} and channel {channel}')
 
+        print('SNN simulation will run for ', duration, ' seconds')
         hfo_detection = run_hfo_detection(
             wideband_signal=wideband_signal,
             signal_time=signal_time,
