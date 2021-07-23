@@ -3,11 +3,13 @@ from typing import NamedTuple
 import scipy.io as sio
 _PACKAGE_NAME = 'snn_hfo_ieeg'
 
+
 class NetworkParameters(NamedTuple):
     neuron_model_path: str
     synapse_model_path: str
     adm_parameters: dict
     network_parameters: dict
+
 
 def load_network_parameters():
     parameters_path = os.path.join(_PACKAGE_NAME, 'parameters')
@@ -21,7 +23,7 @@ def load_network_parameters():
         parameters_path, 'adm.mat'))
     network_parameters = sio.loadmat(
         os.path.join(parameters_path, 'network.mat'))
-        
+
     return NetworkParameters(
         neuron_model_path=neuron_model_path,
         synapse_model_path=synapse_model_path,

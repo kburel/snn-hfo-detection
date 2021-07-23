@@ -7,6 +7,7 @@ SAMPLING_FREQUENCY = 2000
 HFO_DETECTION_STEP_SIZE = 0.01
 HFO_DETECTION_WINDOW_SIZE = 0.05
 
+
 def run_hfo_detection(wideband_signal, signal_time, duration, network_parameters):
     filtered_spikes = filter_stage(
         wideband_signal=wideband_signal,

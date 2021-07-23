@@ -1,7 +1,6 @@
 import os
 import argparse
 import scipy.io as sio
-from brian2.units import second
 from snn_hfo_ieeg.functions.filter import *
 from snn_hfo_ieeg.functions.dynapse_biases import *
 from snn_hfo_ieeg.functions.signal_to_spike import *
