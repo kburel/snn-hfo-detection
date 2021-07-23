@@ -4,7 +4,6 @@ from snn_hfo_ieeg.stages.snn import snn_stage
 from snn_hfo_ieeg.functions.hfo_detection import detect_hfo
 from snn_hfo_ieeg.stages.loading.patient_data import ChannelData
 
-SAMPLING_FREQUENCY = 2000
 HFO_DETECTION_STEP_SIZE = 0.01
 HFO_DETECTION_WINDOW_SIZE = 0.05
 
@@ -12,7 +11,6 @@ HFO_DETECTION_WINDOW_SIZE = 0.05
 def run_hfo_detection(channel_data, duration, network_parameters):
     filtered_spikes = filter_stage(
         channel_data,
-        sampling_frequency=SAMPLING_FREQUENCY,
         adm_parameters=network_parameters.adm_parameters)
 
     spike_monitor_hidden = snn_stage(filtered_spikes=filtered_spikes,
