@@ -28,53 +28,78 @@ class FilteredSpikes(NamedTuple):
     fast_ripple: FastRipple
 
 
+class FilterParameters(NamedTuple):
+    '''
+    Parameters
+    -------
+    wideband_signal: np.array
+        array of measures signals
+    signal_time: np.array
+        array of measured times
+    adm_parameters: dict
+        loaded adm parameters from .mat file
+    lowcut: int
+        lowcut frequency
+    highcut: int
+        highcut frequency
+    sampling_frequency: int
+        new sampling frequency
+    scaling_factor: float
+        new scaling factor
+    '''
+    wideband_signal: np.array
+    signal_time: np.array
+    adm_parameters: dict
+    lowcut: int
+    highcut: int
+    sampling_frequency: int
+    scaling_factor: float
+
+
+def _filter_signal_to_spike(filter_parameters):
+    signal = butter_bandpass_filter(data=filter_parameters.wideband_signal,
+                                    lowcut=filter_parameters.lowcut,
+                                    highcut=filter_parameters.highcut,
+                                    sampling_frequency=filter_parameters.sampling_frequency,
+                                    order=2)
+    threshold = np.ceil(find_thresholds(signal=signal,
+                                        time=filter_parameters.signal_time,
+                                        window=1,
+                                        step_size=1,
+                                        chosen_samples=50,
+                                        scaling_factor=filter_parameters.scaling_factor))
+    return signal_to_spike_refractory(interpfact=filter_parameters.adm_parameters['interpfact'][0][0],
+                                      time=filter_parameters.signal_time,
+                                      amplitude=signal,
+                                      thr_up=threshold, thr_dn=threshold,
+                                      refractory_period=filter_parameters.adm_parameters['refractory'][0][0])
+
+
 def filter_stage(wideband_signal, sampling_frequency, signal_time, adm_parameters):
-    # Filter the Wideband in ripple and fr bands
-    r_signal = butter_bandpass_filter(data=wideband_signal,
-                                      lowcut=80,
-                                      highcut=250,
-                                      sampling_frequency=sampling_frequency,
-                                      order=2)
-    fr_signal = butter_bandpass_filter(data=wideband_signal,
-                                       lowcut=250,
-                                       highcut=500,
-                                       sampling_frequency=sampling_frequency,
-                                       order=2)
+    r_filter_parameters = FilterParameters(
+        wideband_signal=wideband_signal,
+        signal_time=signal_time,
+        sampling_frequency=sampling_frequency,
+        adm_parameters=adm_parameters,
+        lowcut=80,
+        highcut=250,
+        scaling_factor=adm_parameters['Ripple_sf'][0][0]
+    )
 
-    # ==================================
-    # Baseline detection stage
-    # ==================================
-    # Based on the noise floor find the signal-to-spike thresholds
-    r_threshold = np.ceil(find_thresholds(signal=r_signal,
-                                          time=signal_time,
-                                          window=1,
-                                          step_size=1,
-                                          chosen_samples=50,
-                                          scaling_factor=adm_parameters['Ripple_sf'][0][0]))
+    fr_filter_parameters = FilterParameters(
+        wideband_signal=wideband_signal,
+        signal_time=signal_time,
+        sampling_frequency=sampling_frequency,
+        adm_parameters=adm_parameters,
+        lowcut=250,
+        highcut=500,
+        scaling_factor=adm_parameters['FR_sf'][0][0]
+    )
 
-    fr_threshold = np.ceil(find_thresholds(signal=fr_signal,
-                                           time=signal_time,
-                                           window=1,
-                                           step_size=1,
-                                           chosen_samples=50,
-                                           scaling_factor=adm_parameters['FR_sf'][0][0]))
+    r_up, r_dn = _filter_signal_to_spike(r_filter_parameters)
+    fr_up, fr_dn = _filter_signal_to_spike(fr_filter_parameters)
 
-    # ==================================
-    # ADM stage
-    # ==================================
-    # Convert each signal into a stream of up and DOWN spikes
-    r_up, r_dn = signal_to_spike_refractory(interpfact=adm_parameters['interpfact'][0][0],
-                                            time=signal_time,
-                                            amplitude=r_signal,
-                                            thr_up=r_threshold, thr_dn=r_threshold,
-                                            refractory_period=adm_parameters['refractory'][0][0])
     ripple = Ripple(up=r_up, down=r_dn)
-
-    fr_up, fr_dn = signal_to_spike_refractory(interpfact=adm_parameters['interpfact'][0][0],
-                                              time=signal_time,
-                                              amplitude=fr_signal,
-                                              thr_up=fr_threshold, thr_dn=fr_threshold,
-                                              refractory_period=adm_parameters['refractory'][0][0])
     fast_ripple = FastRipple(up=fr_up, down=fr_dn)
 
     return FilteredSpikes(ripple=ripple, fast_ripple=fast_ripple)
