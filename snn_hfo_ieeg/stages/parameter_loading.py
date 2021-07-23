@@ -5,6 +5,20 @@ _PACKAGE_NAME = 'snn_hfo_ieeg'
 
 
 class NetworkParameters(NamedTuple):
+    '''
+    Pre-defined network parameters
+
+    Parameters
+    --------
+    neuron_model_path : str
+        Path to the neuron model imported by teili
+    synapse_model_path : str
+        Path to the synapse model imported by teili
+    adm_parameters : dict
+        Imported ADM parameters from .mat file
+    network_parameters : dict
+        Imported network parameters from .mat file
+    '''
     neuron_model_path: str
     synapse_model_path: str
     adm_parameters: dict

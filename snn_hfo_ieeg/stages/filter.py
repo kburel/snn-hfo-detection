@@ -5,16 +5,25 @@ from snn_hfo_ieeg.functions.signal_to_spike import find_thresholds, signal_to_sp
 
 
 class Ripple(NamedTuple):
+    '''
+    Up and down spikes in a ripple bandwidth (80-250Hz)
+    '''
     up: np.array
     down: np.array
 
 
 class FastRipple(NamedTuple):
+    '''
+    Up and down spikes in a fast ripple bandwidth (250-500Hz)
+    '''
     up: np.array
     down: np.array
 
 
 class FilteredSpikes(NamedTuple):
+    '''
+    Spikes filtered in the ripple and fast ripple bandwidths
+    '''
     ripple: Ripple
     fast_ripple: FastRipple
 
