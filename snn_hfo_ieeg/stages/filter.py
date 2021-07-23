@@ -1,3 +1,4 @@
+from snn_hfo_ieeg.stages.loading.patient_data import ChannelData
 from typing import NamedTuple
 import numpy as np
 from snn_hfo_ieeg.functions.filter import butter_bandpass_filter
@@ -32,10 +33,8 @@ class FilterParameters(NamedTuple):
     '''
     Parameters
     -------
-    wideband_signal: np.array
-        array of measures signals
-    signal_time: np.array
-        array of measured times
+    channel_data: ChannelData
+        channel measurements
     adm_parameters: dict
         loaded adm parameters from .mat file
     lowcut: int
@@ -47,8 +46,7 @@ class FilterParameters(NamedTuple):
     scaling_factor: float
         new scaling factor
     '''
-    wideband_signal: np.array
-    signal_time: np.array
+    channel_data: ChannelData
     adm_parameters: dict
     lowcut: int
     highcut: int
@@ -75,10 +73,9 @@ def _filter_signal_to_spike(filter_parameters):
                                       refractory_period=filter_parameters.adm_parameters['refractory'][0][0])
 
 
-def filter_stage(wideband_signal, sampling_frequency, signal_time, adm_parameters):
+def filter_stage(channel_data, sampling_frequency, adm_parameters):
     r_filter_parameters = FilterParameters(
-        wideband_signal=wideband_signal,
-        signal_time=signal_time,
+        channel_data=channel_data,
         sampling_frequency=sampling_frequency,
         adm_parameters=adm_parameters,
         lowcut=80,
@@ -87,8 +84,7 @@ def filter_stage(wideband_signal, sampling_frequency, signal_time, adm_parameter
     )
 
     fr_filter_parameters = FilterParameters(
-        wideband_signal=wideband_signal,
-        signal_time=signal_time,
+        channel_data=channel_data,
         sampling_frequency=sampling_frequency,
         adm_parameters=adm_parameters,
         lowcut=250,
