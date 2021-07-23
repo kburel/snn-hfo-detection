@@ -10,7 +10,7 @@ This code is intended to be used for the detection of High Frequency Oscillation
 * Electrocorticography ECoG 
 * Intracranial Electroencephalogram iEEG 
 
-## Introduction
+## Introduction.
 ### HFO working definition
 HFO are recognized as biomarkers for epileptogenic brain tissue. HFOs are generally viewed as spontaneous EEG patterns in the frequency range between 80 to 500 Hz that consist of at least four oscillations that clearly stand out of the background activity. [HFO Review](https://doi.org/10.1016/j.clinph.2019.01.016)   
 
