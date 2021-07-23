@@ -1,7 +1,7 @@
 import os
 from pathlib import Path
 import pytest
-from run_test_snn_ieeg import run_hfo_detection
+from run_test_snn_ieeg import run_hfo_detection_for_all_channels
 from tests.utility import are_hfo_detections_equal
 
 
@@ -23,7 +23,7 @@ def _get_hfo_directory(dataset_name):
 
 def test_dummy_data():
     data_path = _get_hfo_directory('dummy')
-    run_hfo_detection(data_path, _assert_dummy_hfo_is_empty)
+    run_hfo_detection_for_all_channels(data_path, _assert_dummy_hfo_is_empty)
 
 
 def _generate_add_detected_hfo_to_list_cb(list):
@@ -33,7 +33,7 @@ def _generate_add_detected_hfo_to_list_cb(list):
 def test_hfo_data():
     data_path = _get_hfo_directory('hfo')
     detected_hfos = []
-    run_hfo_detection(
+    run_hfo_detection_for_all_channels(
         data_path, _generate_add_detected_hfo_to_list_cb(detected_hfos))
     assert len(detected_hfos) == 1
     hfo = detected_hfos[0]
