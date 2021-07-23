@@ -29,10 +29,10 @@ def _create_input_layer(filtered_spikes, network_parameters):
 
 def _create_hidden_layer(network_parameters):
     hidden_neurons = network_parameters.imported_network_parameters['hidden_neurons'][0][0]
-    builder_object1 = NeuronEquationBuilder.import_eq(
+    equation_builder = NeuronEquationBuilder.import_eq(
         network_parameters.neuron_model_path, num_inputs=1)
     hidden_layer = Neurons(
-        hidden_neurons, equation_builder=builder_object1, name='hidden_layer', dt=100*us)
+        hidden_neurons, equation_builder=equation_builder, name='hidden_layer', dt=100*us)
     hidden_layer.refP = network_parameters.imported_network_parameters[
         'neuron_refractory'][0][0] * second
     hidden_layer.Itau = get_tau_current(
@@ -41,10 +41,10 @@ def _create_hidden_layer(network_parameters):
 
 
 def _create_input_hidden_layer(input_layer, hidden_layer, network_parameters):
-    builder_object2 = SynapseEquationBuilder.import_eq(
+    equation_builder = SynapseEquationBuilder.import_eq(
         network_parameters.synapse_model_path)
     input_hidden_layer = Connections(
-        input_layer, hidden_layer, equation_builder=builder_object2, name='input_hidden_layer', verbose=False, dt=100*us)
+        input_layer, hidden_layer, equation_builder=equation_builder, name='input_hidden_layer', verbose=False, dt=100*us)
 
     input_hidden_layer.connect()
     input_hidden_layer.weight = network_parameters.imported_network_parameters[
@@ -61,10 +61,10 @@ def snn_stage(filtered_spikes, network_parameters, duration):
 
     input_layer = _create_input_layer(filtered_spikes, network_parameters)
     hidden_layer = _create_hidden_layer(network_parameters)
-    _create_input_hidden_layer(
+    _input_hidden_layer = _create_input_hidden_layer(
         input_layer, hidden_layer, network_parameters)
 
     spike_monitor_hidden = SpikeMonitor(hidden_layer)
-
     run(duration * second)
+
     return spike_monitor_hidden
