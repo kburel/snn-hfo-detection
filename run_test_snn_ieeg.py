@@ -27,7 +27,7 @@ def run_hfo_detection_for_all_channels(data_path, hfo_cb):
 
     network_parameters = load_network_parameters()
 
-    for channel in len(patient_data.wideband_signals):
+    for channel in range(len(patient_data.wideband_signals)):
         channel_data = extract_channel_data(patient_data, channel)
 
         print(
