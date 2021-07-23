@@ -28,13 +28,13 @@ def get_tau_current(tau, vector=False):
     u_t = 25*1e-3  # V
     k = 0.7
 
-    if vector == False:
+    if vector is False:
         if tau == 0:
             return 2.390625e-05
 
     currents = (c_p*u_t)/(k*tau)
 
-    if vector == True:
+    if vector is True:
         zeros = np.where(tau == 0)
         currents[zeros] = 0
 

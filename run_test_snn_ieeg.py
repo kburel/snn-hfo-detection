@@ -1,20 +1,21 @@
+import os
+import warnings
+import argparse
+import scipy.io as sio
 from teili.core.groups import Neurons, Connections
 from teili.models.builder.neuron_equation_builder import NeuronEquationBuilder
 from teili.models.builder.synapse_equation_builder import SynapseEquationBuilder
+from brian2 import start_scope, run, SpikeGeneratorGroup, SpikeMonitor
+from brian2.units import second, us, amp, pamp
 from snn_hfo_ieeg.functions.filter import *
 from snn_hfo_ieeg.functions.dynapse_biases import *
 from snn_hfo_ieeg.functions.signal_to_spike import *
 from snn_hfo_ieeg.functions.hfo_detection import *
-import os
-import argparse
-import scipy.io as sio
-from brian2 import *
-import warnings
 
 _PACKAGE_NAME = 'snn_hfo_ieeg'
 
 
-def run_hfo_detection(data_path, hfo_callback):
+def run_hfo_detection(data_path, hfo_cb):
     warnings.filterwarnings("ignore", category=DeprecationWarning)
     parameters_path = os.path.join(_PACKAGE_NAME, 'parameters')
     snn_models_path = os.path.join(_PACKAGE_NAME, 'models')
@@ -39,58 +40,28 @@ def run_hfo_detection(data_path, hfo_callback):
     interval = sio.loadmat(os.path.join(data_path, file_name))
 
     num_channels = interval['chb'].shape[0]
-    for ch in range(num_channels):
-
+    for channel in range(num_channels):
         print(
-            f'Running test for Patient {patient}, interval {current_interval} and channel {ch}')
-
-        # Prepare dictionaries to return results
-        if ch == 0:
-            test_info = {}
-            test_info['Patient'] = patient
-            test_info['interval'] = current_interval
-            test_info['Channels'] = num_channels
-
-            test_results = {}
-            test_results['Info'] = test_info
-            test_results['SNN'] = {}
-            test_results['SNN']['number_hfo'] = np.zeros(num_channels)
-            test_results['SNN']['rate_hfo'] = np.zeros(num_channels)
+            f'Running test for Patient {patient}, interval {current_interval} and channel {channel}')
 
         # ==================================
         # Filtering stage
         # ==================================
         # Get the data for the current channel
-        Wideband_signal = interval['chb'][ch]
+        wideband_signal = interval['chb'][channel]
         signal_time = interval['t'][0]
 
-        # Prepare dictionaries to return data
-        if ch == 0:
-            signal = {}
-            signal['time'] = signal_time
-            signal['ripple'] = np.zeros((num_channels, signal_time.size))
-            signal['fr'] = np.zeros((num_channels, signal_time.size))
-
-            spikes = {}
-            spikes['ripple'] = {}
-            spikes['ripple']['thresholds'] = np.zeros(num_channels)
-            spikes['fr'] = {}
-            spikes['fr']['thresholds'] = np.zeros(num_channels)
-
         # Filter the Wideband in ripple and fr bands
-        r_signal = butter_bandpass_filter(data=Wideband_signal,
+        r_signal = butter_bandpass_filter(data=wideband_signal,
                                           lowcut=80,
                                           highcut=250,
-                                          fs=sampling_frequency,
+                                          sampling_frequency=sampling_frequency,
                                           order=2)
-        fr_signal = butter_bandpass_filter(data=Wideband_signal,
+        fr_signal = butter_bandpass_filter(data=wideband_signal,
                                            lowcut=250,
                                            highcut=500,
-                                           fs=sampling_frequency,
+                                           sampling_frequency=sampling_frequency,
                                            order=2)
-
-        signal['ripple'][ch, :] = r_signal
-        signal['fr'][ch, :] = fr_signal
 
         # ==================================
         # Baseline detection stage
@@ -110,9 +81,6 @@ def run_hfo_detection(data_path, hfo_callback):
                                                chosen_samples=50,
                                                scaling_factor=adm_parameters['FR_sf'][0][0]))
 
-        spikes['ripple']['thresholds'] = r_threshold
-        spikes['fr']['thresholds'] = fr_threshold
-
         # ==================================
         # ADM stage
         # ==================================
@@ -128,15 +96,6 @@ def run_hfo_detection(data_path, hfo_callback):
                                                   amplitude=fr_signal,
                                                   thr_up=fr_threshold, thr_dn=fr_threshold,
                                                   refractory_period=adm_parameters['refractory'][0][0])
-        channel_key = f'ch_{ch}'
-        spikes['ripple'][channel_key] = {
-            'up': r_up,
-            'dn': r_dn
-        }
-        spikes['fr'][channel_key] = {
-            'up': fr_up,
-            'dn': fr_dn
-        }
 
         # ==================================
         # SNN stage
@@ -147,7 +106,7 @@ def run_hfo_detection(data_path, hfo_callback):
         spikes_list['r_dn'] = r_dn
         spikes_list['fr_up'] = fr_up
         spikes_list['fr_dn'] = fr_dn
-        input_spiketimes, input_neurons_ID = concatenate_spikes(spikes_list)
+        input_spiketimes, input_neurons_id = concatenate_spikes(spikes_list)
 
         extra_simulation_time = 0.050
         #-----------% SNN input %-----------#
@@ -155,7 +114,7 @@ def run_hfo_detection(data_path, hfo_callback):
 
         input_channels = network_parameters['input_neurons'][0][0]
         input = SpikeGeneratorGroup(input_channels,
-                                    input_neurons_ID,
+                                    input_neurons_id,
                                     input_spiketimes*second,
                                     dt=100*us, name='input')
 
@@ -181,9 +140,7 @@ def run_hfo_detection(data_path, hfo_callback):
         input_hidden_layer.baseweight = 1 * pamp
 
         #-----------% SNN Monitors %-----------#
-        spike_Monitor_hidden = SpikeMonitor(hidden_layer)
-        hidden_Monitor = StateMonitor(hidden_layer, variables=['Iin'], record=[
-            0], name='test_hidden_Monitor')
+        spike_monitor_hidden = SpikeMonitor(hidden_layer)
 
         # Run SNN simulation
         duration = np.max(signal_time) + extra_simulation_time
@@ -199,23 +156,19 @@ def run_hfo_detection(data_path, hfo_callback):
         hfo_detection_window_size = 0.05
         hfo_detection = detect_hfo(trial_duration=duration,
                                    spike_monitor=(
-                                       spike_Monitor_hidden.t/second),
+                                       spike_monitor_hidden.t/second),
                                    original_time_vector=signal_time,
                                    step_size=hfo_detection_step_size,
                                    window_size=hfo_detection_window_size)
 
         detected_hfo = hfo_detection['total_hfo']
 
-        # Save HFO results
-        test_results['SNN']['number_hfo'][ch] = detected_hfo
-        test_results['SNN']['rate_hfo'][ch] = detected_hfo/duration
-
         print('Found hfo', detected_hfo)
         print('Rate of hfo (event/min)',
               np.around((detected_hfo/duration)*60, decimals=2))
         print(' ')
 
-        hfo_callback(hfo_detection)
+        hfo_cb(hfo_detection)
 
 
 def _parse_arguments():

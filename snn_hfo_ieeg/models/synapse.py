@@ -37,7 +37,7 @@ synapse = {'model':
           ''',
            'on_post':
            '''
-   
+
 ''',
            'parameters':
            {

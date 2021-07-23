@@ -1,5 +1,5 @@
-from snn_hfo_ieeg.functions.hfo_detection import *
 import pytest
+from snn_hfo_ieeg.functions.hfo_detection import *
 from tests.utility import *
 
 

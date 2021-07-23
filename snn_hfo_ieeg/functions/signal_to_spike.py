@@ -1,27 +1,25 @@
 import scipy as sc
 import numpy as np
-from scipy.signal import butter, lfilter,  filtfilt
 
 # ========================================================================================
 # Threshold calculation based on the noise floor
 # ========================================================================================
-'''
-This functions retuns the mean threshold for your signal, based on the calculated 
-mean noise floor and a user-specified scaling facotr that depeneds on the type of signal,
-characteristics of patterns, etc.
-
-:signal (array): amplitude of the signal
-:time (array): time vector
-:window (float): time window [same units as time vector] where the maximum amplitude of the signal 
-                 will be calculated
-:chosen_samples (int): from the maximum values in each window time, only these number of
-                       samples will be used to calculate the mean maximum amplitude.
-: scaling_factr (float): a percentage of the calculated threshold
-
-'''
 
 
 def find_thresholds(signal, time, window, step_size, chosen_samples, scaling_factor):
+    '''
+    This functions retuns the mean threshold for your signal, based on the calculated
+    mean noise floor and a user-specified scaling facotr that depeneds on the type of signal,
+    characteristics of patterns, etc.
+
+    :signal (array): amplitude of the signal
+    :time (array): time vector
+    :window (float): time window [same units as time vector] where the maximum amplitude of the signal
+                    will be calculated
+    :chosen_samples (int): from the maximum values in each window time, only these number of
+                        samples will be used to calculate the mean maximum amplitude.
+    : scaling_factr (float): a percentage of the calculated threshold
+    '''
     window_size = window
     trial_duration = np.max(time)
     num_timesteps = int(np.ceil(trial_duration / step_size))
@@ -47,30 +45,28 @@ def find_thresholds(signal, time, window, step_size, chosen_samples, scaling_fac
 # ========================================================================================
 # Signal to spike conversion with refractory period
 # ========================================================================================
-'''
-This functions retuns two spike trains, when the signal crosses the specified threshold in 
-a rising direction (UP spikes) and when it crosses the specified threshold in a falling 
-direction (DOWN spikes)
-
-:time (array): time vector
-:amplitude (array): amplitude of the signal
-:interpfact (int): upsampling factor, new sampling frequency
-:thr_up (float): threshold crossing in a rising direction
-:thr_dn (float): threshold crossing in a falling direction
-:refractory_period (float): period in which no spike will be generated [same units as time vector]
-'''
-
-
 def signal_to_spike_refractory(interpfact, time, amplitude, thr_up, thr_dn, refractory_period):
+    '''
+    This functions retuns two spike trains, when the signal crosses the specified threshold in
+    a rising direction (UP spikes) and when it crosses the specified threshold in a falling
+    direction (DOWN spikes)
+
+    :time (array): time vector
+    :amplitude (array): amplitude of the signal
+    :interpfact (int): upsampling factor, new sampling frequency
+    :thr_up (float): threshold crossing in a rising direction
+    :thr_dn (float): threshold crossing in a falling direction
+    :refractory_period (float): period in which no spike will be generated [same units as time vector]
+    '''
     actual_dc = 0
     spike_up = []
     spike_dn = []
 
-    f = sc.interpolate.interp1d(time, amplitude)
+    intepolated_time = sc.interpolate.interp1d(time, amplitude)
     rangeint = np.round((np.max(time) - np.min(time))*interpfact)
     xnew = np.linspace(np.min(time), np.max(
         time), num=int(rangeint), endpoint=True)
-    data = np.reshape([xnew, f(xnew)], (2, len(xnew))).T
+    data = np.reshape([xnew, intepolated_time(xnew)], (2, len(xnew))).T
 
     i = 0
     while i < (len(data)):
@@ -91,18 +87,15 @@ def signal_to_spike_refractory(interpfact, time, amplitude, thr_up, thr_dn, refr
 # ========================================================================================
 # List of spiketimes for the SNN input
 # ========================================================================================
-'''
-Get spikes per channel in a dictionary and concatenate them in one single vector with 
-spike times and neuron ids.
-:param spikes_list (dict): dict where the key is the channel name and contains a vector
-                           with spike times 
-:return all_spiketimes (array): vector of all spike times
-:return all_neuron_ids (array): vector of all neuron ids 
-'''
-
-
 def concatenate_spikes(spikes_list):
-
+    '''
+    Get spikes per channel in a dictionary and concatenate them in one single vector with
+    spike times and neuron ids.
+    :param spikes_list (dict): dict where the key is the channel name and contains a vector
+                            with spike times
+    :return all_spiketimes (array): vector of all spike times
+    :return all_neuron_ids (array): vector of all neuron ids
+    '''
     all_spiketimes = []
     all_neuron_ids = []
     channel_nr = 0

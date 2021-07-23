@@ -26,8 +26,7 @@ def detect_hfo(trial_duration, spike_monitor, original_time_vector, step_size, w
         index = np.where(np.logical_and(
             spike_monitor >= start_time, spike_monitor <= end_time))[0]
         interval_duration = end_time - start_time
-        a = np.asarray(index.size / interval_duration)
-        mfr[interval_nr] = a
+        mfr[interval_nr] = np.asarray(index.size / interval_duration)
         if index.size != 0:
             index_time_vector = np.where(np.logical_and(original_time_vector >= start_time,
                                                         original_time_vector <= end_time))[0]
