@@ -61,6 +61,7 @@ def snn_stage(filtered_spikes, network_parameters, duration):
 
     input_layer = _create_input_layer(filtered_spikes, network_parameters)
     hidden_layer = _create_hidden_layer(network_parameters)
+    # Do not remove the following variable, otherwise its lifetime is too narrow
     _input_hidden_layer = _create_input_hidden_layer(
         input_layer, hidden_layer, network_parameters)
 
