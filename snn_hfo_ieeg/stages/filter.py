@@ -4,6 +4,7 @@ import numpy as np
 from snn_hfo_ieeg.functions.filter import butter_bandpass_filter
 from snn_hfo_ieeg.functions.signal_to_spike import find_thresholds, signal_to_spike_refractory
 
+SAMPLING_FREQUENCY = 2000
 
 class Ripple(NamedTuple):
     '''
@@ -41,8 +42,6 @@ class FilterParameters(NamedTuple):
         lowcut frequency
     highcut: int
         highcut frequency
-    sampling_frequency: int
-        new sampling frequency
     scaling_factor: float
         new scaling factor
     '''
@@ -58,7 +57,7 @@ def _filter_signal_to_spike(filter_parameters):
     signal = butter_bandpass_filter(data=filter_parameters.wideband_signal,
                                     lowcut=filter_parameters.lowcut,
                                     highcut=filter_parameters.highcut,
-                                    sampling_frequency=filter_parameters.sampling_frequency,
+                                    sampling_frequency=SAMPLING_FREQUENCY,
                                     order=2)
     threshold = np.ceil(find_thresholds(signal=signal,
                                         time=filter_parameters.signal_time,
@@ -73,10 +72,9 @@ def _filter_signal_to_spike(filter_parameters):
                                       refractory_period=filter_parameters.adm_parameters['refractory'][0][0])
 
 
-def filter_stage(channel_data, sampling_frequency, adm_parameters):
+def filter_stage(channel_data, adm_parameters):
     r_filter_parameters = FilterParameters(
         channel_data=channel_data,
-        sampling_frequency=sampling_frequency,
         adm_parameters=adm_parameters,
         lowcut=80,
         highcut=250,
@@ -85,7 +83,6 @@ def filter_stage(channel_data, sampling_frequency, adm_parameters):
 
     fr_filter_parameters = FilterParameters(
         channel_data=channel_data,
-        sampling_frequency=sampling_frequency,
         adm_parameters=adm_parameters,
         lowcut=250,
         highcut=500,
