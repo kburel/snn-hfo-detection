@@ -41,7 +41,6 @@ def _create_hidden_layer(network_parameters):
 
 
 def _create_input_hidden_layer(input_layer, hidden_layer, network_parameters):
-    #-----------% SNN Synapse %-----------#
     builder_object2 = SynapseEquationBuilder.import_eq(
         network_parameters.synapse_model_path)
     input_hidden_layer = Connections(
