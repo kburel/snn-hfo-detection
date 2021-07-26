@@ -5,8 +5,8 @@ from teili.models.builder.neuron_equation_builder import NeuronEquationBuilder
 from teili.models.builder.synapse_equation_builder import SynapseEquationBuilder
 from snn_hfo_ieeg.functions.signal_to_spike import concatenate_spikes
 from snn_hfo_ieeg.functions.dynapse_biases import get_tau_current
-from tau_generation import generate_concatenated_taus
-from weight_generation import generate_weights
+from .tau_generation import generate_concatenated_taus
+from .weight_generation import generate_weights
 
 
 def _concatenate_filtered_spikes(filtered_spikes):
