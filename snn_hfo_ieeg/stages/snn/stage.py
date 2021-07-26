@@ -21,16 +21,15 @@ def _concatenate_filtered_spikes(filtered_spikes):
     if filtered_spikes.fast_ripple is not None:
         spikes_list['fr_up'] = filtered_spikes.fast_ripple.up,
         spikes_list['fr_dn'] = filtered_spikes.fast_ripple.down
-
     return concatenate_spikes(spikes_list)
 
 
 def _measurement_mode_to_input_count(measurement_mode):
     if measurement_mode is MeasurementMode.IEEG:
         return 4
-    elif measurement_mode is MeasurementMode.ECOG:
+    if measurement_mode is MeasurementMode.ECOG:
         return 2
-    elif measurement_mode is MeasurementMode.SCALP:
+    if measurement_mode is MeasurementMode.SCALP:
         return 2
     raise ValueError(
         f'measurement_mode is outside valid range. Allowed values: {MeasurementMode}, instead got: {measurement_mode}')

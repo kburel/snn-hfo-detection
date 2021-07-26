@@ -93,9 +93,9 @@ def filter_stage(channel_data, configuration):
 
     if configuration.measurement_mode is MeasurementMode.IEEG:
         return FilteredSpikes(ripple=ripple, fast_ripple=fast_ripple)
-    elif configuration.measurement_mode is MeasurementMode.ECOG:
+    if configuration.measurement_mode is MeasurementMode.ECOG:
         return FilteredSpikes(ripple=None, fast_ripple=fast_ripple)
-    elif configuration.measurement_mode is MeasurementMode.SCALP:
+    if configuration.measurement_mode is MeasurementMode.SCALP:
         return FilteredSpikes(ripple=ripple, fast_ripple=None)
     raise ValueError(
         f'configuration.measurement_mode has an invalid value. Allowed values: {MeasurementMode}, instead got: {configuration.measurement_mode}')
