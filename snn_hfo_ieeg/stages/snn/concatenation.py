@@ -7,8 +7,6 @@ def _is_odd(number):
 
 def _concatenate_excitatory_and_inhibitory_for_input_pair(hidden_neuron_count, generate_array_cb):
     excitatory_array, inhibitory_array = generate_array_cb(hidden_neuron_count)
-    print(excitatory_array)
-    print(inhibitory_array)
     half_point = len(excitatory_array) // 2
     first_input_to_first_half_of_hidden = excitatory_array[:half_point]
     first_input_to_second_half_of_hidden = inhibitory_array[:half_point]
