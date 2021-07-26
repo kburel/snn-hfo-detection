@@ -27,8 +27,7 @@ def _concatenate_filtered_spikes(filtered_spikes):
 def _create_input_layer(filtered_spikes):
     input_spiketimes, input_neurons_id = _concatenate_filtered_spikes(
         filtered_spikes)
-    input_channels = 4
-    return SpikeGeneratorGroup(input_channels,
+    return SpikeGeneratorGroup(INPUT_COUNT,
                                input_neurons_id,
                                input_spiketimes*second,
                                dt=100*us, name='input')
@@ -53,7 +52,6 @@ def _create_synapses(input_layer, hidden_layer, model_paths):
     synapses.weight = generate_weights(INPUT_COUNT, HIDDEN_NEURON_COUNT)
     taus = generate_concatenated_taus(INPUT_COUNT, HIDDEN_NEURON_COUNT)
     synapses.I_tau = get_tau_current(taus*1e-3, True) * amp
-    synapses.baseweight = 1 * pamp
 
     return synapses
 

@@ -50,6 +50,6 @@ synapse = {'model':
                'I_th': '10. * pamp',
                'I_syn': '0.5 * pamp',
                'w_plast': '1',
-               'baseweight': '7. * pamp',
+               'baseweight': '1. * pamp',
            }
            }
