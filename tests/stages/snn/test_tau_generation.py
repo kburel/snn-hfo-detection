@@ -17,27 +17,27 @@ def _get_stochastic_inaccuracy_for_mean_in_range(taus, min, max):
     return abs(expected_mean - actual_mean)
 
 
-def _has_excitatory_mean(taus):
+def _assert_excitatory_mean(taus):
     stochastic_inaccuracy = _get_stochastic_inaccuracy_for_mean_in_range(
         taus, MIN_TAU, MAX_TAU)
-    return stochastic_inaccuracy < ARBITRARY_ACCURACY
+    assert stochastic_inaccuracy < ARBITRARY_ACCURACY
 
 
 def test_tau_generation_has_right_excitatory_mean():
     excitatory_taus, _ = _generate_test_taus()
-    assert _has_excitatory_mean(excitatory_taus)
+    _assert_excitatory_mean(excitatory_taus)
 
 
-def _has_inhibitory_mean(taus):
+def _assert_inhibitory_mean(taus):
     mean_delta = np.mean([MIN_DELTA_TAU, MAX_DELTA_TAU])
     stochastic_inaccuracy = _get_stochastic_inaccuracy_for_mean_in_range(
         taus, MIN_TAU - mean_delta, MAX_TAU + mean_delta)
-    return stochastic_inaccuracy < ARBITRARY_ACCURACY
+    assert stochastic_inaccuracy < ARBITRARY_ACCURACY
 
 
 def test_tau_generation_has_right_inhibitory_mean():
     _, inhibitory_taus = _generate_test_taus()
-    assert _has_inhibitory_mean(inhibitory_taus)
+    _assert_inhibitory_mean(inhibitory_taus)
 
 
 def _get_stochastic_inaccuracy_for_taus_outside_range(taus, min, max):
@@ -95,7 +95,7 @@ def test_concatenated_tau_generation_fails_on_odd_number_of_hidden_neurons():
 def test_concatenated_tau_generation_has_correct_length(input_neuron_count, hidden_neuron_count):
     taus = generate_concatenated_taus(input_neuron_count, hidden_neuron_count)
     # Times 2 because one is inhibitory, one is excitatory
-    expected_length = input_neuron_count * hidden_neuron_count * 2
+    expected_length = input_neuron_count // 2 * hidden_neuron_count * 2
     assert len(taus) == expected_length
 
 
@@ -107,7 +107,7 @@ def test_concatenated_tau_generation_has_right_sequence_for_input_pair():
     third_quarter = taus[2*quarter_point:3*quarter_point]
     fourth_quarter = taus[3*quarter_point:4*quarter_point]
 
-    assert _has_excitatory_mean(first_quarter)
-    assert _has_inhibitory_mean(second_quarter)
-    assert _has_inhibitory_mean(third_quarter)
-    assert _has_excitatory_mean(fourth_quarter)
+    _assert_excitatory_mean(first_quarter)
+    _assert_inhibitory_mean(second_quarter)
+    _assert_inhibitory_mean(third_quarter)
+    _assert_excitatory_mean(fourth_quarter)
