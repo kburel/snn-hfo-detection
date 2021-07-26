@@ -102,7 +102,7 @@ def test_concatenated_tau_generation_fails_on_odd_number_of_hidden_neurons():
 def test_concatenated_tau_generation_has_correct_length(neuron_count):
     taus = generate_concatenated_taus(neuron_count)
     # Times 2 because one is inhibitory, one is excitatory
-    expected_length = neuron_count.input // 2 * neuron_count.output * 2
+    expected_length = neuron_count.input // 2 * neuron_count.hidden * 2
     assert len(taus) == expected_length
 
 
