@@ -4,7 +4,6 @@ from snn_hfo_ieeg.functions.dynapse_biases import *
 from snn_hfo_ieeg.functions.signal_to_spike import *
 from snn_hfo_ieeg.functions.hfo_detection import *
 from snn_hfo_ieeg.stages.all import run_hfo_detection
-from snn_hfo_ieeg.stages.loading.network_parameters import load_network_parameters
 from snn_hfo_ieeg.stages.loading.patient_data import load_patient_data, extract_channel_data
 
 
@@ -25,8 +24,6 @@ def run_hfo_detection_for_all_channels(data_path, hfo_cb):
         data_path=data_path)
     duration = _calculate_duration(patient_data.signal_time)
 
-    network_parameters = load_network_parameters()
-
     for channel in range(len(patient_data.wideband_signals)):
         channel_data = extract_channel_data(patient_data, channel)
 
@@ -36,8 +33,7 @@ def run_hfo_detection_for_all_channels(data_path, hfo_cb):
         print('SNN simulation will run for ', duration, ' seconds')
         hfo_detection = run_hfo_detection(
             channel_data,
-            duration=duration,
-            network_parameters=network_parameters)
+            duration=duration)
 
         hfo_count = hfo_detection['total_hfo']
 

@@ -38,8 +38,6 @@ class FilterParameters(NamedTuple):
     -------
     channel_data: ChannelData
         channel measurements
-    adm_parameters: dict
-        loaded adm parameters from .mat file
     lowcut: int
         lowcut frequency
     highcut: int
@@ -48,7 +46,6 @@ class FilterParameters(NamedTuple):
         new scaling factor
     '''
     channel_data: ChannelData
-    adm_parameters: dict
     lowcut: int
     highcut: int
     scaling_factor: float
@@ -66,28 +63,26 @@ def _filter_signal_to_spike(filter_parameters):
                                         step_size=1,
                                         chosen_samples=50,
                                         scaling_factor=filter_parameters.scaling_factor))
-    return signal_to_spike_refractory(interpfact=filter_parameters.adm_parameters['interpfact'][0][0],
+    return signal_to_spike_refractory(interpfact=35000,
                                       time=filter_parameters.channel_data.signal_time,
                                       amplitude=signal,
                                       thr_up=threshold, thr_dn=threshold,
-                                      refractory_period=filter_parameters.adm_parameters['refractory'][0][0])
+                                      refractory_period=3e-4)
 
 
-def filter_stage(channel_data, adm_parameters):
+def filter_stage(channel_data):
     r_filter_parameters = FilterParameters(
         channel_data=channel_data,
-        adm_parameters=adm_parameters,
         lowcut=80,
         highcut=250,
-        scaling_factor=adm_parameters['Ripple_sf'][0][0]
+        scaling_factor=0.6
     )
 
     fr_filter_parameters = FilterParameters(
         channel_data=channel_data,
-        adm_parameters=adm_parameters,
         lowcut=250,
         highcut=500,
-        scaling_factor=adm_parameters['FR_sf'][0][0]
+        scaling_factor=0.3
     )
 
     r_up, r_dn = _filter_signal_to_spike(r_filter_parameters)
