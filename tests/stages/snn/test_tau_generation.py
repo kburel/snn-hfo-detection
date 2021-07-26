@@ -1,6 +1,6 @@
 import numpy as np
 import pytest
-from .utility import quarter
+from utility import quarter
 from snn_hfo_ieeg.stages.snn.tau_generation import generate_taus, generate_concatenated_taus, OUTLIER_FRACTION, MIN_TAU, MAX_TAU, MIN_DELTA_TAU, MAX_DELTA_TAU
 
 ARBITRARY_BIG_NUMBER = 1000000
