@@ -5,7 +5,8 @@ from teili.models.builder.neuron_equation_builder import NeuronEquationBuilder
 from teili.models.builder.synapse_equation_builder import SynapseEquationBuilder
 from snn_hfo_ieeg.functions.signal_to_spike import concatenate_spikes
 from snn_hfo_ieeg.functions.dynapse_biases import get_tau_current
-from snn_hfo_ieeg.stages.snn.tau_generation import generate_concatenated_taus
+from tau_generation import generate_concatenated_taus
+from weight_generation import generate_weights
 
 
 def _concatenate_filtered_spikes(filtered_spikes):
@@ -48,11 +49,11 @@ def _create_synapses(input_layer, hidden_layer, network_parameters):
         input_layer, hidden_layer, equation_builder=equation_builder, name='synapses', verbose=False, dt=100*us)
 
     synapses.connect()
-    synapses.weight = network_parameters.imported_network_parameters[
-        'synapse_weights'][0]
 
     input_count = network_parameters.imported_network_parameters['input_neurons'][0][0]
     hidden_count = network_parameters.imported_network_parameters['hidden_neurons'][0][0]
+
+    synapses.weight = generate_weights(input_count, hidden_count)
     taus = generate_concatenated_taus(input_count, hidden_count)
     synapses.I_tau = get_tau_current(taus*1e-3, True) * amp
     synapses.baseweight = 1 * pamp

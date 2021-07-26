@@ -10,7 +10,7 @@ def _generate_weights_for_input_pair(hidden_neuron_count):
     first_input_to_first_half_of_hidden = weights[:half_point]
     first_input_to_second_half_of_hidden = weights[half_point:] * -1
     second_input_to_first_half_of_hidden = weights[:half_point] * -1
-    second_input_to_second_half_of_hidden = weights[:half_point]
+    second_input_to_second_half_of_hidden = weights[half_point:]
     return np.concatenate([
         first_input_to_first_half_of_hidden,
         first_input_to_second_half_of_hidden,
