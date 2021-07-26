@@ -50,6 +50,17 @@ def test_weights_have_correct_sequence():
     assert np.all(quarters.fourth > 0)
 
 
+def test_weights_have_correct_sequence_with_multiple_input_pairs():
+    weights = generate_weights(4, 32)
+    half_point = len(weights) // 2
+    for weight_half in [weights[:half_point], weights[half_point:]]:
+        quarters = quarter(weight_half)
+        assert np.all(quarters.first > 0)
+        assert np.all(quarters.second < 0)
+        assert np.all(quarters.third < 0)
+        assert np.all(quarters.fourth > 0)
+
+
 def test_weight_generation_fails_on_odd_number_of_inputs():
     with pytest.raises(ValueError):
         generate_weights(3, 2)
