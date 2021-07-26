@@ -1,4 +1,3 @@
-from snn_hfo_ieeg.stages.snn.tau_generation import generate_concatenated_taus
 from brian2 import start_scope, run, SpikeGeneratorGroup, SpikeMonitor
 from brian2.units import us, amp, pamp, second
 from teili.core.groups import Neurons, Connections
@@ -6,6 +5,7 @@ from teili.models.builder.neuron_equation_builder import NeuronEquationBuilder
 from teili.models.builder.synapse_equation_builder import SynapseEquationBuilder
 from snn_hfo_ieeg.functions.signal_to_spike import concatenate_spikes
 from snn_hfo_ieeg.functions.dynapse_biases import get_tau_current
+from snn_hfo_ieeg.stages.snn.tau_generation import generate_concatenated_taus
 
 
 def _concatenate_filtered_spikes(filtered_spikes):
