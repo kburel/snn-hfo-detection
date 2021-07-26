@@ -40,8 +40,6 @@ def _create_hidden_layer(model_paths):
         model_paths.neuron, num_inputs=1)
     hidden_layer = Neurons(
         hidden_neurons, equation_builder=equation_builder, name='hidden_layer', dt=100*us)
-    hidden_layer.refP = 3e-4 * second
-    hidden_layer.Itau = get_tau_current(15.3 * 1e-3) * amp
     return hidden_layer
 
 

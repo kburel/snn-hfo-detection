@@ -81,7 +81,7 @@ Iin = Iin0 : amp # input currents
                     'Ispkthr': '1. * namp',
                     'Ireset': '0.6 * pamp',
                     'Ith': '0.9 * pamp',
-                    'Itau': '8. * pamp',
-                    'refP': '1. * msecond',
+                    'Itau': '3.5 * pamp',
+                    'refP': '0.3 * msecond',
           }
           }
