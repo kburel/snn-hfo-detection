@@ -1,7 +1,7 @@
 import pytest
 import numpy as np
+from .utility import quarter
 from snn_hfo_ieeg.stages.snn.weight_generation import generate_weights, POSSIBLE_ABSOLUTE_WEIGHTS
-from utility import quarter
 
 INPUT_TEST_PAIRS = [(2, 2),
                     (2, 4),
