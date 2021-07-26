@@ -1,4 +1,5 @@
 import numpy as np
+from functools import reduce
 
 MIN_TAU = 3
 MAX_TAU = 6
@@ -33,7 +34,15 @@ def _get_inhibitory_taus_in_range(min_tau, max_tau, min_delta, max_delta, size):
         mean, standard_deviation, size)
 
 
+def _is_odd(number):
+    return number % 2 != 0
+
+
 def generate_taus(hidden_neuron_count):
+    if _is_odd(hidden_neuron_count):
+        raise ValueError(
+            f'hidden_neuron_count must be an even number but was odd. Actual value: {hidden_neuron_count}')
+
     excitatory_taus = _get_excitatory_taus_in_range(
         min_tau=MIN_TAU,
         max_tau=MAX_TAU,
@@ -47,3 +56,23 @@ def generate_taus(hidden_neuron_count):
         size=hidden_neuron_count)
 
     return excitatory_taus, inhibitory_taus
+
+
+def generate_concatenated_taus_for_input_pair(hidden_neuron_count):
+    excitatory_taus, inhibitory_taus = generate_taus(hidden_neuron_count)
+    half_point = len(excitatory_taus) // 2
+    first_excitatory_half = excitatory_taus[:half_point]
+    second_excitatory_half = excitatory_taus[half_point:]
+    first_inhibitory_taus_half = inhibitory_taus[:half_point]
+    second_inhibitory_taus_half = inhibitory_taus[half_point:]
+    return np.concatenate([first_excitatory_half, first_inhibitory_taus_half, second_inhibitory_taus_half, second_excitatory_half])
+
+
+def generate_concatenated_taus(input_neuron_count, hidden_neuron_count):
+    if _is_odd(input_neuron_count):
+        raise ValueError(
+            f'input_neuron_count must be an even number but was odd. Actual value: {input_neuron_count}')
+    input_pair_count = input_neuron_count // 2
+    concatenated_taus = [generate_concatenated_taus_for_input_pair(
+        _) for _ in [hidden_neuron_count] * input_pair_count]
+    return reduce(np.concatenate, concatenated_taus, np.array([]))

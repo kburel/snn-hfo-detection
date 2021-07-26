@@ -1,4 +1,5 @@
 import numpy as np
+import pytest
 from snn_hfo_ieeg.stages.snn.tau_generation import generate_taus, MIN_TAU, MAX_TAU, MIN_DELTA_TAU, MAX_DELTA_TAU
 
 ARBITRARY_BIG_NUMBER = 1000000
@@ -57,3 +58,13 @@ def test_inhibitory_mean_is_maller_than_excitatory():
     excitatory_mean = np.mean(excitatory_taus)
     inhibitory_mean = np.mean(inhibitory_taus)
     assert inhibitory_mean < excitatory_mean
+
+
+def test_tau_generation_fails_on_odd_number():
+    with pytest.raises(ValueError):
+        generate_taus(ARBITRARY_BIG_NUMBER + 1)
+
+
+def test_taus_have_specified_size():
+    excitatory_taus, inhibitory_taus = _generate_test_taus()
+    assert len(excitatory_taus) == len(inhibitory_taus) == ARBITRARY_ACCURACY
