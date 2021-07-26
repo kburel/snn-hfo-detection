@@ -1,10 +1,13 @@
+import warnings
+from brian2 import start_scope, run, SpikeGeneratorGroup, SpikeMonitor
+from brian2.units import us, amp, pamp, second
 from teili.core.groups import Neurons, Connections
 from teili.models.builder.neuron_equation_builder import NeuronEquationBuilder
 from teili.models.builder.synapse_equation_builder import SynapseEquationBuilder
-from brian2 import start_scope, run, SpikeGeneratorGroup, SpikeMonitor
-from brian2.units import us, amp, pamp, second
 from snn_hfo_ieeg.functions.signal_to_spike import concatenate_spikes
 from snn_hfo_ieeg.functions.dynapse_biases import get_tau_current
+from snn_hfo_ieeg.stages.snn.tau_generation import generate_concatenated_taus
+from snn_hfo_ieeg.stages.snn.weight_generation import generate_weights
 
 
 def _concatenate_filtered_spikes(filtered_spikes):
@@ -40,29 +43,33 @@ def _create_hidden_layer(network_parameters):
     return hidden_layer
 
 
-def _create_input_hidden_layer(input_layer, hidden_layer, network_parameters):
+def _create_synapses(input_layer, hidden_layer, network_parameters):
     equation_builder = SynapseEquationBuilder.import_eq(
         network_parameters.synapse_model_path)
-    input_hidden_layer = Connections(
-        input_layer, hidden_layer, equation_builder=equation_builder, name='input_hidden_layer', verbose=False, dt=100*us)
+    synapses = Connections(
+        input_layer, hidden_layer, equation_builder=equation_builder, name='synapses', verbose=False, dt=100*us)
 
-    input_hidden_layer.connect()
-    input_hidden_layer.weight = network_parameters.imported_network_parameters[
-        'synapse_weights'][0]
-    input_hidden_layer.I_tau = get_tau_current(
-        network_parameters.imported_network_parameters['synapse_taus'][0]*1e-3, True) * amp
-    input_hidden_layer.baseweight = 1 * pamp
+    synapses.connect()
 
-    return input_hidden_layer
+    input_count = network_parameters.imported_network_parameters['input_neurons'][0][0]
+    hidden_count = network_parameters.imported_network_parameters['hidden_neurons'][0][0]
+
+    synapses.weight = generate_weights(input_count, hidden_count)
+    taus = generate_concatenated_taus(input_count, hidden_count)
+    synapses.I_tau = get_tau_current(taus*1e-3, True) * amp
+    synapses.baseweight = 1 * pamp
+
+    return synapses
 
 
 def snn_stage(filtered_spikes, network_parameters, duration):
+    warnings.simplefilter("ignore", DeprecationWarning)
     start_scope()
 
     input_layer = _create_input_layer(filtered_spikes, network_parameters)
     hidden_layer = _create_hidden_layer(network_parameters)
     # Do not remove the following variable, otherwise its lifetime is too narrow
-    _input_hidden_layer = _create_input_hidden_layer(
+    _synapses = _create_synapses(
         input_layer, hidden_layer, network_parameters)
 
     spike_monitor_hidden = SpikeMonitor(hidden_layer)
