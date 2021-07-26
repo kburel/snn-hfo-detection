@@ -70,7 +70,7 @@ def test_inhibitory_mean_is_maller_than_excitatory():
 
 def test_taus_have_specified_size():
     excitatory_taus, inhibitory_taus = _generate_test_taus()
-    assert len(excitatory_taus) == len(inhibitory_taus) == ARBITRARY_ACCURACY
+    assert len(excitatory_taus) == len(inhibitory_taus) == ARBITRARY_BIG_NUMBER
 
 
 def test_concatenated_tau_generation_fails_on_odd_number_of_inputs():
