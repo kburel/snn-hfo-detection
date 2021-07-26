@@ -13,7 +13,7 @@ def _calculate_duration(signal_time):
     return np.max(signal_time) + extra_simulation_time
 
 
-def run_hfo_detection_for_all_channels(configuration, hfo_cb):
+def run_hfo_detection_for_all_channels(configuration, custom_duration, hfo_cb):
     # Select Data from a single patient
     patient = 1
     # interval
@@ -23,7 +23,7 @@ def run_hfo_detection_for_all_channels(configuration, hfo_cb):
         patient=patient,
         interval=current_interval,
         data_path=configuration.data_path)
-    duration = configuration.duration if configuration.duration is not None else _calculate_duration(
+    duration = custom_duration if custom_duration is not None else _calculate_duration(
         patient_data.signal_time)
 
     for channel in range(len(patient_data.wideband_signals)):
@@ -32,9 +32,10 @@ def run_hfo_detection_for_all_channels(configuration, hfo_cb):
         print(
             f'Running test for Patient {patient}, interval {current_interval} and channel {channel}')
 
-        print('SNN simulation will run for ', duration, ' seconds')
+        print(f'SNN simulation will run for {duration} seconds')
         hfo_detection = run_hfo_detection(
             channel_data=channel_data,
+            duration=duration,
             configuration=configuration)
 
         hfo_count = hfo_detection['total_hfo']
@@ -66,12 +67,14 @@ def _convert_arguments_to_config(arguments):
     return Configuration(
         data_path=arguments.data_path,
         measurement_mode=MeasurementMode[arguments.mode.upper()],
-        hidden_neuron_count=arguments.hidden_neurons,
-        duration=arguments.duration
+        hidden_neuron_count=arguments.hidden_neurons
     )
 
 
 if __name__ == '__main__':
     arguments = _parse_arguments()
     configuration = _convert_arguments_to_config(arguments)
-    run_hfo_detection_for_all_channels(configuration, lambda _: {})
+    run_hfo_detection_for_all_channels(
+        configuration=configuration,
+        custom_duration=arguments.duration,
+        hfo_cb=lambda _: {})

@@ -12,9 +12,6 @@ from snn_hfo_ieeg.stages.snn.model_paths import load_model_paths
 from snn_hfo_ieeg.stages.snn.concatenation import NeuronCount
 from snn_hfo_ieeg.stages.shared_config import MeasurementMode
 
-INPUT_COUNT = 4
-HIDDEN_NEURON_COUNT = 86
-
 
 def _concatenate_filtered_spikes(filtered_spikes):
     spikes_list = {
@@ -27,7 +24,7 @@ def _concatenate_filtered_spikes(filtered_spikes):
 
 
 def _measurement_mode_to_input_count(measurement_mode):
-    if measurement_mode == MeasurementMode.IEEG:
+    if measurement_mode is MeasurementMode.IEEG:
         return 4
     return 2
 
@@ -70,7 +67,7 @@ def _create_synapses(input_layer, hidden_layer, model_paths, neuron_counts):
     return synapses
 
 
-def snn_stage(filtered_spikes, configuration):
+def snn_stage(filtered_spikes, duration, configuration):
     warnings.simplefilter("ignore", DeprecationWarning)
     start_scope()
 
@@ -88,6 +85,6 @@ def snn_stage(filtered_spikes, configuration):
         neuron_counts)
 
     spike_monitor_hidden = SpikeMonitor(hidden_layer)
-    run(configuration.duration * second)
+    run(duration * second)
 
     return spike_monitor_hidden
