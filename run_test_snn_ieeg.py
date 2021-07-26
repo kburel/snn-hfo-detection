@@ -1,4 +1,5 @@
 import argparse
+from snn_hfo_ieeg.stages.shared_config import Configuration, MeasurementMode
 from snn_hfo_ieeg.functions.filter import *
 from snn_hfo_ieeg.functions.dynapse_biases import *
 from snn_hfo_ieeg.functions.signal_to_spike import *
@@ -12,7 +13,7 @@ def _calculate_duration(signal_time):
     return np.max(signal_time) + extra_simulation_time
 
 
-def run_hfo_detection_for_all_channels(user_settings, hfo_cb):
+def run_hfo_detection_for_all_channels(configuration, hfo_cb):
     # Select Data from a single patient
     patient = 1
     # interval
@@ -21,8 +22,8 @@ def run_hfo_detection_for_all_channels(user_settings, hfo_cb):
     patient_data = load_patient_data(
         patient=patient,
         interval=current_interval,
-        data_path=user_settings.data_path)
-    duration = user_settings.duration if user_settings.duration is not None else _calculate_duration(
+        data_path=configuration.data_path)
+    duration = configuration.duration if configuration.duration is not None else _calculate_duration(
         patient_data.signal_time)
 
     for channel in range(len(patient_data.wideband_signals)):
@@ -34,8 +35,7 @@ def run_hfo_detection_for_all_channels(user_settings, hfo_cb):
         print('SNN simulation will run for ', duration, ' seconds')
         hfo_detection = run_hfo_detection(
             channel_data=channel_data,
-            hidden_neuron_count=user_settings.hidden_neuron_count,
-            duration=duration)
+            configuration=configuration)
 
         hfo_count = hfo_detection['total_hfo']
 
@@ -49,11 +49,29 @@ def run_hfo_detection_for_all_channels(user_settings, hfo_cb):
 
 def _parse_arguments():
     parser = argparse.ArgumentParser(description='Perform an hfo test run')
-    parser.add_argument('--data-path', type=str, nargs='?', default='data/',
-                        help='Specifies the path to the directory containing the test data. Default is ./data/')
+    default_data_path = 'data/'
+    default_hidden_neurons = 86
+    parser.add_argument('--data-path', type=str, default=default_data_path,
+                        help=f'Specifies the path to the directory containing the test data. Default is {default_data_path}')
+    parser.add_argument('--hidden-neurons', type=int, default=default_hidden_neurons,
+                        help=f'How many neurons should be in the hidden layer. Default is {default_hidden_neurons}')
+    parser.add_argument('--duration', type=float, default=None,
+                        help='How many seconds of the dataset should be processed. By default, the entire dataset will be processed')
+    parser.add_argument('mode', type=str,
+                        help='Which measurement mode was used to capture the data. Possible values: iEEG, eCoG or scalp')
     return parser.parse_args()
 
 
+def _convert_arguments_to_config(arguments):
+    return Configuration(
+        data_path=arguments.data_path,
+        measurement_mode=MeasurementMode[arguments.mode.upper()],
+        hidden_neuron_count=arguments.hidden_neurons,
+        duration=arguments.duration
+    )
+
+
 if __name__ == '__main__':
-    data_path = _parse_arguments().data_path
-    run_hfo_detection_for_all_channels(data_path, lambda _: {})
+    arguments = _parse_arguments()
+    configuration = _convert_arguments_to_config(arguments)
+    run_hfo_detection_for_all_channels(configuration, lambda _: {})
