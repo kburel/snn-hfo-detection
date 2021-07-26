@@ -3,7 +3,7 @@ neuron = {'model':
             dImem/dt = (((Ith_clip / Itau_clip) * (Iin_clip  + Ia_clip - Ishunt_clip - Iahp_clip)) - Ith_clip - ((1 + ((Ishunt_clip + Iahp_clip - Ia_clip) / Itau_clip)) * Imem)) / (tau * ((Ith_clip/(Imem + Io)) + 1)) : amp (unless refractory)
 
           dIahp/dt = (- Ithahp_clip - Iahp + 2*Io*(Iahp<=Io)) / (tauahp * (Ithahp_clip / Iahp + 1)) : amp # adaptation current
-        Ia = Iagain / (1 + exp(-(Imem - Iath) / Ianorm)) : amp  # postive feedback current
+        Ia = Iagain / (1 + exp(-(Imem - Iath) / Ianorm)) : amp  # positive feedback current
           Iahp_clip = Iahp*(Imem>Io) + Io*(Imem<=Io)  : amp
 
             Itau_clip = Itau*(Imem>Io) + Io*(Imem<=Io)  : amp
