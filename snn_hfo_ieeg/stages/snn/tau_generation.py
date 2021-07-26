@@ -1,5 +1,4 @@
 import numpy as np
-from functools import reduce
 
 MIN_TAU = 3
 MAX_TAU = 6
