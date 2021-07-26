@@ -1,3 +1,4 @@
+from snn_hfo_ieeg.stages.snn.tau_generation import generate_concatenated_taus
 from teili.core.groups import Neurons, Connections
 from teili.models.builder.neuron_equation_builder import NeuronEquationBuilder
 from teili.models.builder.synapse_equation_builder import SynapseEquationBuilder
@@ -49,8 +50,11 @@ def _create_synapses(input_layer, hidden_layer, network_parameters):
     synapses.connect()
     synapses.weight = network_parameters.imported_network_parameters[
         'synapse_weights'][0]
-    synapses.I_tau = get_tau_current(
-        network_parameters.imported_network_parameters['synapse_taus'][0]*1e-3, True) * amp
+
+    input_count = network_parameters.imported_network_parameters['input_neurons'][0][0]
+    hidden_count = network_parameters.imported_network_parameters['hidden_neurons'][0][0]
+    taus = generate_concatenated_taus(input_count, hidden_count)
+    synapses.I_tau = get_tau_current(taus*1e-3, True) * amp
     synapses.baseweight = 1 * pamp
 
     return synapses
