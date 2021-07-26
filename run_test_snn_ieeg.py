@@ -12,7 +12,7 @@ def _calculate_duration(signal_time):
     return np.max(signal_time) + extra_simulation_time
 
 
-def run_hfo_detection_for_all_channels(data_path, hfo_cb):
+def run_hfo_detection_for_all_channels(user_settings, hfo_cb):
     # Select Data from a single patient
     patient = 1
     # interval
@@ -21,8 +21,9 @@ def run_hfo_detection_for_all_channels(data_path, hfo_cb):
     patient_data = load_patient_data(
         patient=patient,
         interval=current_interval,
-        data_path=data_path)
-    duration = _calculate_duration(patient_data.signal_time)
+        data_path=user_settings.data_path)
+    duration = user_settings.duration if user_settings.duration is not None else _calculate_duration(
+        patient_data.signal_time)
 
     for channel in range(len(patient_data.wideband_signals)):
         channel_data = extract_channel_data(patient_data, channel)
@@ -32,7 +33,8 @@ def run_hfo_detection_for_all_channels(data_path, hfo_cb):
 
         print('SNN simulation will run for ', duration, ' seconds')
         hfo_detection = run_hfo_detection(
-            channel_data,
+            channel_data=channel_data,
+            hidden_neuron_count=user_settings.hidden_neuron_count,
             duration=duration)
 
         hfo_count = hfo_detection['total_hfo']
