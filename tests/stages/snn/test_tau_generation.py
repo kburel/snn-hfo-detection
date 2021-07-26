@@ -31,7 +31,7 @@ def test_tau_generation_has_right_excitatory_mean():
 def _assert_inhibitory_mean(taus):
     mean_delta = np.mean([MIN_DELTA_TAU, MAX_DELTA_TAU])
     stochastic_inaccuracy = _get_stochastic_inaccuracy_for_mean_in_range(
-        taus, MIN_TAU - mean_delta, MAX_TAU + mean_delta)
+        taus, MIN_TAU - mean_delta, MAX_TAU - mean_delta)
     assert stochastic_inaccuracy < ARBITRARY_ACCURACY
 
 
@@ -105,7 +105,7 @@ def test_concatenated_tau_generation_has_right_sequence_for_input_pair():
     first_quarter = taus[:quarter_point]
     second_quarter = taus[quarter_point:2*quarter_point]
     third_quarter = taus[2*quarter_point:3*quarter_point]
-    fourth_quarter = taus[3*quarter_point:4*quarter_point]
+    fourth_quarter = taus[3*quarter_point:]
 
     _assert_excitatory_mean(first_quarter)
     _assert_inhibitory_mean(second_quarter)
