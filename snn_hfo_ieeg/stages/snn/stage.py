@@ -1,3 +1,4 @@
+import warnings
 from brian2 import start_scope, run, SpikeGeneratorGroup, SpikeMonitor
 from brian2.units import us, amp, pamp, second
 from teili.core.groups import Neurons, Connections
@@ -62,6 +63,7 @@ def _create_synapses(input_layer, hidden_layer, network_parameters):
 
 
 def snn_stage(filtered_spikes, network_parameters, duration):
+    warnings.simplefilter("ignore", DeprecationWarning)
     start_scope()
 
     input_layer = _create_input_layer(filtered_spikes, network_parameters)
