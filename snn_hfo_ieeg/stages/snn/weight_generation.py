@@ -1,6 +1,6 @@
 import random
 import numpy as np
-from .concatenation import concatenate_excitatory_and_inhibitory_with_generator_function
+from snn_hfo_ieeg.stages.snn.concatenation import concatenate_excitatory_and_inhibitory_with_generator_function
 POSSIBLE_ABSOLUTE_WEIGHTS = [1000, 2000]
 
 
