@@ -47,4 +47,3 @@ def generate_taus(hidden_neuron_count):
         size=hidden_neuron_count)
 
     return excitatory_taus, inhibitory_taus
-
