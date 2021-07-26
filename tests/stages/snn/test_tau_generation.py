@@ -83,21 +83,21 @@ def test_inhibitory_taus_are_always_smaller_than_excitatory_ones():
 def test_concatenated_tau_generation_fails_on_odd_number_of_inputs():
     with pytest.raises(ValueError):
         generate_concatenated_taus(
-            NeuronCount(input=ARBITRARY_BIG_NUMBER + 1, output=ARBITRARY_BIG_NUMBER))
+            NeuronCount(input=ARBITRARY_BIG_NUMBER + 1, hidden=ARBITRARY_BIG_NUMBER))
 
 
 def test_concatenated_tau_generation_fails_on_odd_number_of_hidden_neurons():
     with pytest.raises(ValueError):
         generate_concatenated_taus(
-            NeuronCount(input=ARBITRARY_BIG_NUMBER, output=ARBITRARY_BIG_NUMBER+1))
+            NeuronCount(input=ARBITRARY_BIG_NUMBER, hidden=ARBITRARY_BIG_NUMBER+1))
 
 
 @pytest.mark.parametrize(
     'neuron_count',
-    [NeuronCount(input=2, output=2),
-     NeuronCount(input=2, output=4),
-     NeuronCount(input=4, output=16),
-     NeuronCount(input=16, output=2)]
+    [NeuronCount(input=2, hidden=2),
+     NeuronCount(input=2, hidden=4),
+     NeuronCount(input=4, hidden=16),
+     NeuronCount(input=16, hidden=2)]
 )
 def test_concatenated_tau_generation_has_correct_length(neuron_count):
     taus = generate_concatenated_taus(neuron_count)
@@ -108,7 +108,7 @@ def test_concatenated_tau_generation_has_correct_length(neuron_count):
 
 def test_concatenated_tau_generation_has_right_sequence_for_input_pair():
     taus = generate_concatenated_taus(
-        NeuronCount(input=2, output=ARBITRARY_BIG_NUMBER))
+        NeuronCount(input=2, hidden=ARBITRARY_BIG_NUMBER))
     quarters = quarter(taus)
 
     _assert_excitatory_mean(quarters.first)
