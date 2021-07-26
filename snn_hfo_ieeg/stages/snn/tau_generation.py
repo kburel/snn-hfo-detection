@@ -5,12 +5,11 @@ MAX_TAU = 6
 MIN_DELTA_TAU = 0.3
 MAX_DELTA_TAU = 1
 
-POSSIBLE_WEIGHTS = [1000, 2000]
-
+OUTLIER_FRACTION = 0.05
 
 def _get_mean_and_standard_deviation_for_range(min, max):
     mean = np.mean([min, max])
-    # 95% of data is within 2 standard deviations
+    # 95% (100% - OUTLIER_FRACTION) of all data lies within 2 standard deviations on a normal distribution
     standard_deviation = (max - mean) / 2
     return mean, standard_deviation
 

@@ -1,10 +1,10 @@
 import numpy as np
 import pytest
-from snn_hfo_ieeg.stages.snn.tau_generation import generate_taus, generate_concatenated_taus, MIN_TAU, MAX_TAU, MIN_DELTA_TAU, MAX_DELTA_TAU
+from snn_hfo_ieeg.stages.snn.tau_generation import generate_taus, generate_concatenated_taus, OUTLIER_FRACTION, MIN_TAU, MAX_TAU, MIN_DELTA_TAU, MAX_DELTA_TAU
+from utility import quarter
 
 ARBITRARY_BIG_NUMBER = 1000000
 ARBITRARY_ACCURACY = 0.01
-EXPECTED_OUTLIER_FRACTION = 0.05
 
 
 def _generate_test_taus():
@@ -44,7 +44,7 @@ def _get_stochastic_inaccuracy_for_taus_outside_range(taus, min, max):
     outliers = [tau for tau in taus if tau <
                 min or tau > max]
     actual_outlier_fraction = len(outliers) / len(taus)
-    return actual_outlier_fraction - EXPECTED_OUTLIER_FRACTION
+    return actual_outlier_fraction - OUTLIER_FRACTION
 
 
 def test_tau_generation_has_right_excitatory_bounds():
@@ -101,13 +101,9 @@ def test_concatenated_tau_generation_has_correct_length(input_neuron_count, hidd
 
 def test_concatenated_tau_generation_has_right_sequence_for_input_pair():
     taus = generate_concatenated_taus(2, ARBITRARY_BIG_NUMBER)
-    quarter_point = len(taus) // 4
-    first_quarter = taus[:quarter_point]
-    second_quarter = taus[quarter_point:2*quarter_point]
-    third_quarter = taus[2*quarter_point:3*quarter_point]
-    fourth_quarter = taus[3*quarter_point:]
+    quarters = quarter(taus)
 
-    _assert_excitatory_mean(first_quarter)
-    _assert_inhibitory_mean(second_quarter)
-    _assert_inhibitory_mean(third_quarter)
-    _assert_excitatory_mean(fourth_quarter)
+    _assert_excitatory_mean(quarters.first)
+    _assert_inhibitory_mean(quarters.second)
+    _assert_inhibitory_mean(quarters.third)
+    _assert_excitatory_mean(quarters.fourth)
