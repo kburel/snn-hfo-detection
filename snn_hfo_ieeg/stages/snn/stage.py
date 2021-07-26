@@ -26,7 +26,12 @@ def _concatenate_filtered_spikes(filtered_spikes):
 def _measurement_mode_to_input_count(measurement_mode):
     if measurement_mode is MeasurementMode.IEEG:
         return 4
-    return 2
+    elif measurement_mode is MeasurementMode.ECOG:
+        return 2
+    elif measurement_mode is MeasurementMode.SCALP:
+        return 2
+    raise ValueError(
+        f'measurement_mode is outside valid range. Allowed values: {MeasurementMode}, instead got: {measurement_mode}')
 
 
 def _read_neuron_counts(configuration):
@@ -35,8 +40,7 @@ def _read_neuron_counts(configuration):
     return NeuronCount(input_count, configuration.hidden_neuron_count)
 
 
-def _create_input_layer(filtered_spikes, measurement_mode):
-    input_count = _measurement_mode_to_input_count(measurement_mode)
+def _create_input_layer(filtered_spikes, input_count):
     input_spiketimes, input_neurons_id = _concatenate_filtered_spikes(
         filtered_spikes)
     return SpikeGeneratorGroup(input_count,
