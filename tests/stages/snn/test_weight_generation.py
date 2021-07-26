@@ -26,7 +26,7 @@ def test_weights_are_in_range(input_neuron_count, hidden_neuron_count):
     weights = generate_weights(input_neuron_count, hidden_neuron_count)
     min_weight = min(POSSIBLE_ABSOLUTE_WEIGHTS)
     max_weight = max(POSSIBLE_ABSOLUTE_WEIGHTS)
-    assert np.all(min_weight <= weights <= max_weight)
+    assert np.all(weights >= min_weight) and np.all(weights <= max_weight)
 
 
 @pytest.mark.parametrize(
