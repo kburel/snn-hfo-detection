@@ -73,6 +73,12 @@ def test_taus_have_specified_size():
     assert len(excitatory_taus) == len(inhibitory_taus) == ARBITRARY_BIG_NUMBER
 
 
+def test_inhibitory_taus_are_always_smaller_than_excitatory_ones():
+    excitatory_taus, inhibitory_taus = _generate_test_taus()
+    for excitatory_tau, inhibitory_tau in zip(excitatory_taus, inhibitory_taus):
+        assert excitatory_tau > inhibitory_tau
+
+
 def test_concatenated_tau_generation_fails_on_odd_number_of_inputs():
     with pytest.raises(ValueError):
         generate_concatenated_taus(

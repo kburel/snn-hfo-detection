@@ -16,36 +16,24 @@ def _get_mean_and_standard_deviation_for_range(min, max):
     return mean, standard_deviation
 
 
-def _get_excitatory_taus_in_range(min_tau, max_tau, size):
+def _get_abs_normal_range(min, max, size):
     mean, standard_deviation = _get_mean_and_standard_deviation_for_range(
-        min_tau, max_tau)
-    return np.random.normal(
-        mean, standard_deviation, size)
-
-
-def _get_inhibitory_taus_in_range(min_tau, max_tau, min_delta, max_delta, size):
-    excitatory_mean, excitatory_standard_deviation = _get_mean_and_standard_deviation_for_range(
-        min_tau, max_tau)
-    delta_mean, delta_standard_deviation = _get_mean_and_standard_deviation_for_range(
-        min_delta, max_delta)
-    mean = excitatory_mean - delta_mean
-    standard_deviation = excitatory_standard_deviation - delta_standard_deviation
-    return np.random.normal(
-        mean, standard_deviation, size)
+        min, max)
+    normal_range = np.random.normal(mean, standard_deviation, size)
+    return abs(normal_range)
 
 
 def generate_taus(hidden_neuron_count):
-    excitatory_taus = _get_excitatory_taus_in_range(
-        min_tau=MIN_TAU,
-        max_tau=MAX_TAU,
+    excitatory_taus = _get_abs_normal_range(
+        min=MIN_TAU,
+        max=MAX_TAU,
+        size=hidden_neuron_count)
+    deltas = _get_abs_normal_range(
+        min=MIN_DELTA_TAU,
+        max=MAX_DELTA_TAU,
         size=hidden_neuron_count)
 
-    inhibitory_taus = _get_inhibitory_taus_in_range(
-        min_tau=MIN_TAU,
-        max_tau=MAX_TAU,
-        min_delta=MIN_DELTA_TAU,
-        max_delta=MAX_DELTA_TAU,
-        size=hidden_neuron_count)
+    inhibitory_taus = excitatory_taus - deltas
 
     return excitatory_taus, inhibitory_taus
 
