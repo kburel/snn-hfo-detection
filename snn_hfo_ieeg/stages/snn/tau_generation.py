@@ -57,7 +57,7 @@ def generate_taus(hidden_neuron_count):
 def generate_concatenated_taus_for_input_pair(hidden_neuron_count):
     if _is_odd(hidden_neuron_count):
         raise ValueError(
-            f'hidden_neuron_count must be a positive, even  number but was odd. Actual value: {hidden_neuron_count}')
+            f'hidden_neuron_count must be a positive, even number but was odd. Actual value: {hidden_neuron_count}')
     excitatory_taus, inhibitory_taus = generate_taus(hidden_neuron_count)
     half_point = len(excitatory_taus) // 2
     first_input_to_first_half_of_hidden = excitatory_taus[:half_point]
