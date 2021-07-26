@@ -3,22 +3,15 @@ import numpy as np
 from snn_hfo_ieeg.stages.loading.patient_data import ChannelData
 from snn_hfo_ieeg.functions.filter import butter_bandpass_filter
 from snn_hfo_ieeg.functions.signal_to_spike import find_thresholds, signal_to_spike_refractory
+from snn_hfo_ieeg.stages.shared_config import MeasurementMode
 
 
 SAMPLING_FREQUENCY = 2000
 
 
-class Ripple(NamedTuple):
+class Bandwidth(NamedTuple):
     '''
-    Up and down spikes in a ripple bandwidth (80-250Hz)
-    '''
-    up: np.array
-    down: np.array
-
-
-class FastRipple(NamedTuple):
-    '''
-    Up and down spikes in a fast ripple bandwidth (250-500Hz)
+    Up and down spikes in a bandwidth (80-250Hz)
     '''
     up: np.array
     down: np.array
@@ -27,16 +20,23 @@ class FastRipple(NamedTuple):
 class FilteredSpikes(NamedTuple):
     '''
     Spikes filtered in the ripple and fast ripple bandwidths
+
+    Parameters
+    -----
+    ripple : Bandwidth
+        signals in ripple bandwidth (80-250Hz)
+    fast_ripple : Bandwidth
+        signals in fast ripple bandwidth (250-500Hz)
     '''
-    ripple: Ripple
-    fast_ripple: FastRipple
+    ripple: Bandwidth
+    fast_ripple: Bandwidth
 
 
 class FilterParameters(NamedTuple):
     '''
     Parameters
     -------
-    channel_data: ChannelData
+    channel_data : ChannelData
         channel measurements
     lowcut: int
         lowcut frequency
@@ -70,7 +70,7 @@ def _filter_signal_to_spike(filter_parameters):
                                       refractory_period=3e-4)
 
 
-def filter_stage(channel_data):
+def filter_stage(channel_data, configuration):
     r_filter_parameters = FilterParameters(
         channel_data=channel_data,
         lowcut=80,
@@ -88,7 +88,14 @@ def filter_stage(channel_data):
     r_up, r_dn = _filter_signal_to_spike(r_filter_parameters)
     fr_up, fr_dn = _filter_signal_to_spike(fr_filter_parameters)
 
-    ripple = Ripple(up=r_up, down=r_dn)
-    fast_ripple = FastRipple(up=fr_up, down=fr_dn)
+    ripple = Bandwidth(up=r_up, down=r_dn)
+    fast_ripple = Bandwidth(up=fr_up, down=fr_dn)
 
-    return FilteredSpikes(ripple=ripple, fast_ripple=fast_ripple)
+    if configuration.measurement_mode is MeasurementMode.IEEG:
+        return FilteredSpikes(ripple=ripple, fast_ripple=fast_ripple)
+    elif configuration.measurement_mode is MeasurementMode.ECOG:
+        return FilteredSpikes(ripple=None, fast_ripple=fast_ripple)
+    elif configuration.measurement_mode is MeasurementMode.SCALP:
+        return FilteredSpikes(ripple=ripple, fast_ripple=None)
+    raise ValueError(
+        f'configuration.measurement_mode has an invalid value. Allowed values: {MeasurementMode}, instead got: {configuration.measurement_mode}')
