@@ -33,10 +33,6 @@ def detect_hfo(trial_duration, spike_monitor, original_time_vector, step_size, w
 
             hfo_identificaiton_signal[index_time_vector] = 1
 
-    mfr_ones = np.where(mfr != 0)
-    mfr_binary = np.zeros(mfr.size)
-    mfr_binary[mfr_ones] = 1
-
     signal_rise = []
     signal_fall = []
 
@@ -55,8 +51,6 @@ def detect_hfo(trial_duration, spike_monitor, original_time_vector, step_size, w
     signal_rise = np.asarray(signal_rise)
     signal_fall = np.asarray(signal_fall)
 
-    identified_hfo = signal_rise.size
-
     if signal_rise.size != 0:
         start_period_hfo = hfo_identificaiton_time[signal_rise]
         stop_period_hfo = hfo_identificaiton_time[signal_fall]
@@ -65,7 +59,7 @@ def detect_hfo(trial_duration, spike_monitor, original_time_vector, step_size, w
         periods_of_hfo = np.array([0, 0])
 
     hfo_detection = {}
-    hfo_detection['total_hfo'] = identified_hfo
+    hfo_detection['total_hfo'] = signal_rise.size
     hfo_detection['time'] = hfo_identificaiton_time
     hfo_detection['signal'] = hfo_identificaiton_signal
     hfo_detection['periods_hfo'] = periods_of_hfo
