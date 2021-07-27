@@ -62,11 +62,30 @@ The SNN HFO detector will run for all the channel from a single recorded interva
 
 The Filtered signal as well as the generated UP and DN spikes can be accessed trough the dictionaries "signal"  and  "spikes" respectively.
 
+## Instructions
+This project uses [poetry](https://python-poetry.org/) to manage its dependencies. You can download it via
+```bash
+pip install --user poetry
+```
+then clone this repository, `cd` into it and run
+```bash
+poetry install
+```
+Place your data in the folder `data/P<patient>` in the form of `P<patient>I<interval>.mat`, e.g.:
+```bash
+SNN_HFO_iEEG/data/P1/P1I1.mat
+```
+then run the code via
+```bash
+poetry run python run_test_snn_ieeg.py <mode>
+```
+where `<mode>` is one of either `ieeg`, `ecog` or `scalp`.
+If you run into problems, you can always run
+```bash
+poetry run python run_test_snn_ieeg.py --help
+``` 
+And if you're still stuck, feel free to open an [issue](https://github.com/kburel/SNN_HFO_iEEG/issues/new) and we will help.
 
-## How to use the code:
-1. Install the spiking neural network simulator [brian2](https://brian2.readthedocs.io/en/stable/) as well as the toolbox for brian2 [teili](https://teili.readthedocs.io/en/latest/).
-2. Make sure that the input data is in the correct format.
-3. The rest of the code should run without a problem.
 
 # Support
 
