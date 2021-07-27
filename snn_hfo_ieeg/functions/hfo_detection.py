@@ -86,7 +86,7 @@ def get_binary_hfos(duration, spike_times, signal_times, step_size, window_size)
     return binary_hfo_signal
 
 
-def find_periods(signals, times):
+def _find_periods(signals, times):
     if len(signals) == 0:
         raise ValueError('signals is not allowed to be empty, but was')
     if len(times) == 0:
@@ -125,7 +125,7 @@ def detect_hfo(duration, spike_times, signal_times, step_size, window_size):
 
     binary_hfo_signal = get_binary_hfos(
         duration, spike_times, signal_times, step_size, window_size)
-    periods = find_periods(binary_hfo_signal, signal_times)
+    periods = _find_periods(binary_hfo_signal, signal_times)
     flat_periods = _flatten_periods(periods)
 
     return HfoDetection(

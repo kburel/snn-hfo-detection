@@ -5,15 +5,15 @@ from tests.utility import *
 
 @pytest.mark.parametrize(
     'duration, spike_monitor, original_time_vector, step_size, window_size, expected_hfo_detection',
-    [(0, [0], np.array([0]), 0.1, 0.1, HfoDetection(
-        total_amount=0,
-        frequency=0,
+    [(1, [0], np.array([0]), 0.1, 0.1, HfoDetection(
+        total_amount=1,
+        frequency=1,
         plotting_data=PlottingData(
-            detections=[0],
+            detections=[1],
             analyzed_times=[0],
             periods=Periods(
-                start=[],
-                stop=[]
+                start=[0],
+                stop=[0]
             )
         ))),
      (1, [0.5], np.array([0.5]), 0.1, 0.5, HfoDetection(
@@ -27,7 +27,7 @@ from tests.utility import *
                  stop=[0.5]
              )
          ))),
-     (-1, [-0.5], np.array([-0.5]), -0.1, -0.05, HfoDetection(
+     (2, [-0.5], np.array([-0.5]), -0.1, -0.05, HfoDetection(
          total_amount=0,
          frequency=0,
          plotting_data=PlottingData(
@@ -57,10 +57,15 @@ def test_hfo_detection(duration, spike_monitor, original_time_vector, step_size,
 
 
 def test_hfo_detection_fails_when_step_size_is_bigger_than_window():
-    with pytest.raises(AssertionError):
-        detect_hfo(0, [0], [0], 1, 0.5)
+    with pytest.raises(ValueError):
+        detect_hfo(1, [0], [0], 1, 0.5)
 
 
 def test_hfo_detection_fails_when_step_size_is_zero():
     with pytest.raises(ZeroDivisionError):
-        detect_hfo(0, [0], [0], 0, 0)
+        detect_hfo(1, [0], [0], 0, 0)
+
+
+def test_hfo_detection_fails_when_duration_is_zero():
+    with pytest.raises(ValueError):
+        detect_hfo(0, [0], [0], 1, 0.5)
