@@ -1,6 +1,5 @@
 from typing import NamedTuple
 import numpy as np
-from numpy.linalg import det
 
 # ========================================================================================
 # Account for changes in a binary signal
@@ -65,19 +64,20 @@ class HfoDetection(NamedTuple):
 
 def _did_snn_find_hfo(spike_times, window):
     return np.any(
-        (spike_times >= window.start) & (spike_times <= window.end))
+        (spike_times >= window.start) & (spike_times <= window.stop))
 
 
 def _get_time_indices_in_window(signal_times, window):
     return np.where(
-        (signal_times >= window.start) & (signal_times <= window.end))
+        (signal_times >= window.start) & (signal_times <= window.stop))
 
 
 def get_binary_hfos(duration, spike_times, signal_times, step_size, window_size):
     binary_hfo_signal = np.zeros(len(signal_times)).astype(int)
 
     for start_time in np.arange(start=0, stop=duration, step=step_size):
-        window = Window(start=start_time, end=start_time + window_size)
+        window = Window(start=start_time,
+                        stop=(start_time + window_size))
 
         if _did_snn_find_hfo(spike_times, window):
             hfo_indices = _get_time_indices_in_window(
@@ -116,7 +116,12 @@ def _flatten_periods(periods):
 
 
 def detect_hfo(duration, spike_times, signal_times, step_size, window_size):
-    assert step_size <= window_size
+    if step_size > window_size:
+        raise ValueError(
+            f'step_size needs to be at most windows_size, but got: step_size={step_size}, window_size={step_size}')
+    if duration <= 0:
+        raise ValueError(
+            f'Tried to detect an HFO for a dataset with a duration that under or equal to zero. Got duration: {duration}')
 
     binary_hfo_signal = get_binary_hfos(
         duration, spike_times, signal_times, step_size, window_size)
