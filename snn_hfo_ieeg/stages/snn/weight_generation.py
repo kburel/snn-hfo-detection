@@ -11,5 +11,5 @@ def _generate_weights(hidden_neuron_count):
     return excitatory_weights, inhibitory_weights
 
 
-def generate_weights(input_neuron_count, hidden_neuron_count):
-    return concatenate_excitatory_and_inhibitory_with_generator_function(input_neuron_count, hidden_neuron_count, _generate_weights)
+def generate_weights(neuron_count):
+    return concatenate_excitatory_and_inhibitory_with_generator_function(neuron_count, _generate_weights)

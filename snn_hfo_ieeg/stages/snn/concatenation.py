@@ -1,4 +1,10 @@
+from typing import NamedTuple
 import numpy as np
+
+
+class NeuronCount(NamedTuple):
+    input: int
+    hidden: int
 
 
 def _is_odd(number):
@@ -19,15 +25,15 @@ def _concatenate_excitatory_and_inhibitory_for_input_pair(hidden_neuron_count, g
         second_input_to_second_half_of_hidden])
 
 
-def concatenate_excitatory_and_inhibitory_with_generator_function(input_neuron_count, hidden_neuron_count, generate_array_cb):
-    if _is_odd(input_neuron_count):
+def concatenate_excitatory_and_inhibitory_with_generator_function(neuron_count, generate_array_cb):
+    if _is_odd(neuron_count.input):
         raise ValueError(
-            f'input_neuron_count must be a positive, even number, but got: {input_neuron_count}')
-    if _is_odd(hidden_neuron_count):
+            f'input_neuron_count must be a positive, even number, but got: {neuron_count.input}')
+    if _is_odd(neuron_count.hidden):
         raise ValueError(
-            f'hidden_neuron_count must be a positive, even number, but got: {hidden_neuron_count}')
-    input_pair_count = input_neuron_count // 2
+            f'hidden_neuron_count must be a positive, even number, but got: {neuron_count.hidden}')
+    input_pair_count = neuron_count.input // 2
     weights = [_concatenate_excitatory_and_inhibitory_for_input_pair(_, generate_array_cb)
                for _
-               in [hidden_neuron_count] * input_pair_count]
+               in [neuron_count.hidden] * input_pair_count]
     return np.concatenate(weights)

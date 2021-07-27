@@ -1,9 +1,18 @@
+from typing import NamedTuple
 import scipy as sc
 import numpy as np
 
 # ========================================================================================
 # Threshold calculation based on the noise floor
 # ========================================================================================
+
+
+class SpikeTrains(NamedTuple):
+    '''
+    Up and down spike trains received by filtering a signal
+    '''
+    up: np.array
+    down: np.array
 
 
 def find_thresholds(signal, time, window, step_size, chosen_samples, scaling_factor):
@@ -81,31 +90,31 @@ def signal_to_spike_refractory(interpfact, time, amplitude, thr_up, thr_dn, refr
         else:
             i += 1
 
-    return spike_up, spike_dn
+    return SpikeTrains(up=spike_up,
+                       down=spike_dn)
 
 
 # ========================================================================================
 # List of spiketimes for the SNN input
 # ========================================================================================
-def concatenate_spikes(spikes_list):
+def concatenate_spikes(spikes):
     '''
     Get spikes per channel in a dictionary and concatenate them in one single vector with
     spike times and neuron ids.
-    :param spikes_list (dict): dict where the key is the channel name and contains a vector
-                            with spike times
+    :param spikes_list (list): list of sampled frequencies, where every frequency is a list of spike times
     :return all_spiketimes (array): vector of all spike times
     :return all_neuron_ids (array): vector of all neuron ids
     '''
     all_spiketimes = []
     all_neuron_ids = []
     channel_nr = 0
-    for key in spikes_list:
+    for spike in spikes:
         if channel_nr == 0:
-            all_spiketimes = spikes_list[key]
+            all_spiketimes = spike
             all_neuron_ids = np.ones_like(all_spiketimes) * channel_nr
             channel_nr += 1
         else:
-            new_spiketimes = spikes_list[key]
+            new_spiketimes = spike
             all_spiketimes = np.concatenate(
                 (all_spiketimes, new_spiketimes), axis=0)
             all_neuron_ids = np.concatenate((all_neuron_ids,

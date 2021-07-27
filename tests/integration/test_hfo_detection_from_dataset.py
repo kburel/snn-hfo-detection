@@ -1,8 +1,28 @@
 import os
 from pathlib import Path
 import pytest
-from run_test_snn_ieeg import run_hfo_detection_for_all_channels
+from snn_hfo_ieeg.stages.shared_config import Configuration, MeasurementMode
+from run_test_snn_ieeg import CustomOverrides, run_hfo_detection_for_all_channels
 from tests.utility import are_hfo_detections_equal
+
+EMPTY_CUSTOM_OVERRIDES = CustomOverrides(
+    duration=None,
+    channels=None
+)
+
+
+def _get_hfo_directory(dataset_name):
+    file_path = os.path.realpath(__file__)
+    parent_dir = Path(file_path).parent.absolute()
+    return os.path.join(parent_dir, 'data', dataset_name)
+
+
+def _generate_test_configuration(dataset_name):
+    return Configuration(
+        data_path=_get_hfo_directory(dataset_name),
+        measurement_mode=MeasurementMode.IEEG,
+        hidden_neuron_count=86,
+    )
 
 
 def _assert_dummy_hfo_is_empty(hfo_detection):
@@ -15,15 +35,11 @@ def _assert_dummy_hfo_is_empty(hfo_detection):
     assert are_hfo_detections_equal(expected_hfo_detection, hfo_detection)
 
 
-def _get_hfo_directory(dataset_name):
-    file_path = os.path.realpath(__file__)
-    parent_dir = Path(file_path).parent.absolute()
-    return os.path.join(parent_dir, 'data', dataset_name)
-
-
 def test_dummy_data():
-    data_path = _get_hfo_directory('dummy')
-    run_hfo_detection_for_all_channels(data_path, _assert_dummy_hfo_is_empty)
+    run_hfo_detection_for_all_channels(
+        configuration=_generate_test_configuration('dummy'),
+        custom_overrides=EMPTY_CUSTOM_OVERRIDES,
+        hfo_cb=_assert_dummy_hfo_is_empty)
 
 
 def _generate_add_detected_hfo_to_list_cb(list):
@@ -31,10 +47,11 @@ def _generate_add_detected_hfo_to_list_cb(list):
 
 
 def test_hfo_data():
-    data_path = _get_hfo_directory('hfo')
     detected_hfos = []
     run_hfo_detection_for_all_channels(
-        data_path, _generate_add_detected_hfo_to_list_cb(detected_hfos))
+        configuration=_generate_test_configuration('hfo'),
+        custom_overrides=EMPTY_CUSTOM_OVERRIDES,
+        hfo_cb=_generate_add_detected_hfo_to_list_cb(detected_hfos))
     assert len(detected_hfos) == 1
     hfo = detected_hfos[0]
     assert hfo['total_hfo'] == 1

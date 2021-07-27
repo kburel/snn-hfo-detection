@@ -38,5 +38,5 @@ def generate_taus(hidden_neuron_count):
     return excitatory_taus, inhibitory_taus
 
 
-def generate_concatenated_taus(input_neuron_count, hidden_neuron_count):
-    return concatenate_excitatory_and_inhibitory_with_generator_function(input_neuron_count, hidden_neuron_count, generate_taus)
+def generate_concatenated_taus(neuron_count):
+    return concatenate_excitatory_and_inhibitory_with_generator_function(neuron_count, generate_taus)
