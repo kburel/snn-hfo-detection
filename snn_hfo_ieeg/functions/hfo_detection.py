@@ -11,21 +11,16 @@ def detect_hfo(trial_duration, spike_monitor, spike_times, step_size, window_siz
     # Detect HFO
     # ==============================================================================
     assert step_size <= window_size
-    # to get same number of time steps for all trials independently of spiking behaviour
-    num_timesteps = int(np.ceil(trial_duration / step_size))
 
     # Prepare HFO signals
-    hfo_identificaiton_signal = np.zeros(spike_times.size)
+    hfo_identificaiton_signal = np.zeros(len(spike_times))
 
-    mfr = np.zeros([num_timesteps])
-    for interval_nr, interval_start in enumerate(np.arange(start=0, stop=trial_duration, step=step_size)):
+    for interval_start in np.arange(start=0, stop=trial_duration, step=step_size):
         interval = [interval_start, interval_start + window_size]
         start_time, end_time = interval
 
         index = np.where(np.logical_and(
             spike_monitor >= start_time, spike_monitor <= end_time))[0]
-        interval_duration = end_time - start_time
-        mfr[interval_nr] = np.asarray(index.size / interval_duration)
         if index.size != 0:
             index_time_vector = np.where(np.logical_and(spike_times >= start_time,
                                                         spike_times <= end_time))[0]
