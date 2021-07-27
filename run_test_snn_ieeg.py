@@ -1,4 +1,5 @@
 import argparse
+from typing import List, NamedTuple
 from snn_hfo_ieeg.stages.shared_config import Configuration, MeasurementMode
 from snn_hfo_ieeg.functions.filter import *
 from snn_hfo_ieeg.functions.dynapse_biases import *
@@ -8,12 +9,17 @@ from snn_hfo_ieeg.stages.all import run_hfo_detection
 from snn_hfo_ieeg.stages.loading.patient_data import load_patient_data, extract_channel_data
 
 
+class CustomOverrides(NamedTuple):
+    duration: float
+    channels: List[int]
+
+
 def _calculate_duration(signal_time):
     extra_simulation_time = 0.050
     return np.max(signal_time) + extra_simulation_time
 
 
-def run_hfo_detection_for_all_channels(configuration, custom_duration, hfo_cb):
+def run_hfo_detection_for_all_channels(configuration, custom_overrides, hfo_cb):
     # Select Data from a single patient
     patient = 1
     # interval
@@ -23,10 +29,13 @@ def run_hfo_detection_for_all_channels(configuration, custom_duration, hfo_cb):
         patient=patient,
         interval=current_interval,
         data_path=configuration.data_path)
-    duration = custom_duration if custom_duration is not None else _calculate_duration(
+    duration = custom_overrides.duration if custom_overrides.duration is not None else _calculate_duration(
         patient_data.signal_time)
 
     for channel in range(len(patient_data.wideband_signals)):
+        if custom_overrides.channels is not None and channel not in custom_overrides.channels:
+            continue
+
         channel_data = extract_channel_data(patient_data, channel)
 
         print(
@@ -58,6 +67,8 @@ def _parse_arguments():
                         help=f'How many neurons should be in the hidden layer. Default is {default_hidden_neurons}')
     parser.add_argument('--duration', type=float, default=None,
                         help='How many seconds of the dataset should be processed. By default, the entire dataset will be processed')
+    parser.add_argument('--channels', type=float, default=None, nargs='*',
+                        help='Which channels of the dataset should be processed. By default, all channels will be processed')
     parser.add_argument('mode', type=str,
                         help='Which measurement mode was used to capture the data. Possible values: iEEG, eCoG or scalp')
     return parser.parse_args()
@@ -71,10 +82,17 @@ def _convert_arguments_to_config(arguments):
     )
 
 
+def _convert_arguments_to_custom_overrides(arguments):
+    return CustomOverrides(
+        duration=arguments.duration,
+        channels=arguments.channels)
+
+
 if __name__ == '__main__':
     arguments = _parse_arguments()
     configuration = _convert_arguments_to_config(arguments)
+    custom_overrides = _convert_arguments_to_custom_overrides(arguments)
     run_hfo_detection_for_all_channels(
         configuration=configuration,
-        custom_duration=arguments.duration,
+        custom_overrides=custom_overrides,
         hfo_cb=lambda _: {})

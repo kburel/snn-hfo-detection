@@ -2,8 +2,13 @@ import os
 from pathlib import Path
 import pytest
 from snn_hfo_ieeg.stages.shared_config import Configuration, MeasurementMode
-from run_test_snn_ieeg import run_hfo_detection_for_all_channels
+from run_test_snn_ieeg import CustomOverrides, run_hfo_detection_for_all_channels
 from tests.utility import are_hfo_detections_equal
+
+EMPTY_CUSTOM_OVERRIDES = CustomOverrides(
+    duration=None,
+    channels=None
+)
 
 
 def _get_hfo_directory(dataset_name):
@@ -33,7 +38,7 @@ def _assert_dummy_hfo_is_empty(hfo_detection):
 def test_dummy_data():
     run_hfo_detection_for_all_channels(
         configuration=_generate_test_configuration('dummy'),
-        custom_duration=None,
+        custom_duration=EMPTY_CUSTOM_OVERRIDES,
         hfo_cb=_assert_dummy_hfo_is_empty)
 
 
@@ -45,7 +50,7 @@ def test_hfo_data():
     detected_hfos = []
     run_hfo_detection_for_all_channels(
         configuration=_generate_test_configuration('hfo'),
-        custom_duration=None,
+        custom_duration=EMPTY_CUSTOM_OVERRIDES,
         hfo_cb=_generate_add_detected_hfo_to_list_cb(detected_hfos))
     assert len(detected_hfos) == 1
     hfo = detected_hfos[0]
