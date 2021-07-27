@@ -1,5 +1,4 @@
 import numpy as np
-from typing import NamedTuple
 
 # ========================================================================================
 # Account for changes in a binary signal
@@ -14,7 +13,7 @@ def detect_hfo(duration, spike_times, signal_times, step_size, window_size):
     assert step_size <= window_size
 
     # Prepare HFO signals
-    binary_hfo_signal = np.zeros(len(signal_times))
+    binary_hfo_signal = np.zeros(len(signal_times)).astype(int)
 
     for interval_start in np.arange(start=0, stop=duration, step=step_size):
         interval = [interval_start, interval_start + window_size]
@@ -56,5 +55,4 @@ def detect_hfo(duration, spike_times, signal_times, step_size, window_size):
     hfo_detection['time'] = signal_times
     hfo_detection['signal'] = binary_hfo_signal
     hfo_detection['periods_hfo'] = periods_of_hfo
-
     return hfo_detection
