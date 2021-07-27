@@ -38,7 +38,7 @@ def _assert_dummy_hfo_is_empty(hfo_detection):
 def test_dummy_data():
     run_hfo_detection_for_all_channels(
         configuration=_generate_test_configuration('dummy'),
-        custom_duration=EMPTY_CUSTOM_OVERRIDES,
+        custom_overrides=EMPTY_CUSTOM_OVERRIDES,
         hfo_cb=_assert_dummy_hfo_is_empty)
 
 
@@ -50,7 +50,7 @@ def test_hfo_data():
     detected_hfos = []
     run_hfo_detection_for_all_channels(
         configuration=_generate_test_configuration('hfo'),
-        custom_duration=EMPTY_CUSTOM_OVERRIDES,
+        custom_overrides=EMPTY_CUSTOM_OVERRIDES,
         hfo_cb=_generate_add_detected_hfo_to_list_cb(detected_hfos))
     assert len(detected_hfos) == 1
     hfo = detected_hfos[0]
