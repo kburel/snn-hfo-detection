@@ -70,7 +70,8 @@ def _parse_arguments():
     parser.add_argument('--channels', type=float, default=None, nargs='*',
                         help='Which channels of the dataset should be processed. By default, all channels will be processed')
     parser.add_argument('mode', type=str,
-                        help='Which measurement mode was used to capture the data. Possible values: iEEG, eCoG or scalp')
+                        help='Which measurement mode was used to capture the data. Possible values: iEEG, eCoG or scalp.\
+                        Note that eCoG will use signals in the fast ripple channel (250-500 Hz), scalp will use the ripple channel (80-250 Hz) and iEEG will use both')
     return parser.parse_args()
 
 
