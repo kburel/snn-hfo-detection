@@ -15,7 +15,6 @@ def detect_hfo(duration, spike_times, signal_times, step_size, window_size):
 
     # Prepare HFO signals
     binary_hfo_signal = np.zeros(len(signal_times))
-    hfo_identification_times = []
 
     for interval_start in np.arange(start=0, stop=duration, step=step_size):
         interval = [interval_start, interval_start + window_size]
@@ -28,13 +27,10 @@ def detect_hfo(duration, spike_times, signal_times, step_size, window_size):
                                                         signal_times <= end_time))[0]
 
             binary_hfo_signal[index_time_vector] = 1
-            hfo_identification_times = np.array(
-                signal_times)[index_time_vector]
 
     signal_rise = []
     signal_fall = []
     for i in range(binary_hfo_signal.size):
-        print(i)
         if i == 0 and binary_hfo_signal[0] == 1.0:
             signal_rise.append(i)
         if i > 0 and binary_hfo_signal[i] == 1 and binary_hfo_signal[i-1] == 0:
@@ -57,7 +53,7 @@ def detect_hfo(duration, spike_times, signal_times, step_size, window_size):
 
     hfo_detection = {}
     hfo_detection['total_hfo'] = signal_rise.size
-    hfo_detection['time'] = hfo_identification_times
+    hfo_detection['time'] = signal_times
     hfo_detection['signal'] = binary_hfo_signal
     hfo_detection['periods_hfo'] = periods_of_hfo
 
