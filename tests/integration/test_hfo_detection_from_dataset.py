@@ -65,4 +65,4 @@ def test_hfo_data():
     assert hfo.total_amount == 1
     assert hfo.frequency == pytest.approx(0.019980219582613215)
     assert hfo.plotting_data.periods.start == [pytest.approx(0)]
-    assert hfo.plotting_data.periods.stop == [pytest.approx(0.06)]
+    assert hfo.plotting_data.periods.stop == [pytest.approx(0.0605)]
