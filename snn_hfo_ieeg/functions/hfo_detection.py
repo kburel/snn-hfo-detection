@@ -14,9 +14,8 @@ class HfoPeriod(NamedTuple):
 def get_binary_hfos(duration, spike_times, signal_times, step_size, window_size):
     binary_hfo_signal = np.zeros(len(signal_times)).astype(int)
 
-    for interval_start in np.arange(start=0, stop=duration, step=step_size):
-        interval = [interval_start, interval_start + window_size]
-        start_time, end_time = interval
+    for start_time in np.arange(start=0, stop=duration, step=step_size):
+        end_time = start_time + window_size
 
         index = np.where(np.logical_and(
             spike_times >= start_time, spike_times <= end_time))[0]
