@@ -9,7 +9,6 @@ HFO_DETECTION_WINDOW_SIZE = 0.05
 
 def run_hfo_detection(channel_data, duration, configuration):
     filtered_spikes = filter_stage(channel_data, configuration)
-
     spike_monitor_hidden = snn_stage(
         filtered_spikes=filtered_spikes,
         duration=duration,

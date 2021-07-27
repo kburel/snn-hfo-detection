@@ -35,11 +35,11 @@ def test_signal_to_spike_refractory(interpfact, time, amplitude, thr_up, thr_dn,
 
 
 @pytest.mark.parametrize(
-    'spikes_list, expected_concatenation',
-    [({'0': np.array([1, 2, 3])}, ([1, 2, 3], [0, 0, 0])),
-     ({'0': np.array([1, 2, 3]), '1': np.array([4, 5, 6])}, ([1, 2, 3, 4, 5, 6], [0, 0, 0, 1, 1, 1]))])
-def test_concatenate_spikes(spikes_list, expected_concatenation):
-    spike_times, neuron_ids = concatenate_spikes(spikes_list)
+    'spikes, expected_concatenation',
+    [([np.array([1, 2, 3])], ([1, 2, 3], [0, 0, 0])),
+     ([np.array([1, 2, 3]), np.array([4, 5, 6])], ([1, 2, 3, 4, 5, 6], [0, 0, 0, 1, 1, 1]))])
+def test_concatenate_spikes(spikes, expected_concatenation):
+    spike_times, neuron_ids = concatenate_spikes(spikes)
     expected_spike_times, expected_neuron_ids = expected_concatenation
     assert are_lists_approximately_equal(spike_times, expected_spike_times)
     assert are_lists_approximately_equal(neuron_ids, expected_neuron_ids)

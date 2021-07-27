@@ -14,14 +14,14 @@ from snn_hfo_ieeg.stages.shared_config import MeasurementMode
 
 
 def _concatenate_filtered_spikes(filtered_spikes):
-    spikes_list = {}
+    spikes = []
     if filtered_spikes.ripple is not None:
-        spikes_list['r_up'] = filtered_spikes.ripple.up
-        spikes_list['r_dn'] = filtered_spikes.ripple.down
+        spikes.append(filtered_spikes.ripple.up)
+        spikes.append(filtered_spikes.ripple.down)
     if filtered_spikes.fast_ripple is not None:
-        spikes_list['fr_up'] = filtered_spikes.fast_ripple.up,
-        spikes_list['fr_dn'] = filtered_spikes.fast_ripple.down
-    return concatenate_spikes(spikes_list)
+        spikes.append(filtered_spikes.fast_ripple.up)
+        spikes.append(filtered_spikes.fast_ripple.down)
+    return concatenate_spikes(spikes)
 
 
 def _measurement_mode_to_input_count(measurement_mode):
