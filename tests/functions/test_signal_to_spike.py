@@ -19,19 +19,25 @@ def test_find_thresholds(signal, time, window, step_size, chosen_samples, scalin
 
 
 @pytest.mark.parametrize(
-    'interpfact, time, amplitude, thr_up, thr_dn, refractory_period, expected_thresholds',
-    [(1, [0, 1], [1, 0], 3, 0.5, 0.01, ([], [])),
-     (10, [0, 1, 2], [0, 10, -20], 3, 0.5, 0.01, ([0.3157894736842105, 0.631578947368421, 0.9473684210526315], [1.0526315789473684, 1.1578947368421053,
-                                                                                                                1.263157894736842, 1.3684210526315788, 1.4736842105263157, 1.5789473684210527, 1.6842105263157894, 1.789473684210526, 1.894736842105263, 2.0])),
-     (100, np.arange(0, 4, 0.01), np.arange(-20, 20, 0.1), 3, -5, 0.6, ([0.6015075376884422,
-                                                                         1.2030150753768845, 1.8045226130653267, 2.406030150753769, 3.007537688442211, 3.6090452261306534], [0.0]))]
+    'interpfact, time, amplitude, thr_up, thr_dn, refractory_period, expected_spike_trains',
+    [(1, [0, 1], [1, 0], 3, 0.5, 0.01, SpikeTrains(up=[], down=[])),
+     (10, [0, 1, 2], [0, 10, -20], 3, 0.5, 0.01, SpikeTrains(up=[0.3157894736842105, 0.631578947368421, 0.9473684210526315],
+                                                             down=[1.0526315789473684, 1.1578947368421053,
+                                                                   1.263157894736842, 1.3684210526315788, 1.4736842105263157,
+                                                                   1.5789473684210527, 1.6842105263157894, 1.789473684210526,
+                                                                   1.894736842105263, 2.0])),
+     (100, np.arange(0, 4, 0.01), np.arange(-20, 20, 0.1), 3, -5, 0.6, SpikeTrains(up=[0.6015075376884422, 1.2030150753768845,
+                                                                                       1.8045226130653267, 2.406030150753769,
+                                                                                       3.007537688442211, 3.6090452261306534],
+                                                                                   down=[0.0]))]
 )
-def test_signal_to_spike_refractory(interpfact, time, amplitude, thr_up, thr_dn, refractory_period, expected_thresholds):
-    spike_up, spike_dn = signal_to_spike_refractory(
+def test_signal_to_spike_refractory(interpfact, time, amplitude, thr_up, thr_dn, refractory_period, expected_spike_trains):
+    spike_trains = signal_to_spike_refractory(
         interpfact, time, amplitude, thr_up, thr_dn, refractory_period)
-    expected_spike_up, expected_spike_dn = expected_thresholds
-    assert are_lists_approximately_equal(spike_up, expected_spike_up)
-    assert are_lists_approximately_equal(spike_dn, expected_spike_dn)
+    assert are_lists_approximately_equal(
+        spike_trains.up, expected_spike_trains.up)
+    assert are_lists_approximately_equal(
+        spike_trains.down, expected_spike_trains.down)
 
 
 @pytest.mark.parametrize(

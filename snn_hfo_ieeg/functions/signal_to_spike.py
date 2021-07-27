@@ -1,9 +1,18 @@
+from typing import NamedTuple
 import scipy as sc
 import numpy as np
 
 # ========================================================================================
 # Threshold calculation based on the noise floor
 # ========================================================================================
+
+
+class SpikeTrains(NamedTuple):
+    '''
+    Up and down spike trains received by filtering a signal
+    '''
+    up: np.array
+    down: np.array
 
 
 def find_thresholds(signal, time, window, step_size, chosen_samples, scaling_factor):
@@ -81,7 +90,8 @@ def signal_to_spike_refractory(interpfact, time, amplitude, thr_up, thr_dn, refr
         else:
             i += 1
 
-    return spike_up, spike_dn
+    return SpikeTrains(up=spike_up,
+                       down=spike_dn)
 
 
 # ========================================================================================
