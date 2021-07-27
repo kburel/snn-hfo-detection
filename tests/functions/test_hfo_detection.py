@@ -6,13 +6,13 @@ from tests.utility import *
 @pytest.mark.parametrize(
     'duration, spike_monitor, original_time_vector, step_size, window_size, expected_hfo_detection',
     [(0, [0], np.array([0]), 0.1, 0.1, {'total_hfo': 0,
-                                        'time': [0], 'signal': [0], 'periods_hfo': [0, 0]}),
+                                        'time': [0], 'signal': [0], 'periods_hfo': [[], []]}),
      (1, [0.5], np.array([0.5]), 0.1, 0.5, {'total_hfo': 1,
-                                            'time': [0.5], 'signal': [1], 'periods_hfo': [0.5, 0.5]}),
+                                            'time': [0.5], 'signal': [1], 'periods_hfo': [[0.5], []]}),
      (-1, [-0.5], np.array([-0.5]), -0.1, -0.05, {'total_hfo': 0,
-                                                  'time': [-0.5], 'signal': [0], 'periods_hfo': [0, 0]}),
+                                                  'time': [-0.5], 'signal': [0], 'periods_hfo': [[], []]}),
      (0.001, np.arange(0, 300, 5e-4), [0.2, 0.3], 0.01, 0.05, {'total_hfo': 0,
-                                                               'time': [0.2, 0.3], 'signal': [0, 0], 'periods_hfo': [0, 0]})]
+                                                               'time': [0.2, 0.3], 'signal': [0, 0], 'periods_hfo': [[], []]})]
 )
 def test_hfo_detection(duration, spike_monitor, original_time_vector, step_size, window_size, expected_hfo_detection):
     hfo_detection = detect_hfo(duration, spike_monitor,

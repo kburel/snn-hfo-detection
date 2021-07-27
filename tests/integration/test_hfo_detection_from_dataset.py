@@ -1,5 +1,6 @@
 import os
 from pathlib import Path
+from snn_hfo_ieeg.functions.hfo_detection import HfoPeriod
 import pytest
 from snn_hfo_ieeg.stages.shared_config import Configuration, MeasurementMode
 from run_test_snn_ieeg import CustomOverrides, run_hfo_detection_for_all_channels
@@ -31,7 +32,7 @@ def _assert_dummy_hfo_is_empty(hfo_detection):
                                0.002, 0.0025, 0.003, 0.0035,
                                0.004, 0.0045],
                               'signal': [0., 0., 0., 0., 0., 0., 0., 0., 0., 0.],
-                              'periods_hfo': [0, 0]}
+                              'periods_hfo': [[], []]}
     assert are_hfo_detections_equal(expected_hfo_detection, hfo_detection)
 
 

@@ -1,12 +1,36 @@
 import numpy as np
+from typing import NamedTuple
 
 # ========================================================================================
 # Account for changes in a binary signal
 # ========================================================================================
 
 
+class HfoPeriod(NamedTuple):
+    start: float
+    stop: float
+
+
+def find_periods(signals, times):
+    periods = []
+    for signal, time in zip(signals, times):
+        is_last_period_finished = len(
+            periods) == 0 or periods[-1].stop is not None
+
+        if signal == 0 and not is_last_period_finished:
+            periods[-1] = HfoPeriod(start=periods[-1].start, stop=time)
+        if signal == 1 and is_last_period_finished:
+            periods.append(HfoPeriod(start=time, stop=None))
+    return periods
+
+
+def _flatten_periods(periods):
+    start = [period.start for period in periods]
+    stop = [period.stop for period in periods if period.stop is not None]
+    return [start, stop]
+
+
 def detect_hfo(duration, spike_times, signal_times, step_size, window_size):
-    periods_of_hfo = np.array([[0, 0]])
     # ==============================================================================
     # Detect HFO
     # ==============================================================================
@@ -27,32 +51,12 @@ def detect_hfo(duration, spike_times, signal_times, step_size, window_size):
 
             binary_hfo_signal[index_time_vector] = 1
 
-    signal_rise = []
-    signal_fall = []
-    for i in range(binary_hfo_signal.size):
-        if i == 0 and binary_hfo_signal[0] == 1.0:
-            signal_rise.append(i)
-        if i > 0 and binary_hfo_signal[i] == 1 and binary_hfo_signal[i-1] == 0:
-            signal_rise.append(i)
-        elif binary_hfo_signal[i] == 1 and (i + 1 == binary_hfo_signal.size or binary_hfo_signal[i+1] == 0):
-            signal_fall.append(i)
-        if i == binary_hfo_signal.size-2 and binary_hfo_signal[i] == 1:
-            signal_fall.append(i)
-
-    signal_rise = np.asarray(signal_rise)
-    signal_fall = np.asarray(signal_fall)
-
-    if signal_rise.size != 0:
-        start_period_hfo = signal_times[signal_rise]
-        print(signal_fall)
-        stop_period_hfo = signal_times[signal_fall]
-        periods_of_hfo = np.array([start_period_hfo, stop_period_hfo])
-    else:
-        periods_of_hfo = np.array([0, 0])
+    periods = find_periods(binary_hfo_signal, signal_times)
+    flat_periods = _flatten_periods(periods)
 
     hfo_detection = {}
-    hfo_detection['total_hfo'] = signal_rise.size
+    hfo_detection['total_hfo'] = len(periods)
     hfo_detection['time'] = signal_times
     hfo_detection['signal'] = binary_hfo_signal
-    hfo_detection['periods_hfo'] = periods_of_hfo
+    hfo_detection['periods_hfo'] = flat_periods
     return hfo_detection
