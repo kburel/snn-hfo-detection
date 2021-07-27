@@ -1,5 +1,8 @@
 import os
 from pathlib import Path
+
+from scipy.signal.spectral import periodogram
+from snn_hfo_ieeg.functions.hfo_detection import HfoDetection, Periods, PlottingData
 import pytest
 from snn_hfo_ieeg.stages.shared_config import Configuration, MeasurementMode
 from run_test_snn_ieeg import CustomOverrides, run_hfo_detection_for_all_channels
@@ -26,12 +29,19 @@ def _generate_test_configuration(dataset_name):
 
 
 def _assert_dummy_hfo_is_empty(hfo_detection):
-    expected_hfo_detection = {'total_hfo': 0, 'time':
-                              [0., 0.0005, 0.001, 0.0015,
-                               0.002, 0.0025, 0.003, 0.0035,
-                               0.004, 0.0045],
-                              'signal': [0., 0., 0., 0., 0., 0., 0., 0., 0., 0.],
-                              'periods_hfo': [[], []]}
+    expected_hfo_detection = HfoDetection(
+        total_amount=0,
+        frequency=0,
+        plotting_data=PlottingData(
+            detections=[0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+            analyzed_times=[0., 0.0005, 0.001, 0.0015,
+                            0.002, 0.0025, 0.003, 0.0035,
+                            0.004, 0.0045],
+            periods=Periods(
+                start=[],
+                stop=[]
+            )
+        ))
     assert are_hfo_detections_equal(expected_hfo_detection, hfo_detection)
 
 
@@ -43,7 +53,7 @@ def test_dummy_data():
 
 
 def _generate_add_detected_hfo_to_list_cb(list):
-    return lambda hfo_detection: list.append(hfo_detection) if hfo_detection['total_hfo'] != 0 else None
+    return lambda hfo_detection: list.append(hfo_detection) if hfo_detection.total_amount != 0 else None
 
 
 def test_hfo_data():
@@ -54,6 +64,7 @@ def test_hfo_data():
         hfo_cb=_generate_add_detected_hfo_to_list_cb(detected_hfos))
     assert len(detected_hfos) == 1
     hfo = detected_hfos[0]
-    assert hfo['total_hfo'] == 1
-    assert hfo['periods_hfo'][0] == [pytest.approx(0)]
-    assert hfo['periods_hfo'][1] == [pytest.approx(0.06)]
+    assert hfo.total_amount == 1
+    assert hfo.frequency == pytest.approx(1)
+    assert hfo.plotting_data.periods.start == [pytest.approx(0)]
+    assert hfo.plotting_data.periods.stop == [pytest.approx(0.06)]
