@@ -5,7 +5,7 @@ import numpy as np
 # ========================================================================================
 
 
-def detect_hfo(trial_duration, spike_monitor, signal_times, step_size, window_size):
+def detect_hfo(duration, spike_times, signal_times, step_size, window_size):
     periods_of_hfo = np.array([[0, 0]])
     # ==============================================================================
     # Detect HFO
@@ -15,12 +15,12 @@ def detect_hfo(trial_duration, spike_monitor, signal_times, step_size, window_si
     # Prepare HFO signals
     hfo_identificaiton_signal = np.zeros(len(signal_times))
 
-    for interval_start in np.arange(start=0, stop=trial_duration, step=step_size):
+    for interval_start in np.arange(start=0, stop=duration, step=step_size):
         interval = [interval_start, interval_start + window_size]
         start_time, end_time = interval
 
         index = np.where(np.logical_and(
-            spike_monitor >= start_time, spike_monitor <= end_time))[0]
+            spike_times >= start_time, spike_times <= end_time))[0]
         if index.size != 0:
             index_time_vector = np.where(np.logical_and(signal_times >= start_time,
                                                         signal_times <= end_time))[0]
