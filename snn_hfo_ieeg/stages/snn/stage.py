@@ -68,7 +68,7 @@ def _create_synapses(input_layer, hidden_layer, model_paths, neuron_counts):
 
     synapses.weight = generate_weights(neuron_counts)
     taus = generate_concatenated_taus(neuron_counts)
-    synapses.I_tau = get_current(taus*1e-3, True) * amp
+    synapses.I_tau = get_current(taus*1e-3) * amp
 
     return synapses
 
