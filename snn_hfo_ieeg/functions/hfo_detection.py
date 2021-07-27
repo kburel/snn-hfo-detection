@@ -6,24 +6,31 @@ import numpy as np
 # ========================================================================================
 
 
-class HfoPeriod(NamedTuple):
+class Window(NamedTuple):
     start: float
     stop: float
+
+
+def _did_snn_find_hfo(spike_times, window):
+    return np.any(
+        (spike_times >= window.start) & (spike_times <= window.end))
+
+
+def _get_time_indices_in_window(signal_times, window):
+    return np.where(
+        (signal_times >= window.start) & (signal_times <= window.end))
 
 
 def get_binary_hfos(duration, spike_times, signal_times, step_size, window_size):
     binary_hfo_signal = np.zeros(len(signal_times)).astype(int)
 
     for start_time in np.arange(start=0, stop=duration, step=step_size):
-        end_time = start_time + window_size
+        window = Window(start=start_time, end=start_time + window_size)
 
-        are_spike_times_in_window = np.any(
-            (spike_times >= start_time) & (spike_times <= end_time))
-        if are_spike_times_in_window:
-            index_time_vector = np.where(
-                (signal_times >= start_time) & (signal_times <= end_time))
-
-            binary_hfo_signal[index_time_vector] = 1
+        if _did_snn_find_hfo(spike_times, window):
+            hfo_indices = _get_time_indices_in_window(
+                signal_times, window)
+            binary_hfo_signal[hfo_indices] = 1
     return binary_hfo_signal
 
 
@@ -34,9 +41,9 @@ def find_periods(signals, times):
             periods) == 0 or periods[-1].stop is not None
 
         if signal == 0 and not is_last_period_finished:
-            periods[-1] = HfoPeriod(start=periods[-1].start, stop=time)
+            periods[-1] = Window(start=periods[-1].start, stop=time)
         if signal == 1 and is_last_period_finished:
-            periods.append(HfoPeriod(start=time, stop=None))
+            periods.append(Window(start=time, stop=None))
     return periods
 
 
