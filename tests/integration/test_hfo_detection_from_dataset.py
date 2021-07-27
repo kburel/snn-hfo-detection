@@ -1,6 +1,5 @@
 import os
 from pathlib import Path
-from snn_hfo_ieeg.functions.hfo_detection import HfoPeriod
 import pytest
 from snn_hfo_ieeg.stages.shared_config import Configuration, MeasurementMode
 from run_test_snn_ieeg import CustomOverrides, run_hfo_detection_for_all_channels

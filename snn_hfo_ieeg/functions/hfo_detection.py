@@ -17,11 +17,11 @@ def get_binary_hfos(duration, spike_times, signal_times, step_size, window_size)
     for start_time in np.arange(start=0, stop=duration, step=step_size):
         end_time = start_time + window_size
 
-        index = np.where(np.logical_and(
-            spike_times >= start_time, spike_times <= end_time))[0]
-        if index.size != 0:
-            index_time_vector = np.where(np.logical_and(signal_times >= start_time,
-                                                        signal_times <= end_time))[0]
+        are_spike_times_in_window = np.any(
+            (spike_times >= start_time) & (spike_times <= end_time))
+        if are_spike_times_in_window:
+            index_time_vector = np.where(
+                (signal_times >= start_time) & (signal_times <= end_time))
 
             binary_hfo_signal[index_time_vector] = 1
     return binary_hfo_signal
@@ -54,7 +54,6 @@ def detect_hfo(duration, spike_times, signal_times, step_size, window_size):
 
     binary_hfo_signal = get_binary_hfos(
         duration, spike_times, signal_times, step_size, window_size)
-
     periods = find_periods(binary_hfo_signal, signal_times)
     flat_periods = _flatten_periods(periods)
 
