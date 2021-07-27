@@ -87,6 +87,14 @@ def get_binary_hfos(duration, spike_times, signal_times, step_size, window_size)
 
 
 def find_periods(signals, times):
+    if len(signals) == 0:
+        raise ValueError('signals is not allowed to be empty, but was')
+    if len(times) == 0:
+        raise ValueError('times is not allowed to be empty, but was')
+    if len(signals) != len(times):
+        raise ValueError(
+            f'signals and times need to have corresponding indices, but signals has length {len(signals)} while times has length {len(times)}')
+
     periods = []
     for signal, time in zip(signals, times):
         is_last_period_finished = len(
@@ -96,6 +104,8 @@ def find_periods(signals, times):
             periods[-1] = Window(start=periods[-1].start, stop=time)
         if signal == 1 and is_last_period_finished:
             periods.append(Window(start=time, stop=None))
+    if len(periods) != 0 and periods[-1].stop is None:
+        periods[-1] = Window(periods[-1].start, times[-1])
     return periods
 
 
