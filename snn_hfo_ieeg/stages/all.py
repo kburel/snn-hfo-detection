@@ -14,9 +14,9 @@ def run_hfo_detection(channel_data, duration, configuration):
         duration=duration,
         configuration=configuration)
 
-    return detect_hfo(trial_duration=duration,
-                      spike_monitor=(
+    return detect_hfo(duration=duration,
+                      spike_times=(
                           spike_monitor_hidden.t/second),
-                      original_time_vector=channel_data.signal_time,
+                      signal_times=channel_data.signal_time,
                       step_size=HFO_DETECTION_STEP_SIZE,
                       window_size=HFO_DETECTION_WINDOW_SIZE)

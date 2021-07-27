@@ -1,3 +1,4 @@
+from typing import NamedTuple
 import numpy as np
 
 # ========================================================================================
@@ -5,69 +6,134 @@ import numpy as np
 # ========================================================================================
 
 
-def detect_hfo(trial_duration, spike_monitor, original_time_vector, step_size, window_size):
-    periods_of_hfo = np.array([[0, 0]])
-    # ==============================================================================
-    # Detect HFO
-    # ==============================================================================
-    assert step_size <= window_size
-    # to get same number of time steps for all trials independently of spiking behaviour
-    num_timesteps = int(np.ceil(trial_duration / step_size))
+class Window(NamedTuple):
+    start: float
+    stop: float
 
-    # Prepare HFO signals
-    hfo_identificaiton_time = np.copy(original_time_vector)
-    hfo_identificaiton_signal = np.zeros(hfo_identificaiton_time.size)
 
-    mfr = np.zeros([num_timesteps])
-    for interval_nr, interval_start in enumerate(np.arange(start=0, stop=trial_duration, step=step_size)):
-        interval = [interval_start, interval_start + window_size]
-        start_time, end_time = interval
+class Periods(NamedTuple):
+    '''
+    Periods in which HFOs were detected. Used for plotting.
 
-        index = np.where(np.logical_and(
-            spike_monitor >= start_time, spike_monitor <= end_time))[0]
-        interval_duration = end_time - start_time
-        mfr[interval_nr] = np.asarray(index.size / interval_duration)
-        if index.size != 0:
-            index_time_vector = np.where(np.logical_and(original_time_vector >= start_time,
-                                                        original_time_vector <= end_time))[0]
+    Parameters
+    -----
+    start : np.array
+        List of times where an HFO started.
+    start : np.array
+        List of times where an HFO stopped.
+    '''
+    start: np.array
+    stop: np.array
 
-            hfo_identificaiton_signal[index_time_vector] = 1
 
-    mfr_ones = np.where(mfr != 0)
-    mfr_binary = np.zeros(mfr.size)
-    mfr_binary[mfr_ones] = 1
+class PlottingData(NamedTuple):
+    '''
+    Convenience data that can be used for plotting.
 
-    signal_rise = []
-    signal_fall = []
+    Parameters
+    -----
+    detections : np.array
+        Boolean list of HFO detection. The indices correspond to analyzed_times.
+    analyzed_times : np.array
+        List of all analyzed timestamps.
+    periods : Periods
+        The start and end times in which HFOs were detected.
+    '''
+    detections: np.array
+    analyzed_times: np.array
+    periods: Periods
 
-    binary_signal = hfo_identificaiton_signal
 
-    for i in range(binary_signal.size-1):
-        if i == 0 and binary_signal[0] == 1:
-            signal_rise.append(i)
-        if i > 0 and binary_signal[i] == 1 and binary_signal[i-1] == 0:
-            signal_rise.append(i)
-        elif binary_signal[i] == 1 and binary_signal[i+1] == 0:
-            signal_fall.append(i)
-        if i == binary_signal.size-2 and binary_signal[i] == 1:
-            signal_fall.append(i)
+class HfoDetection(NamedTuple):
+    '''
+    The result of the SNNs HFO detection
 
-    signal_rise = np.asarray(signal_rise)
-    signal_fall = np.asarray(signal_fall)
+    Parameters
+    -----
+    frequency : float
+        The measured frequency of HFOs per second. This is the most important value.
+    total_amount : int
+        Total amount of detected HFOs over the entire dataset.
+    plotting_data : PlottingData
+        Convenience data that a user can use for their plotting.
+    '''
+    frequency: float
+    total_amount: int
+    plotting_data: PlottingData
 
-    identified_hfo = signal_rise.size
 
-    if signal_rise.size != 0:
-        start_period_hfo = hfo_identificaiton_time[signal_rise]
-        stop_period_hfo = hfo_identificaiton_time[signal_fall]
-        periods_of_hfo = np.array([start_period_hfo, stop_period_hfo])
-    else:
-        periods_of_hfo = np.array([0, 0])
+def _did_snn_find_hfo(spike_times, window):
+    return np.any(
+        (spike_times >= window.start) & (spike_times <= window.stop))
 
-    hfo_detection = {}
-    hfo_detection['total_hfo'] = identified_hfo
-    hfo_detection['time'] = hfo_identificaiton_time
-    hfo_detection['signal'] = hfo_identificaiton_signal
-    hfo_detection['periods_hfo'] = periods_of_hfo
 
-    return hfo_detection
+def _get_time_indices_in_window(signal_times, window):
+    return np.where(
+        (signal_times >= window.start) & (signal_times <= window.stop))
+
+
+def get_binary_hfos(duration, spike_times, signal_times, step_size, window_size):
+    binary_hfo_signal = np.zeros(len(signal_times)).astype(int)
+
+    for start_time in np.arange(start=0, stop=duration, step=step_size):
+        window = Window(start=start_time,
+                        stop=(start_time + window_size))
+
+        if _did_snn_find_hfo(spike_times, window):
+            hfo_indices = _get_time_indices_in_window(
+                signal_times, window)
+            binary_hfo_signal[hfo_indices] = 1
+    return binary_hfo_signal
+
+
+def _find_periods(signals, times):
+    if len(signals) == 0:
+        raise ValueError('signals is not allowed to be empty, but was')
+    if len(times) == 0:
+        raise ValueError('times is not allowed to be empty, but was')
+    if len(signals) != len(times):
+        raise ValueError(
+            f'signals and times need to have corresponding indices, but signals has length {len(signals)} while times has length {len(times)}')
+
+    periods = []
+    for signal, time in zip(signals, times):
+        is_last_period_finished = len(
+            periods) == 0 or periods[-1].stop is not None
+
+        if signal == 0 and not is_last_period_finished:
+            periods[-1] = Window(start=periods[-1].start, stop=time)
+        if signal == 1 and is_last_period_finished:
+            periods.append(Window(start=time, stop=None))
+    if len(periods) != 0 and periods[-1].stop is None:
+        periods[-1] = Window(periods[-1].start, times[-1])
+    return periods
+
+
+def _flatten_periods(periods):
+    start = [period.start for period in periods]
+    stop = [period.stop for period in periods if period.stop is not None]
+    return Periods(start, stop)
+
+
+def detect_hfo(duration, spike_times, signal_times, step_size, window_size):
+    if step_size > window_size:
+        raise ValueError(
+            f'step_size needs to be at most windows_size, but got: step_size={step_size}, window_size={step_size}')
+    if duration <= 0:
+        raise ValueError(
+            f'Tried to detect an HFO for a dataset with a duration that under or equal to zero. Got duration: {duration}')
+
+    binary_hfo_signal = get_binary_hfos(
+        duration, spike_times, signal_times, step_size, window_size)
+    periods = _find_periods(binary_hfo_signal, signal_times)
+    flat_periods = _flatten_periods(periods)
+
+    return HfoDetection(
+        total_amount=len(periods),
+        frequency=len(periods)/duration,
+        plotting_data=PlottingData(
+            detections=binary_hfo_signal,
+            analyzed_times=signal_times,
+            periods=flat_periods
+        )
+    )

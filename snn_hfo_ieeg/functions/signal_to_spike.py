@@ -36,8 +36,7 @@ def find_thresholds(signal, time, window, step_size, chosen_samples, scaling_fac
     for interval_nr, interval_start in enumerate(np.arange(start=0, stop=trial_duration, step=step_size)):
         interval = [interval_start, interval_start + window_size]
         start_time, end_time = interval
-        index = np.where(np.logical_and(
-            time >= start_time, time <= end_time))[0]
+        index = np.where((time >= start_time) & (time <= end_time))
         max_amplitude = np.max(signal[index])
         min_amplitude = np.min(signal[index])
         max_min_amplitude[interval_nr, 0] = max_amplitude
