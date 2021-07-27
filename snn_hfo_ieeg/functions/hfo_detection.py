@@ -1,5 +1,6 @@
 from typing import NamedTuple
 import numpy as np
+from numpy.linalg import det
 
 # ========================================================================================
 # Account for changes in a binary signal
@@ -9,6 +10,57 @@ import numpy as np
 class Window(NamedTuple):
     start: float
     stop: float
+
+
+class Periods(NamedTuple):
+    '''
+    Periods in which HFOs were detected. Used for plotting.
+
+    Parameters
+    -----
+    start : np.array
+        List of times where an HFO started.
+    start : np.array
+        List of times where an HFO stopped.
+    '''
+    start: np.array
+    stop: np.array
+
+
+class PlottingData(NamedTuple):
+    '''
+    Convenience data that can be used for plotting.
+
+    Parameters
+    -----
+    detections : np.array
+        Boolean list of HFO detection. The indices correspond to analyzed_times.
+    analyzed_times : np.array
+        List of all analyzed timestamps.
+    periods : Periods
+        The start and end times in which HFOs were detected.
+    '''
+    detections: np.array
+    analyzed_times: np.array
+    periods: Periods
+
+
+class HfoDetection(NamedTuple):
+    '''
+    The result of the SNNs HFO detection
+
+    Parameters
+    -----
+    frequency : float
+        The measured frequency of HFOs. This is the most important value.
+    total_amount : int
+        Total amount of detected HFOs over the entire dataset.
+    plotting_data : PlottingData
+        Convenience data that a user can use for their plotting.
+    '''
+    frequency: float
+    total_amount: int
+    plotting_data: PlottingData
 
 
 def _did_snn_find_hfo(spike_times, window):
@@ -50,7 +102,7 @@ def find_periods(signals, times):
 def _flatten_periods(periods):
     start = [period.start for period in periods]
     stop = [period.stop for period in periods if period.stop is not None]
-    return [start, stop]
+    return Periods(start, stop)
 
 
 def detect_hfo(duration, spike_times, signal_times, step_size, window_size):
@@ -61,9 +113,12 @@ def detect_hfo(duration, spike_times, signal_times, step_size, window_size):
     periods = find_periods(binary_hfo_signal, signal_times)
     flat_periods = _flatten_periods(periods)
 
-    hfo_detection = {}
-    hfo_detection['total_hfo'] = len(periods)
-    hfo_detection['time'] = signal_times
-    hfo_detection['signal'] = binary_hfo_signal
-    hfo_detection['periods_hfo'] = flat_periods
-    return hfo_detection
+    return HfoDetection(
+        total_amount=len(periods),
+        frequency=len(periods)/duration,
+        plotting_data=PlottingData(
+            detections=binary_hfo_signal,
+            analyzed_times=signal_times,
+            periods=flat_periods
+        )
+    )
