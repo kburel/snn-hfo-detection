@@ -1,5 +1,5 @@
-import numpy as np
 from typing import NamedTuple
+import numpy as np
 
 # ========================================================================================
 # Account for changes in a binary signal
