@@ -1,3 +1,4 @@
+from functools import reduce
 import warnings
 from brian2 import start_scope, run, SpikeGeneratorGroup, SpikeMonitor
 from brian2.units import us, amp, second
@@ -13,14 +14,14 @@ from snn_hfo_ieeg.stages.snn.concatenation import NeuronCount
 from snn_hfo_ieeg.stages.shared_config import MeasurementMode
 
 
+def _append_spikes(spikes, spike_train):
+    spikes.append(spike_train.up)
+    spikes.append(spike_train.down)
+    return spikes
+
+
 def _concatenate_filtered_spikes(filtered_spikes):
-    spikes = []
-    if filtered_spikes.ripple is not None:
-        spikes.append(filtered_spikes.ripple.up)
-        spikes.append(filtered_spikes.ripple.down)
-    if filtered_spikes.fast_ripple is not None:
-        spikes.append(filtered_spikes.fast_ripple.up)
-        spikes.append(filtered_spikes.fast_ripple.down)
+    spikes = reduce(_append_spikes, filtered_spikes, [])
     return concatenate_spikes(spikes)
 
 
