@@ -5,7 +5,7 @@ import numpy as np
 # ========================================================================================
 
 
-def detect_hfo(trial_duration, spike_monitor, original_time_vector, step_size, window_size):
+def detect_hfo(trial_duration, spike_monitor, spike_times, step_size, window_size):
     periods_of_hfo = np.array([[0, 0]])
     # ==============================================================================
     # Detect HFO
@@ -15,7 +15,7 @@ def detect_hfo(trial_duration, spike_monitor, original_time_vector, step_size, w
     num_timesteps = int(np.ceil(trial_duration / step_size))
 
     # Prepare HFO signals
-    hfo_identificaiton_signal = np.zeros(original_time_vector.size)
+    hfo_identificaiton_signal = np.zeros(spike_times.size)
 
     mfr = np.zeros([num_timesteps])
     for interval_nr, interval_start in enumerate(np.arange(start=0, stop=trial_duration, step=step_size)):
@@ -27,8 +27,8 @@ def detect_hfo(trial_duration, spike_monitor, original_time_vector, step_size, w
         interval_duration = end_time - start_time
         mfr[interval_nr] = np.asarray(index.size / interval_duration)
         if index.size != 0:
-            index_time_vector = np.where(np.logical_and(original_time_vector >= start_time,
-                                                        original_time_vector <= end_time))[0]
+            index_time_vector = np.where(np.logical_and(spike_times >= start_time,
+                                                        spike_times <= end_time))[0]
 
             hfo_identificaiton_signal[index_time_vector] = 1
 
@@ -51,15 +51,15 @@ def detect_hfo(trial_duration, spike_monitor, original_time_vector, step_size, w
     signal_fall = np.asarray(signal_fall)
 
     if signal_rise.size != 0:
-        start_period_hfo = original_time_vector[signal_rise]
-        stop_period_hfo = original_time_vector[signal_fall]
+        start_period_hfo = spike_times[signal_rise]
+        stop_period_hfo = spike_times[signal_fall]
         periods_of_hfo = np.array([start_period_hfo, stop_period_hfo])
     else:
         periods_of_hfo = np.array([0, 0])
 
     hfo_detection = {}
     hfo_detection['total_hfo'] = signal_rise.size
-    hfo_detection['time'] = original_time_vector
+    hfo_detection['time'] = spike_times
     hfo_detection['signal'] = hfo_identificaiton_signal
     hfo_detection['periods_hfo'] = periods_of_hfo
 
