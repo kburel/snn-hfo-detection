@@ -11,6 +11,23 @@ class HfoPeriod(NamedTuple):
     stop: float
 
 
+def get_binary_hfos(duration, spike_times, signal_times, step_size, window_size):
+    binary_hfo_signal = np.zeros(len(signal_times)).astype(int)
+
+    for interval_start in np.arange(start=0, stop=duration, step=step_size):
+        interval = [interval_start, interval_start + window_size]
+        start_time, end_time = interval
+
+        index = np.where(np.logical_and(
+            spike_times >= start_time, spike_times <= end_time))[0]
+        if index.size != 0:
+            index_time_vector = np.where(np.logical_and(signal_times >= start_time,
+                                                        signal_times <= end_time))[0]
+
+            binary_hfo_signal[index_time_vector] = 1
+    return binary_hfo_signal
+
+
 def find_periods(signals, times):
     periods = []
     for signal, time in zip(signals, times):
@@ -36,20 +53,8 @@ def detect_hfo(duration, spike_times, signal_times, step_size, window_size):
     # ==============================================================================
     assert step_size <= window_size
 
-    # Prepare HFO signals
-    binary_hfo_signal = np.zeros(len(signal_times)).astype(int)
-
-    for interval_start in np.arange(start=0, stop=duration, step=step_size):
-        interval = [interval_start, interval_start + window_size]
-        start_time, end_time = interval
-
-        index = np.where(np.logical_and(
-            spike_times >= start_time, spike_times <= end_time))[0]
-        if index.size != 0:
-            index_time_vector = np.where(np.logical_and(signal_times >= start_time,
-                                                        signal_times <= end_time))[0]
-
-            binary_hfo_signal[index_time_vector] = 1
+    binary_hfo_signal = get_binary_hfos(
+        duration, spike_times, signal_times, step_size, window_size)
 
     periods = find_periods(binary_hfo_signal, signal_times)
     flat_periods = _flatten_periods(periods)
