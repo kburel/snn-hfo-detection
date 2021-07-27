@@ -85,7 +85,7 @@ def test_ecog_hfo_detection():
     hfo = detected_hfos[0]
     assert hfo.total_amount == 7
     assert hfo.frequency == pytest.approx(0.09327177)
-    ecog_accuracy = 0.01
+    ecog_accuracy = 0.02
     _assert_all_within_accuracy(expected_values=[4.36, 9.85, 15.64, 34.67, 36.13, 43.52, 53.64],
                                 actual_values=hfo.plotting_data.periods.start,
                                 accuracy=ecog_accuracy)
