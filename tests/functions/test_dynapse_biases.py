@@ -20,25 +20,21 @@ def test_get_tau_raises_error_on_zero_current():
         get_tau(0)
 
 
-
 @pytest.mark.parametrize(
     'tau,expected_current',
     [(1, 5.35e-14),
      (1e-4, 5.35e-10),
      (1.5e-4, 3.57e-10),
-     (-1, -5.35e-14),
-     (0, 2.390625e-05)]  # Only difference to get_tau
+     (-1, -5.35e-14), ]
 )
-def test_get_tau_current(tau, expected_current):
-    actual_current = get_tau_current(tau)
+def test_get_current(tau, expected_current):
+    actual_current = get_current(tau)
     assert expected_current == pytest.approx(actual_current)
 
 
-@pytest.mark.filterwarnings('ignore::DeprecationWarning')
-def test_get_tau_current_raises_error_when_vector_is_specified_without_passing_vector():
-    with pytest.raises(TypeError):
-        get_tau_current(1, vector=True)
-
+def test_get_current_raises_error_on_zero_current():
+    with pytest.raises(ZeroDivisionError):
+        get_current(0)
 
 
 @pytest.mark.parametrize(
@@ -48,6 +44,6 @@ def test_get_tau_current_raises_error_when_vector_is_specified_without_passing_v
      ]
 )
 @pytest.mark.filterwarnings('ignore::DeprecationWarning')
-def test_get_tau_current_with_vector(tau, expected_current):
-    actual_current = get_tau_current(tau, vector=True)
+def test_get_current_with_vector(tau, expected_current):
+    actual_current = get_current(tau)
     assert are_lists_approximately_equal(actual_current, expected_current)
