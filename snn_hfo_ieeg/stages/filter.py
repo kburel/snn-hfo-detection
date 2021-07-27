@@ -34,14 +34,14 @@ def _filter_signal_to_spike(filter_parameters):
                                     highcut=filter_parameters.highcut,
                                     sampling_frequency=SAMPLING_FREQUENCY,
                                     order=2)
-    threshold = np.ceil(find_thresholds(signal=signal,
-                                        time=filter_parameters.channel_data.signal_time,
-                                        window=1,
+    threshold = np.ceil(find_thresholds(signals=signal,
+                                        times=filter_parameters.channel_data.signal_time,
+                                        window_size=1,
                                         step_size=1,
                                         chosen_samples=50,
                                         scaling_factor=filter_parameters.scaling_factor))
     return signal_to_spike_refractory(interpfact=35000,
-                                      time=filter_parameters.channel_data.signal_time,
+                                      times=filter_parameters.channel_data.signal_time,
                                       amplitude=signal,
                                       thr_up=threshold, thr_dn=threshold,
                                       refractory_period=3e-4)

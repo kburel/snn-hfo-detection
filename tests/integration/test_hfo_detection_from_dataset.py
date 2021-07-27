@@ -18,10 +18,10 @@ def _get_hfo_directory(dataset_name):
     return os.path.join(parent_dir, 'data', dataset_name)
 
 
-def _generate_test_configuration(dataset_name):
+def _generate_test_configuration(dataset_name, measurement_mode=MeasurementMode.IEEG,):
     return Configuration(
         data_path=_get_hfo_directory(dataset_name),
-        measurement_mode=MeasurementMode.IEEG,
+        measurement_mode=measurement_mode,
         hidden_neuron_count=86,
     )
 
@@ -54,15 +54,42 @@ def _generate_add_detected_hfo_to_list_cb(list):
     return lambda hfo_detection: list.append(hfo_detection) if hfo_detection.total_amount != 0 else None
 
 
-def test_hfo_data():
+def test_iieg_hfo_detection():
     detected_hfos = []
     run_hfo_detection_for_all_channels(
-        configuration=_generate_test_configuration('hfo'),
+        configuration=_generate_test_configuration('ieeg'),
         custom_overrides=EMPTY_CUSTOM_OVERRIDES,
         hfo_cb=_generate_add_detected_hfo_to_list_cb(detected_hfos))
     assert len(detected_hfos) == 1
     hfo = detected_hfos[0]
     assert hfo.total_amount == 1
-    assert hfo.frequency == pytest.approx(0.019980219582613215)
+    assert hfo.frequency == pytest.approx(0.01998021)
     assert hfo.plotting_data.periods.start == [pytest.approx(0)]
     assert hfo.plotting_data.periods.stop == [pytest.approx(0.0605)]
+
+
+def _assert_all_within_accuracy(expected_values, actual_values, accuracy):
+    deltas = [abs(expected - actual) for expected,
+              actual in zip(expected_values, actual_values)]
+    assert all(delta < accuracy for delta in deltas)
+
+
+def test_ecog_hfo_detection():
+    detected_hfos = []
+    run_hfo_detection_for_all_channels(
+        configuration=_generate_test_configuration(
+            'ecog', MeasurementMode.ECOG),
+        custom_overrides=EMPTY_CUSTOM_OVERRIDES,
+        hfo_cb=_generate_add_detected_hfo_to_list_cb(detected_hfos))
+    assert len(detected_hfos) == 1
+    hfo = detected_hfos[0]
+    assert hfo.total_amount == 7
+    assert hfo.frequency == pytest.approx(0.09327177)
+    ecog_accuracy = 0.02
+    _assert_all_within_accuracy(expected_values=[4.36, 9.85, 15.64, 34.67, 36.13, 43.52, 53.64],
+                                actual_values=hfo.plotting_data.periods.start,
+                                accuracy=ecog_accuracy)
+
+    _assert_all_within_accuracy(expected_values=[4.4605, 9.9405, 15.7305, 34.7605, 36.2205, 43.6205, 53.73],
+                                actual_values=hfo.plotting_data.periods.stop,
+                                accuracy=ecog_accuracy)

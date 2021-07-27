@@ -15,30 +15,49 @@ class SpikeTrains(NamedTuple):
     down: np.array
 
 
-def find_thresholds(signal, time, window, step_size, chosen_samples, scaling_factor):
+def find_thresholds(signals, times, window_size, step_size, chosen_samples, scaling_factor):
     '''
-    This functions retuns the mean threshold for your signal, based on the calculated
-    mean noise floor and a user-specified scaling facotr that depeneds on the type of signal,
+    This functions retuns the mean threshold for your signals, based on the calculated
+    mean noise floor and a user-specified scaling facotr that depeneds on the type of signals,
     characteristics of patterns, etc.
 
-    :signal (array): amplitude of the signal
-    :time (array): time vector
-    :window (float): time window [same units as time vector] where the maximum amplitude of the signal
+    :signals (array): amplitude of the signals
+    :times (array): time vector
+    :window (float): time window [same units as time vector] where the maximum amplitude of the signals
                     will be calculated
     :chosen_samples (int): from the maximum values in each window time, only these number of
                         samples will be used to calculate the mean maximum amplitude.
     : scaling_factr (float): a percentage of the calculated threshold
     '''
-    window_size = window
-    trial_duration = np.max(time)
-    num_timesteps = int(np.ceil(trial_duration / step_size))
+    if step_size > window_size:
+        raise ValueError(
+            f'step_size needs to be at most windows_size, but got: step_size={step_size}, window_size={step_size}')
+    min_time = np.min(times)
+    if np.min(times) < 0:
+        raise ValueError(
+            f'Tried to find thresholds for a dataset with a negative time: {min_time}')
+    duration = np.max(times) - min_time
+    if duration <= 0:
+        raise ValueError(
+            f'Tried to find thresholds for a dataset with a duration that under or equal to zero. Got duration: {duration}')
+
+    if len(signals) == 0:
+        raise ValueError('signals is not allowed to be empty, but was'
+                         )
+    if len(times) == 0:
+        raise ValueError('times is not allowed to be empty, but was')
+
+    if len(signals) != len(times):
+        raise ValueError(
+            f'signals and times need to have corresponding indices, but signals has length {len(signals)} while times has length {len(times)}')
+
+    num_timesteps = int(np.ceil(duration / step_size))
     max_min_amplitude = np.zeros((num_timesteps, 2))
-    for interval_nr, interval_start in enumerate(np.arange(start=0, stop=trial_duration, step=step_size)):
-        interval = [interval_start, interval_start + window_size]
-        start_time, end_time = interval
-        index = np.where((time >= start_time) & (time <= end_time))
-        max_amplitude = np.max(signal[index])
-        min_amplitude = np.min(signal[index])
+    for interval_nr, interval_start in enumerate(np.arange(start=0, stop=duration, step=step_size)):
+        interval_end = interval_start + window_size
+        index = np.where((times >= interval_start) & (times <= interval_end))
+        max_amplitude = np.max(signals[index])
+        min_amplitude = np.min(signals[index])
         max_min_amplitude[interval_nr, 0] = max_amplitude
         max_min_amplitude[interval_nr, 1] = min_amplitude
 
@@ -53,13 +72,13 @@ def find_thresholds(signal, time, window, step_size, chosen_samples, scaling_fac
 # ========================================================================================
 # Signal to spike conversion with refractory period
 # ========================================================================================
-def signal_to_spike_refractory(interpfact, time, amplitude, thr_up, thr_dn, refractory_period):
+def signal_to_spike_refractory(interpfact, times, amplitude, thr_up, thr_dn, refractory_period):
     '''
     This functions retuns two spike trains, when the signal crosses the specified threshold in
     a rising direction (UP spikes) and when it crosses the specified threshold in a falling
     direction (DOWN spikes)
 
-    :time (array): time vector
+    :times (array): time vector
     :amplitude (array): amplitude of the signal
     :interpfact (int): upsampling factor, new sampling frequency
     :thr_up (float): threshold crossing in a rising direction
@@ -70,10 +89,10 @@ def signal_to_spike_refractory(interpfact, time, amplitude, thr_up, thr_dn, refr
     spike_up = []
     spike_dn = []
 
-    intepolated_time = sc.interpolate.interp1d(time, amplitude)
-    rangeint = np.round((np.max(time) - np.min(time))*interpfact)
-    xnew = np.linspace(np.min(time), np.max(
-        time), num=int(rangeint), endpoint=True)
+    intepolated_time = sc.interpolate.interp1d(times, amplitude)
+    rangeint = np.round((np.max(times) - np.min(times))*interpfact)
+    xnew = np.linspace(np.min(times), np.max(
+        times), num=int(rangeint), endpoint=True)
     data = np.reshape([xnew, intepolated_time(xnew)], (2, len(xnew))).T
 
     i = 0

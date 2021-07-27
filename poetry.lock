@@ -35,6 +35,18 @@ tests = ["coverage[toml] (>=5.0.2)", "hypothesis", "pympler", "pytest (>=4.3.0)"
 tests_no_zope = ["coverage[toml] (>=5.0.2)", "hypothesis", "pympler", "pytest (>=4.3.0)", "six", "mypy", "pytest-mypy-plugins"]
 
 [[package]]
+name = "autopep8"
+version = "1.5.7"
+description = "A tool that automatically formats Python code to conform to the PEP 8 style guide"
+category = "dev"
+optional = false
+python-versions = "*"
+
+[package.dependencies]
+pycodestyle = ">=2.7.0"
+toml = "*"
+
+[[package]]
 name = "brian2"
 version = "2.4.2"
 description = "A clock-driven simulator for spiking neural networks"
@@ -323,6 +335,14 @@ optional = false
 python-versions = "*"
 
 [[package]]
+name = "pycodestyle"
+version = "2.7.0"
+description = "Python style guide checker"
+category = "dev"
+optional = false
+python-versions = ">=2.7, !=3.0.*, !=3.1.*, !=3.2.*, !=3.3.*"
+
+[[package]]
 name = "pylint"
 version = "2.9.5"
 description = "python code static checker"
@@ -592,7 +612,7 @@ testing = ["pytest (>=4.6)", "pytest-checkdocs (>=2.4)", "pytest-flake8", "pytes
 [metadata]
 lock-version = "1.1"
 python-versions = ">=3.7,<3.10"
-content-hash = "aa6aef373a325a05af808b2c43d35bb73572af526f8b542f6510fd0781e15293"
+content-hash = "8320bc885e65235a6008db3cfa7fd0be2ac3f2beb01b1fa3aa876a3742f9df07"
 
 [metadata.files]
 astroid = [
@@ -606,6 +626,10 @@ atomicwrites = [
 attrs = [
     {file = "attrs-21.2.0-py2.py3-none-any.whl", hash = "sha256:149e90d6d8ac20db7a955ad60cf0e6881a3f20d37096140088356da6c716b0b1"},
     {file = "attrs-21.2.0.tar.gz", hash = "sha256:ef6aaac3ca6cd92904cdd0d83f629a15f18053ec84e6432106f7a4d04ae4f5fb"},
+]
+autopep8 = [
+    {file = "autopep8-1.5.7-py2.py3-none-any.whl", hash = "sha256:aa213493c30dcdac99537249ee65b24af0b2c29f2e83cd8b3f68760441ed0db9"},
+    {file = "autopep8-1.5.7.tar.gz", hash = "sha256:276ced7e9e3cb22e5d7c14748384a5cf5d9002257c0ed50c0e075b68011bb6d0"},
 ]
 brian2 = [
     {file = "Brian2-2.4.2.tar.gz", hash = "sha256:7a711af40145d8c62b0bc0861d352dc64f341c3a738174d87ef9d71e50e959f2"},
@@ -975,6 +999,10 @@ py = [
 ]
 py-cpuinfo = [
     {file = "py-cpuinfo-8.0.0.tar.gz", hash = "sha256:5f269be0e08e33fd959de96b34cd4aeeeacac014dd8305f70eb28d06de2345c5"},
+]
+pycodestyle = [
+    {file = "pycodestyle-2.7.0-py2.py3-none-any.whl", hash = "sha256:514f76d918fcc0b55c6680472f0a37970994e07bbb80725808c17089be302068"},
+    {file = "pycodestyle-2.7.0.tar.gz", hash = "sha256:c389c1d06bf7904078ca03399a4816f974a1d590090fecea0c63ec26ebaf1cef"},
 ]
 pylint = [
     {file = "pylint-2.9.5-py3-none-any.whl", hash = "sha256:748f81e5776d6273a6619506e08f1b48ff9bcb8198366a56821cf11aac14fc87"},
