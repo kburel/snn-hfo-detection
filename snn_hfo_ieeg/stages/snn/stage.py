@@ -1,6 +1,6 @@
 import warnings
 from brian2 import start_scope, run, SpikeGeneratorGroup, SpikeMonitor
-from brian2.units import us, amp, pamp, second
+from brian2.units import us, amp, second
 from teili.core.groups import Neurons, Connections
 from teili.models.builder.neuron_equation_builder import NeuronEquationBuilder
 from teili.models.builder.synapse_equation_builder import SynapseEquationBuilder
