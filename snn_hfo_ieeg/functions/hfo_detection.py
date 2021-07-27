@@ -14,7 +14,7 @@ def detect_hfo(duration, spike_times, signal_times, step_size, window_size):
     assert step_size <= window_size
 
     # Prepare HFO signals
-    hfo_identificaiton_signal = np.zeros(len(signal_times))
+    binary_hfo_signal = np.zeros(len(signal_times))
     hfo_identification_times = []
 
     for interval_start in np.arange(start=0, stop=duration, step=step_size):
@@ -27,23 +27,21 @@ def detect_hfo(duration, spike_times, signal_times, step_size, window_size):
             index_time_vector = np.where(np.logical_and(signal_times >= start_time,
                                                         signal_times <= end_time))[0]
 
-            hfo_identificaiton_signal[index_time_vector] = 1
+            binary_hfo_signal[index_time_vector] = 1
             hfo_identification_times = np.array(
                 signal_times)[index_time_vector]
 
     signal_rise = []
     signal_fall = []
 
-    binary_signal = hfo_identificaiton_signal
-
-    for i in range(binary_signal.size-1):
-        if i == 0 and binary_signal[0] == 1:
+    for i in range(binary_hfo_signal.size-1):
+        if i == 0 and binary_hfo_signal[0] == 1:
             signal_rise.append(i)
-        if i > 0 and binary_signal[i] == 1 and binary_signal[i-1] == 0:
+        if i > 0 and binary_hfo_signal[i] == 1 and binary_hfo_signal[i-1] == 0:
             signal_rise.append(i)
-        elif binary_signal[i] == 1 and binary_signal[i+1] == 0:
+        elif binary_hfo_signal[i] == 1 and binary_hfo_signal[i+1] == 0:
             signal_fall.append(i)
-        if i == binary_signal.size-2 and binary_signal[i] == 1:
+        if i == binary_hfo_signal.size-2 and binary_hfo_signal[i] == 1:
             signal_fall.append(i)
 
     signal_rise = np.asarray(signal_rise)
@@ -59,7 +57,7 @@ def detect_hfo(duration, spike_times, signal_times, step_size, window_size):
     hfo_detection = {}
     hfo_detection['total_hfo'] = signal_rise.size
     hfo_detection['time'] = hfo_identification_times
-    hfo_detection['signal'] = hfo_identificaiton_signal
+    hfo_detection['signal'] = binary_hfo_signal
     hfo_detection['periods_hfo'] = periods_of_hfo
 
     return hfo_detection
