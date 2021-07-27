@@ -1,6 +1,6 @@
 import warnings
 from brian2 import start_scope, run, SpikeGeneratorGroup, SpikeMonitor
-from brian2.units import us, amp, pamp, second
+from brian2.units import us, amp, second
 from teili.core.groups import Neurons, Connections
 from teili.models.builder.neuron_equation_builder import NeuronEquationBuilder
 from teili.models.builder.synapse_equation_builder import SynapseEquationBuilder
@@ -8,6 +8,10 @@ from snn_hfo_ieeg.functions.signal_to_spike import concatenate_spikes
 from snn_hfo_ieeg.functions.dynapse_biases import get_tau_current
 from snn_hfo_ieeg.stages.snn.tau_generation import generate_concatenated_taus
 from snn_hfo_ieeg.stages.snn.weight_generation import generate_weights
+from snn_hfo_ieeg.stages.snn.model_paths import load_model_paths
+
+INPUT_COUNT = 4
+HIDDEN_NEURON_COUNT = 86
 
 
 def _concatenate_filtered_spikes(filtered_spikes):
@@ -20,57 +24,48 @@ def _concatenate_filtered_spikes(filtered_spikes):
     return concatenate_spikes(spikes_list)
 
 
-def _create_input_layer(filtered_spikes, network_parameters):
+def _create_input_layer(filtered_spikes):
     input_spiketimes, input_neurons_id = _concatenate_filtered_spikes(
         filtered_spikes)
-    input_channels = network_parameters.imported_network_parameters['input_neurons'][0][0]
-    return SpikeGeneratorGroup(input_channels,
+    return SpikeGeneratorGroup(INPUT_COUNT,
                                input_neurons_id,
                                input_spiketimes*second,
                                dt=100*us, name='input')
 
 
-def _create_hidden_layer(network_parameters):
-    hidden_neurons = network_parameters.imported_network_parameters['hidden_neurons'][0][0]
+def _create_hidden_layer(model_paths):
+    hidden_neurons = HIDDEN_NEURON_COUNT
     equation_builder = NeuronEquationBuilder.import_eq(
-        network_parameters.neuron_model_path, num_inputs=1)
+        model_paths.neuron, num_inputs=1)
     hidden_layer = Neurons(
         hidden_neurons, equation_builder=equation_builder, name='hidden_layer', dt=100*us)
-    hidden_layer.refP = network_parameters.imported_network_parameters[
-        'neuron_refractory'][0][0] * second
-    hidden_layer.Itau = get_tau_current(
-        network_parameters.imported_network_parameters['neuron_taus'][0][0]*1e-3, False) * amp
     return hidden_layer
 
 
-def _create_synapses(input_layer, hidden_layer, network_parameters):
-    equation_builder = SynapseEquationBuilder.import_eq(
-        network_parameters.synapse_model_path)
+def _create_synapses(input_layer, hidden_layer, model_paths):
+    equation_builder = SynapseEquationBuilder.import_eq(model_paths.synapse)
     synapses = Connections(
         input_layer, hidden_layer, equation_builder=equation_builder, name='synapses', verbose=False, dt=100*us)
 
     synapses.connect()
 
-    input_count = network_parameters.imported_network_parameters['input_neurons'][0][0]
-    hidden_count = network_parameters.imported_network_parameters['hidden_neurons'][0][0]
-
-    synapses.weight = generate_weights(input_count, hidden_count)
-    taus = generate_concatenated_taus(input_count, hidden_count)
+    synapses.weight = generate_weights(INPUT_COUNT, HIDDEN_NEURON_COUNT)
+    taus = generate_concatenated_taus(INPUT_COUNT, HIDDEN_NEURON_COUNT)
     synapses.I_tau = get_tau_current(taus*1e-3, True) * amp
-    synapses.baseweight = 1 * pamp
 
     return synapses
 
 
-def snn_stage(filtered_spikes, network_parameters, duration):
+def snn_stage(filtered_spikes, duration):
     warnings.simplefilter("ignore", DeprecationWarning)
     start_scope()
 
-    input_layer = _create_input_layer(filtered_spikes, network_parameters)
-    hidden_layer = _create_hidden_layer(network_parameters)
+    model_paths = load_model_paths()
+    input_layer = _create_input_layer(filtered_spikes)
+    hidden_layer = _create_hidden_layer(model_paths)
     # Do not remove the following variable, otherwise its lifetime is too narrow
     _synapses = _create_synapses(
-        input_layer, hidden_layer, network_parameters)
+        input_layer, hidden_layer, model_paths)
 
     spike_monitor_hidden = SpikeMonitor(hidden_layer)
     run(duration * second)

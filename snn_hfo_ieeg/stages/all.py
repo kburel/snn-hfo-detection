@@ -7,14 +7,11 @@ HFO_DETECTION_STEP_SIZE = 0.01
 HFO_DETECTION_WINDOW_SIZE = 0.05
 
 
-def run_hfo_detection(channel_data, duration, network_parameters):
-    filtered_spikes = filter_stage(
-        channel_data,
-        adm_parameters=network_parameters.adm_parameters)
+def run_hfo_detection(channel_data, duration):
+    filtered_spikes = filter_stage(channel_data)
 
-    spike_monitor_hidden = snn_stage(filtered_spikes=filtered_spikes,
-                                     network_parameters=network_parameters,
-                                     duration=duration)
+    spike_monitor_hidden = snn_stage(
+        filtered_spikes=filtered_spikes, duration=duration)
 
     return detect_hfo(trial_duration=duration,
                       spike_monitor=(
