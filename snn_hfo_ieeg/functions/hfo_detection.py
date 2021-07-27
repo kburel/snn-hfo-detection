@@ -47,9 +47,6 @@ def _flatten_periods(periods):
 
 
 def detect_hfo(duration, spike_times, signal_times, step_size, window_size):
-    # ==============================================================================
-    # Detect HFO
-    # ==============================================================================
     assert step_size <= window_size
 
     binary_hfo_signal = get_binary_hfos(
