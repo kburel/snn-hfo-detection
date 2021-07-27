@@ -51,7 +51,7 @@ class HfoDetection(NamedTuple):
     Parameters
     -----
     frequency : float
-        The measured frequency of HFOs. This is the most important value.
+        The measured frequency of HFOs per second. This is the most important value.
     total_amount : int
         Total amount of detected HFOs over the entire dataset.
     plotting_data : PlottingData

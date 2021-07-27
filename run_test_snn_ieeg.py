@@ -47,12 +47,10 @@ def run_hfo_detection_for_all_channels(configuration, custom_overrides, hfo_cb):
             duration=duration,
             configuration=configuration)
 
-        hfo_count = hfo_detection['total_hfo']
-
-        print('Number of HFO events: ', hfo_count)
+        print('Number of HFO events: ', hfo_detection.total_amount)
         print('Rate of HFO (event/min)',
-              np.around((hfo_count/duration)*60, decimals=2))
-        print('')
+              np.around(hfo_detection.frequency * 60, decimals=2))
+        print('----')
 
         hfo_cb(hfo_detection)
 
