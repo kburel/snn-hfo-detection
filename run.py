@@ -1,6 +1,7 @@
 #!/usr/bin/env python3
 
 import argparse
+import sys
 from typing import List, NamedTuple
 from snn_hfo_ieeg.stages.shared_config import Configuration, MeasurementMode
 from snn_hfo_ieeg.functions.filter import *
@@ -27,11 +28,11 @@ def _calculate_duration(signal_time):
 def run_hfo_detection_for_all_channels(configuration, custom_overrides, hfo_cb):
     patient_intervals_paths = get_patient_interval_paths(
         configuration.data_path)
-    for patient, intervals in patient_intervals_paths:
-        if len(custom_overrides.patients) != 0 and patient not in custom_overrides.patients:
+    for patient, intervals in patient_intervals_paths.items():
+        if custom_overrides.patients is not None and patient not in custom_overrides.patients:
             continue
-        for interval, interval_path in intervals:
-            if len(custom_overrides.intervals) != 0 and interval not in custom_overrides.intervals:
+        for interval, interval_path in intervals.items():
+            if custom_overrides.intervals is not None and interval not in custom_overrides.intervals:
                 continue
             patient_data = load_patient_data(interval_path)
             duration = custom_overrides.duration if custom_overrides.duration is not None else _calculate_duration(
@@ -70,11 +71,11 @@ def _parse_arguments():
                         help=f'How many neurons should be in the hidden layer. Default is {default_hidden_neurons}')
     parser.add_argument('--duration', type=float, default=None,
                         help='How many seconds of the dataset should be processed. By default, the entire dataset will be processed')
-    parser.add_argument('--channels', type=int, default=None, nargs='*',
+    parser.add_argument('--channels', type=int, default=None, nargs='+',
                         help='Which channels of the dataset should be processed. By default, all channels will be processed')
-    parser.add_argument('--patients', type=int, default=None, nargs='*',
+    parser.add_argument('--patients', type=int, default=None, nargs='+',
                         help='Which patients should be processed. By default, all patients will be processed')
-    parser.add_argument('--intervals', type=int, default=None, nargs='*',
+    parser.add_argument('--intervals', type=int, default=None, nargs='+',
                         help='Which intervals should be processed. By default, all intervals will be processed. Only works when --patients was called beforehand with exactly one patient number.')
     parser.add_argument('mode', type=str,
                         help='Which measurement mode was used to capture the data. Possible values: iEEG, eCoG or scalp.\
@@ -91,12 +92,12 @@ def _convert_arguments_to_config(arguments):
 
 
 def _validate_custom_overrides(custom_overrides):
-    if len(custom_overrides.patients) == 0 and len(custom_overrides.intervals) != 0:
-        raise ValueError(
-            '--intervals requires --patients with exactly one patient, but you did not specify any')
-    if len(custom_overrides.patients) != 1 and len(custom_overrides.intervals) != 0:
-        raise ValueError(
-            '--intervals requires --patients with exactly one patient, but you did specified more')
+    if custom_overrides.patients is None and custom_overrides.intervals is not None:
+        sys.exit(
+            'run.py: error: --intervals requires --patients with exactly one patient, but you did not specify any')
+    if custom_overrides.patients is not None and len(custom_overrides.patients) != 1 and custom_overrides.intervals is not None:
+        sys.exit(
+            'run.py: error: --intervals requires --patients with exactly one patient, but you did specified more')
 
 
 def _convert_arguments_to_custom_overrides(arguments):

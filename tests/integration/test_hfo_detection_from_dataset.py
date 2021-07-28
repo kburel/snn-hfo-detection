@@ -7,7 +7,9 @@ from tests.utility import are_hfo_detections_equal, get_tests_path
 
 EMPTY_CUSTOM_OVERRIDES = CustomOverrides(
     duration=None,
-    channels=None
+    channels=None,
+    patients=None,
+    intervals=None,
 )
 
 
