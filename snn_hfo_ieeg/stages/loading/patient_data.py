@@ -21,7 +21,7 @@ class ChannelData(NamedTuple):
 
 
 def load_patient_data(patient, interval, data_path):
-    file_name = f'P{patient}/P{patient}I{interval}.mat'
+    file_name = f'P{patient}/I{interval}.mat'
     interval = sio.loadmat(os.path.join(data_path, file_name))
     return PatientData(
         wideband_signals=interval['chb'],
