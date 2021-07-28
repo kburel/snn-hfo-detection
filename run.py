@@ -25,7 +25,7 @@ def _calculate_duration(signal_time):
     return np.max(signal_time) + extra_simulation_time
 
 
-def run_hfo_detection_for_all_channels(configuration, custom_overrides, hfo_cb):
+def run_hfo_detection_with_configuration(configuration, custom_overrides, hfo_cb):
     patient_intervals_paths = get_patient_interval_paths(
         configuration.data_path)
     for patient, intervals in patient_intervals_paths.items():
@@ -114,7 +114,7 @@ if __name__ == '__main__':
     arguments = _parse_arguments()
     configuration = _convert_arguments_to_config(arguments)
     custom_overrides = _convert_arguments_to_custom_overrides(arguments)
-    run_hfo_detection_for_all_channels(
+    run_hfo_detection_with_configuration(
         configuration=configuration,
         custom_overrides=custom_overrides,
         hfo_cb=lambda _: {})
