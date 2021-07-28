@@ -67,7 +67,7 @@ def test_iieg_hfo_detection():
 
 
 def _assert_contains_at_least(expected_values, actual_values, accuracy):
-    assert all(pytest.approx(expected_value, rel=accuracy)
+    assert all(pytest.approx(expected_value, abs=accuracy)
                in actual_values for expected_value in expected_values)
 
 
@@ -81,7 +81,7 @@ def test_ecog_hfo_detection():
     assert len(detected_hfos) == 1
     hfo = detected_hfos[0]
     assert hfo.total_amount == 7 or hfo.total_amount == 8
-    assert hfo.frequency == pytest.approx(0.09327177, rel=0.02)
+    assert hfo.frequency == pytest.approx(0.09327177, abs=0.02)
     ecog_accuracy = 0.01
     _assert_contains_at_least(expected_values=[4.36, 9.85, 15.64, 34.67, 36.13, 43.52, 53.64],
                               actual_values=hfo.plotting_data.periods.start,
