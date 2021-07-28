@@ -2,7 +2,7 @@ import os
 import pytest
 from snn_hfo_ieeg.functions.hfo_detection import HfoDetection, Periods, PlottingData
 from snn_hfo_ieeg.stages.shared_config import Configuration, MeasurementMode
-from run import CustomOverrides, run_hfo_detection_with_configuration
+from snn_hfo_ieeg.hfo_detection import CustomOverrides, run_hfo_detection
 from tests.utility import are_hfo_detections_equal, get_tests_path
 
 EMPTY_CUSTOM_OVERRIDES = CustomOverrides(
@@ -44,19 +44,21 @@ def _assert_dummy_hfo_is_empty(hfo_detection):
 
 
 def test_dummy_data():
-    run_hfo_detection_with_configuration(
+    run_hfo_detection(
         configuration=_generate_test_configuration('dummy'),
         custom_overrides=EMPTY_CUSTOM_OVERRIDES,
         hfo_cb=_assert_dummy_hfo_is_empty)
 
 
 def _generate_add_detected_hfo_to_list_cb(list):
-    return lambda hfo_detection: list.append(hfo_detection) if hfo_detection.total_amount != 0 else None
+    return lambda hfo_detection_run: list.append(hfo_detection_run.hfo_detection)\
+        if hfo_detection_run.hfo_detection.total_amount != 0 \
+        else None
 
 
 def test_iieg_hfo_detection():
     detected_hfos = []
-    run_hfo_detection_with_configuration(
+    run_hfo_detection(
         configuration=_generate_test_configuration('ieeg'),
         custom_overrides=EMPTY_CUSTOM_OVERRIDES,
         hfo_cb=_generate_add_detected_hfo_to_list_cb(detected_hfos))
@@ -75,7 +77,7 @@ def _assert_contains_at_least(expected_values, actual_values, accuracy):
 
 def test_ecog_hfo_detection():
     detected_hfos = []
-    run_hfo_detection_with_configuration(
+    run_hfo_detection(
         configuration=_generate_test_configuration(
             'ecog', MeasurementMode.ECOG),
         custom_overrides=EMPTY_CUSTOM_OVERRIDES,
