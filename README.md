@@ -88,42 +88,42 @@ And if you're still stuck, feel free to open an [issue](https://github.com/kbure
 
 ## Usage Examples
 Show help:
-```python
+```bash
 poetry run ./run.py --help
 ```
 
 Analyze all available data in iEEG mode:
-```python
+```bash
 poetry run ieeg ./run.py
 ```
 
 Run in iEEG mode with custom data path:
-```python
+```bash
 poetry run ./run.py ieeg --data-path path/to/data
 ```
 
 Analyze all available data in iEEG mode with an SNN with 100 hidden neurons:
-```python
+```bash
 poetry run ieeg ./run.py --hidden-neurons 100
 ```
 
 Only analyze channels 2, 3 and 5 in eCoG mode:
-```python
+```bash
 poetry run ./run.py ecog --channels 2 3 5
 ```
 
 Only analyze the first 100 seconds of the datasets in scalp mode:
-```python
+```bash
 poetry run ./run.py scalp --duration 100
 ```
 
 Only analyze patients 1 and 2 in iEEG mode:
-```python
+```bash
 poetry run ./run.py ieeg --patients 1 2
 ```
 
 Only analyze the intervals 2, 3, 4, 6, 7 and 8 of patient 2 in iEEG mode:
-```python
+```bash
 # This only works when exactly one patient was specified with --patients
 poetry run ./run.py ieeg --patients 2 --intervals 2 3 4 6 7 
 ```
@@ -131,7 +131,7 @@ poetry run ./run.py ieeg --patients 2 --intervals 2 3 4 6 7
 All options can be freely combined. For example, the following will construct an SNN with 256 neurons and
 analyze the intervals 3 and 4 of patient 6 in the channels 1 and 2
 while only looking at the first 300 seconds in iEEG mode for data in ./ieeg-data:
-```python
+```bash
 poetry run ./run.py iieg --data-path ./ieeg-data --hidden-neurons 256 --patients 6 --intervals 3 4 --channels 1 2 --duration 300
 ```
 
