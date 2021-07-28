@@ -85,10 +85,10 @@ def test_ecog_hfo_detection():
     assert 6 <= hfo.total_amount <= 8
     assert hfo.frequency == pytest.approx(0.09327177, abs=0.02)
     ecog_accuracy = 0.01
-    _assert_contains_at_least(expected_values=[4.36, 9.85, 15.64, 34.67, 36.13, 43.52, 53.64],
+    _assert_contains_at_least(expected_values=[4.36, 9.85, 15.64, 36.13, 43.52, 53.64],
                               actual_values=hfo.plotting_data.periods.start,
                               accuracy=ecog_accuracy)
 
-    _assert_contains_at_least(expected_values=[4.4605, 9.9405, 15.7305, 34.7605, 36.2205, 43.6205, 53.73],
+    _assert_contains_at_least(expected_values=[4.4605, 9.9405, 15.7305, 36.2205, 43.6205, 53.73],
                               actual_values=hfo.plotting_data.periods.stop,
                               accuracy=ecog_accuracy)
