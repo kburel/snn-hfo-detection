@@ -92,6 +92,11 @@ Show help:
 poetry run ./run.py --help
 ```
 
+When running, you need to specify how the data was obtained in order to run the right analyzers. We support the following modes:
+- **ieeg**: Data was obtained via iEEG, the ripple bandwidth (80-250 Hz) and the fast ripple bandwidth (250-500 Hz) will be analyzed
+- **ecog**: Data was obtained via eCoG, only the fast ripple bandwidth will be analyzed
+- **scalp**: Data was obtained over the scalp via EEG, only the ripple bandwidth will be analyzed
+
 Analyze all available data in iEEG mode:
 ```bash
 poetry run ieeg ./run.py
@@ -109,17 +114,17 @@ poetry run ieeg ./run.py --hidden-neurons 100
 
 Only analyze channels 2, 3 and 5 in eCoG mode:
 ```bash
-poetry run ./run.py ecog --channels 2 3 5
+poetry run ecog ./run.py ecog --channels 2 3 5
 ```
 
 Only analyze the first 100 seconds of the datasets in scalp mode:
 ```bash
-poetry run ./run.py scalp --duration 100
+poetry run scalp ./run.py scalp --duration 100
 ```
 
 Only analyze patients 1 and 2 in iEEG mode:
 ```bash
-poetry run ./run.py ieeg --patients 1 2
+poetry run ieeg ./run.py ieeg --patients 1 2
 ```
 
 Only analyze the intervals 2, 3, 4, 6, 7 and 8 of patient 2 in iEEG mode:
