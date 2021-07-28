@@ -1,10 +1,9 @@
 import os
-from pathlib import Path
 import pytest
 from snn_hfo_ieeg.functions.hfo_detection import HfoDetection, Periods, PlottingData
 from snn_hfo_ieeg.stages.shared_config import Configuration, MeasurementMode
 from run import CustomOverrides, run_hfo_detection_for_all_channels
-from tests.utility import are_hfo_detections_equal
+from tests.utility import are_hfo_detections_equal, get_tests_path
 
 EMPTY_CUSTOM_OVERRIDES = CustomOverrides(
     duration=None,
@@ -13,9 +12,8 @@ EMPTY_CUSTOM_OVERRIDES = CustomOverrides(
 
 
 def _get_hfo_directory(dataset_name):
-    file_path = os.path.realpath(__file__)
-    parent_dir = Path(file_path).parent.absolute()
-    return os.path.join(parent_dir, 'data', dataset_name)
+    tests_path = get_tests_path()
+    return os.path.join(tests_path, 'integration', 'data', dataset_name)
 
 
 def _generate_test_configuration(dataset_name, measurement_mode=MeasurementMode.IEEG,):
