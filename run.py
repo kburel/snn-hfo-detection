@@ -1,3 +1,5 @@
+#!/usr/bin/env python3
+
 import argparse
 from typing import List, NamedTuple
 from snn_hfo_ieeg.stages.shared_config import Configuration, MeasurementMode

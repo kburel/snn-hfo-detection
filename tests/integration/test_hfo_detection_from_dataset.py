@@ -3,7 +3,7 @@ from pathlib import Path
 import pytest
 from snn_hfo_ieeg.functions.hfo_detection import HfoDetection, Periods, PlottingData
 from snn_hfo_ieeg.stages.shared_config import Configuration, MeasurementMode
-from run_test_snn_ieeg import CustomOverrides, run_hfo_detection_for_all_channels
+from run import CustomOverrides, run_hfo_detection_for_all_channels
 from tests.utility import are_hfo_detections_equal
 
 EMPTY_CUSTOM_OVERRIDES = CustomOverrides(
