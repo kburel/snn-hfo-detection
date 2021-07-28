@@ -1,6 +1,7 @@
 #!/usr/bin/env python3
 
 import argparse
+from snn_hfo_ieeg.stages.loading.folder_discovery import get_patient_interval_paths
 from typing import List, NamedTuple
 from snn_hfo_ieeg.stages.shared_config import Configuration, MeasurementMode
 from snn_hfo_ieeg.functions.filter import *
@@ -22,39 +23,35 @@ def _calculate_duration(signal_time):
 
 
 def run_hfo_detection_for_all_channels(configuration, custom_overrides, hfo_cb):
-    # Select Data from a single patient
-    patient = 1
-    # interval
-    current_interval = 1
+    patient_intervals_paths = get_patient_interval_paths(
+        configuration.data_path)
+    for patient, intervals in patient_intervals_paths:
+        for interval, interval_path in intervals:
+            patient_data = load_patient_data(interval_path)
+            duration = custom_overrides.duration if custom_overrides.duration is not None else _calculate_duration(
+                patient_data.signal_time)
 
-    patient_data = load_patient_data(
-        patient=patient,
-        interval=current_interval,
-        data_path=configuration.data_path)
-    duration = custom_overrides.duration if custom_overrides.duration is not None else _calculate_duration(
-        patient_data.signal_time)
+            for channel in range(len(patient_data.wideband_signals)):
+                if custom_overrides.channels is not None and channel not in custom_overrides.channels:
+                    continue
 
-    for channel in range(len(patient_data.wideband_signals)):
-        if custom_overrides.channels is not None and channel not in custom_overrides.channels:
-            continue
+                channel_data = extract_channel_data(patient_data, channel)
 
-        channel_data = extract_channel_data(patient_data, channel)
+                print(
+                    f'Running test for Patient {patient}, interval {interval} and channel {channel}')
 
-        print(
-            f'Running test for Patient {patient}, interval {current_interval} and channel {channel}')
+                print(f'SNN simulation will run for {duration} seconds')
+                hfo_detection = run_hfo_detection(
+                    channel_data=channel_data,
+                    duration=duration,
+                    configuration=configuration)
 
-        print(f'SNN simulation will run for {duration} seconds')
-        hfo_detection = run_hfo_detection(
-            channel_data=channel_data,
-            duration=duration,
-            configuration=configuration)
+                print('Number of HFO events: ', hfo_detection.total_amount)
+                print('Rate of HFO (event/min)',
+                      np.around(hfo_detection.frequency * 60, decimals=2))
+                print('----')
 
-        print('Number of HFO events: ', hfo_detection.total_amount)
-        print('Rate of HFO (event/min)',
-              np.around(hfo_detection.frequency * 60, decimals=2))
-        print('----')
-
-        hfo_cb(hfo_detection)
+                hfo_cb(hfo_detection)
 
 
 def _parse_arguments():
