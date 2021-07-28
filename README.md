@@ -87,7 +87,7 @@ poetry run ./run.py --help
 And if you're still stuck, feel free to open an [issue](https://github.com/kburel/SNN_HFO_iEEG/issues/new) and we will help.
 
 
-# Support
+## Support
 
 ## This code has been written originally by:
 * Karla Burelo

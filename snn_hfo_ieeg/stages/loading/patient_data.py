@@ -1,5 +1,4 @@
 from typing import NamedTuple
-import os
 import numpy as np
 import scipy.io as sio
 
@@ -20,9 +19,8 @@ class ChannelData(NamedTuple):
     signal_time: np.array
 
 
-def load_patient_data(patient, interval, data_path):
-    file_name = f'P{patient}/I{interval}.mat'
-    interval = sio.loadmat(os.path.join(data_path, file_name))
+def load_patient_data(full_intervals_path):
+    interval = sio.loadmat(full_intervals_path)
     return PatientData(
         wideband_signals=interval['channels'],
         signal_time=interval['times'][0])

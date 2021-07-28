@@ -1,3 +1,4 @@
+import pathlib
 import pytest
 import numpy as np
 
@@ -16,3 +17,7 @@ def are_hfo_detections_equal(first_hfo, second_hfo):
         and are_values_same(lambda hfo: hfo.plotting_data.detections) \
         and are_values_same(lambda hfo: hfo.plotting_data.periods.start) \
         and are_values_same(lambda hfo: hfo.plotting_data.periods.stop)
+
+
+def get_tests_path():
+    return pathlib.Path(__file__).parent.resolve()
