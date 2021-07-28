@@ -1,11 +1,7 @@
 import argparse
 import sys
 from snn_hfo_ieeg.stages.shared_config import Configuration, MeasurementMode
-from snn_hfo_ieeg.functions.filter import *
-from snn_hfo_ieeg.functions.dynapse_biases import *
-from snn_hfo_ieeg.functions.signal_to_spike import *
-from snn_hfo_ieeg.functions.hfo_detection import *
-from snn_hfo_ieeg.hfo_detection import CustomOverrides
+from snn_hfo_ieeg.entrypoint.hfo_detection import CustomOverrides
 
 
 def parse_arguments():

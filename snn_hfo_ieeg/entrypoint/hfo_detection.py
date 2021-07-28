@@ -1,8 +1,6 @@
 from typing import List, NamedTuple
-from snn_hfo_ieeg.functions.filter import *
-from snn_hfo_ieeg.functions.dynapse_biases import *
-from snn_hfo_ieeg.functions.signal_to_spike import *
-from snn_hfo_ieeg.functions.hfo_detection import *
+import numpy as np
+from snn_hfo_ieeg.functions.hfo_detection import HfoDetection
 from snn_hfo_ieeg.stages.all import run_all_hfo_detection_stages
 from snn_hfo_ieeg.stages.loading.patient_data import load_patient_data, extract_channel_data
 from snn_hfo_ieeg.stages.loading.folder_discovery import get_patient_interval_paths

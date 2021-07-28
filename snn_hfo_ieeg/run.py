@@ -1,10 +1,5 @@
-from snn_hfo_ieeg.functions.filter import *
-from snn_hfo_ieeg.functions.dynapse_biases import *
-from snn_hfo_ieeg.functions.signal_to_spike import *
-from snn_hfo_ieeg.functions.hfo_detection import *
-from snn_hfo_ieeg.hfo_detection import run_hfo_detection_with_configuration
-from snn_hfo_ieeg.argument_parsing import parse_arguments, convert_arguments_to_config, convert_arguments_to_custom_overrides
-
+from snn_hfo_ieeg.entrypoint.hfo_detection import run_hfo_detection_with_configuration
+from snn_hfo_ieeg.entrypoint.argument_parsing import parse_arguments, convert_arguments_to_config, convert_arguments_to_custom_overrides
 
 def run_hfo_detection(hfo_cb):
     arguments = parse_arguments()
