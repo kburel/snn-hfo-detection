@@ -6,7 +6,7 @@ from teili.core.groups import Neurons, Connections
 from teili.models.builder.neuron_equation_builder import NeuronEquationBuilder
 from teili.models.builder.synapse_equation_builder import SynapseEquationBuilder
 from snn_hfo_ieeg.functions.signal_to_spike import concatenate_spikes
-from snn_hfo_ieeg.functions.dynapse_biases import get_tau_current
+from snn_hfo_ieeg.functions.dynapse_biases import get_current
 from snn_hfo_ieeg.stages.snn.tau_generation import generate_concatenated_taus
 from snn_hfo_ieeg.stages.snn.weight_generation import generate_weights
 from snn_hfo_ieeg.stages.snn.model_paths import load_model_paths
@@ -68,7 +68,7 @@ def _create_synapses(input_layer, hidden_layer, model_paths, neuron_counts):
 
     synapses.weight = generate_weights(neuron_counts)
     taus = generate_concatenated_taus(neuron_counts)
-    synapses.I_tau = get_tau_current(taus*1e-3, True) * amp
+    synapses.I_tau = get_current(taus*1e-3) * amp
 
     return synapses
 
