@@ -77,12 +77,12 @@ SNN_HFO_iEEG/data/P1/P1I1.mat
 ```
 then run the code via
 ```bash
-poetry run python run_test_snn_ieeg.py <mode>
+poetry run ./run.py <mode>
 ```
 where `<mode>` is one of either `ieeg`, `ecog` or `scalp`.
 If you run into problems, you can always run
 ```bash
-poetry run python run_test_snn_ieeg.py --help
+poetry run ./run.py --help
 ``` 
 And if you're still stuck, feel free to open an [issue](https://github.com/kburel/SNN_HFO_iEEG/issues/new) and we will help.
 
