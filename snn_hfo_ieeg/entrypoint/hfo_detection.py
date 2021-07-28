@@ -39,7 +39,7 @@ def run_hfo_detection_with_configuration(configuration, custom_overrides, hfo_cb
             duration = custom_overrides.duration if custom_overrides.duration is not None else _calculate_duration(
                 patient_data.signal_time)
 
-            for channel in range(len(patient_data.wideband_signals)):
+            for channel in range(1, len(patient_data.wideband_signals) + 1):
                 if custom_overrides.channels is not None and channel not in custom_overrides.channels:
                     continue
 
