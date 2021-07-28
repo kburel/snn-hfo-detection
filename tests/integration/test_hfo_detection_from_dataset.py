@@ -82,7 +82,7 @@ def test_ecog_hfo_detection():
         hfo_cb=_generate_add_detected_hfo_to_list_cb(detected_hfos))
     assert len(detected_hfos) == 1
     hfo = detected_hfos[0]
-    assert hfo.total_amount == 7 or hfo.total_amount == 8
+    assert 6 <= hfo.total_amount <= 8
     assert hfo.frequency == pytest.approx(0.09327177, abs=0.02)
     ecog_accuracy = 0.01
     _assert_contains_at_least(expected_values=[4.36, 9.85, 15.64, 34.67, 36.13, 43.52, 53.64],
