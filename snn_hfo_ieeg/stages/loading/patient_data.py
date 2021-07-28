@@ -1,8 +1,6 @@
 from typing import NamedTuple
-import os
 import numpy as np
 import scipy.io as sio
-from snn_hfo_ieeg.stages.loading.folder_discovery import get_patient_interval_paths
 
 
 class PatientData(NamedTuple):

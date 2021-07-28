@@ -1,6 +1,6 @@
-import pytest
 import numpy as np
 import pathlib
+import pytest
 
 
 def are_lists_approximately_equal(first_list, second_list):
