@@ -41,12 +41,15 @@ def _find_name(name, plotting_functions):
 
 
 def find_plotting_functions(plot_names):
+    unique_plot_names = list(set(plot_names))
+
     channel_fns = []
     total_fns = []
     plotting_functions = _get_available_plotting_functions()
-    for plot_name in plot_names:
+    for plot_name in unique_plot_names:
         channel_fn = _find_name(plot_name, plotting_functions.channel)
         total_fn = _find_name(plot_name, plotting_functions.total)
+
         if channel_fn is None and total_fn is None:
             raise ValueError(
                 f'run.py: error: the desired plot "{plot_name}" was not found.')
