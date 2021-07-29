@@ -15,7 +15,7 @@ def parse_arguments():
     parser.add_argument('--duration', type=float, default=None,
                         help='How many seconds of the dataset should be processed. By default, the entire dataset will be processed')
     parser.add_argument('--channels', type=int, default=None, nargs='+',
-                        help='Which channels of the dataset should be processed. By default, all channels will be processed')
+                        help='Which channels of the dataset should be processed, using 1 based indexing. By default, all channels will be processed')
     parser.add_argument('--patients', type=int, default=None, nargs='+',
                         help='Which patients should be processed. By default, all patients will be processed')
     parser.add_argument('--intervals', type=int, default=None, nargs='+',
