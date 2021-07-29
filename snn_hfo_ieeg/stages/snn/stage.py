@@ -82,26 +82,32 @@ class Cache(NamedTuple):
     network: Network
 
 
+def _create_cache(configuration):
+    model_paths = load_model_paths()
+    neuron_counts = _read_neuron_counts(configuration)
+    hidden_layer = _create_hidden_layer(
+        model_paths, neuron_counts.hidden)
+    spike_monitor_hidden = SpikeMonitor(hidden_layer)
+    network = Network(
+        hidden_layer, spike_monitor_hidden)
+    cache = Cache(
+        model_paths=model_paths,
+        neuron_counts=neuron_counts,
+        hidden_layer=hidden_layer,
+        spike_monitor_hidden=spike_monitor_hidden,
+        network=network
+    )
+    cache.network.store()
+    return cache
+
+
 def snn_stage(filtered_spikes, duration, configuration, cache: Cache):
     warnings.simplefilter("ignore", DeprecationWarning)
     if cache is None:
-        model_paths = load_model_paths()
-        neuron_counts = _read_neuron_counts(configuration)
-        hidden_layer = _create_hidden_layer(
-            model_paths, neuron_counts.hidden)
-        spike_monitor_hidden = SpikeMonitor(hidden_layer)
-        network = Network(
-            hidden_layer, spike_monitor_hidden)
-        cache = Cache(
-            model_paths=model_paths,
-            neuron_counts=neuron_counts,
-            hidden_layer=hidden_layer,
-            spike_monitor_hidden=spike_monitor_hidden,
-            network=network
-        )
-        cache.network.store()
+        cache = _create_cache(configuration)
 
     cache.network.restore()
+
     input_layer = _create_input_layer(
         filtered_spikes, cache.neuron_counts.input)
     cache.network.add(input_layer)
