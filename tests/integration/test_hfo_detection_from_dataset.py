@@ -1,5 +1,6 @@
 import os
 import pytest
+import numpy as np
 from snn_hfo_ieeg.functions.hfo_detection import HfoDetection, Periods, Analytics, HfoDetectionWithAnalytics
 from snn_hfo_ieeg.stages.shared_config import Configuration, MeasurementMode
 from snn_hfo_ieeg.entrypoint.hfo_detection import CustomOverrides, run_hfo_detection_with_configuration
@@ -62,6 +63,8 @@ def _generate_add_detected_hfo_to_list_cb(detected_hfos):
 
 
 def test_iieg_hfo_detection():
+    np.random.seed(0)
+
     detected_hfos = []
     run_hfo_detection_with_configuration(
         configuration=_generate_test_configuration('ieeg'),
@@ -74,6 +77,8 @@ def test_iieg_hfo_detection():
     assert hfo.analytics.periods.start == [pytest.approx(0)]
     assert hfo.analytics.periods.stop == [pytest.approx(0.0605)]
 
+    np.random.seed(None)
+
 
 def _assert_contains_at_least(expected_values, actual_values, accuracy):
     assert all(pytest.approx(expected_value, abs=accuracy)
@@ -81,6 +86,8 @@ def _assert_contains_at_least(expected_values, actual_values, accuracy):
 
 
 def test_ecog_hfo_detection():
+    np.random.seed(0)
+
     detected_hfos = []
     run_hfo_detection_with_configuration(
         configuration=_generate_test_configuration(
@@ -99,3 +106,5 @@ def test_ecog_hfo_detection():
     _assert_contains_at_least(expected_values=[4.4605, 9.9405, 15.7305, 36.2205, 43.6205, 53.73],
                               actual_values=hfo.analytics.periods.stop,
                               accuracy=ecog_accuracy)
+
+    np.random.seed(None)
