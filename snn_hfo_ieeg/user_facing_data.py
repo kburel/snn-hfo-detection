@@ -1,4 +1,4 @@
-from typing import List, NamedTuple
+from typing import List, NamedTuple, Optional
 import numpy as np
 
 
@@ -8,6 +8,22 @@ class SpikeTrains(NamedTuple):
     '''
     up: np.array
     down: np.array
+
+
+class FilteredSpikes(NamedTuple):
+    '''
+    Spikes in the filtered bandwidths. If some of these are None, it means
+    that they are not suited for analysis in the specified MeasurementMode
+
+    Parameters
+    -------
+    ripple : Optional[SpikeTrains]
+        Spikes in the ripple bandwidth (80-250 Hz).
+    fast_ripple: Optional[SpikeTrains]
+        Spikes in the fast ripple bandwidth (250-500 Hz).
+    '''
+    ripple: Optional[SpikeTrains]
+    fast_ripple: Optional[SpikeTrains]
 
 
 class HfoDetection(NamedTuple):
@@ -52,14 +68,14 @@ class Analytics(NamedTuple):
         List of all analyzed timestamps.
     periods : Periods
         The start and end times in which HFOs were detected.
-    filtered_spikes : List[SpikeTrains]
+    filtered_spikes : FilteredSpikes
         The spike trains of the filtered bandwidths used for this detection
 
     '''
     detections: np.array
     analyzed_times: np.array
     periods: Periods
-    filtered_spikes: List[SpikeTrains]
+    filtered_spikes: FilteredSpikes
 
 
 class HfoDetectionWithAnalytics(NamedTuple):
