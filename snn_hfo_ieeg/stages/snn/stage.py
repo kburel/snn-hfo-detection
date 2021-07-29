@@ -1,5 +1,5 @@
-from functools import reduce
 import warnings
+from functools import reduce
 from brian2 import start_scope, run, SpikeGeneratorGroup, SpikeMonitor
 from brian2.units import us, amp, second
 from teili.core.groups import Neurons, Connections
@@ -21,7 +21,9 @@ def _append_spikes(spikes, spike_train):
 
 
 def _concatenate_filtered_spikes(filtered_spikes):
-    spikes = reduce(_append_spikes, filtered_spikes, [])
+    spike_trains = [
+        spike_trains for spike_trains in filtered_spikes if spike_trains is not None]
+    spikes = reduce(_append_spikes, spike_trains, [])
     return concatenate_spikes(spikes)
 
 

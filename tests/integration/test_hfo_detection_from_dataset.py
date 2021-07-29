@@ -1,11 +1,12 @@
 import pytest
 import numpy as np
-from snn_hfo_ieeg.functions.hfo_detection import HfoDetection, Periods, Analytics, HfoDetectionWithAnalytics
+from snn_hfo_ieeg.user_facing_data import HfoDetection, Periods, Analytics, HfoDetectionWithAnalytics
 from snn_hfo_ieeg.stages.shared_config import Configuration, MeasurementMode
 from snn_hfo_ieeg.entrypoint.hfo_detection import run_hfo_detection_with_configuration
 from snn_hfo_ieeg.stages.plotting.plot_factory import Plots
 from tests.utility import are_hfo_detections_equal, are_lists_approximately_equal
 from tests.integration.utility import get_hfo_directory, EMPTY_CUSTOM_OVERRIDES
+from snn_hfo_ieeg.stages.filter import FilteredSpikes
 
 
 def _generate_test_configuration(dataset_name, measurement_mode=MeasurementMode.IEEG,):
@@ -33,7 +34,9 @@ def _assert_dummy_hfo_is_empty(_metadata, hfo_detector):
             periods=Periods(
                 start=[],
                 stop=[]
-            )
+            ),
+            filtered_spikes=FilteredSpikes(
+                ripple=None, fast_ripple=None)  # Not inspected
         ))
     hfo_detection = hfo_detector.run_with_analytics()
     assert are_hfo_detections_equal(
