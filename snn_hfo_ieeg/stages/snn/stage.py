@@ -22,7 +22,9 @@ def _append_spikes(spikes, spike_train):
 
 
 def _concatenate_filtered_spikes(filtered_spikes):
-    spikes = reduce(_append_spikes, filtered_spikes, [])
+    spike_trains = [
+        spike_trains for spike_trains in filtered_spikes if spike_trains is not None]
+    spikes = reduce(_append_spikes, spike_trains, [])
     return concatenate_spikes(spikes)
 
 
