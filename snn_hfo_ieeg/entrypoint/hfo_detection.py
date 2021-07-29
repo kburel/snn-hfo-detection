@@ -5,7 +5,6 @@ from snn_hfo_ieeg.stages.all import run_all_hfo_detection_stages
 from snn_hfo_ieeg.user_facing_data import HfoDetection, HfoDetectionWithAnalytics
 from snn_hfo_ieeg.stages.loading.patient_data import load_patient_data, extract_channel_data
 from snn_hfo_ieeg.stages.loading.folder_discovery import get_patient_interval_paths
-from snn_hfo_ieeg.stages.plotting.plot import plot_for_total
 
 
 class CustomOverrides(NamedTuple):
@@ -89,5 +88,5 @@ def run_hfo_detection_with_configuration(configuration, custom_overrides, hfo_cb
                 if should_collect_all_data and hfo_detector.last_run is not None:
                     all_hfo_detections_with_analytics.append(
                         hfo_detector.last_run)
-    plot_for_total(all_hfo_detections_with_analytics,
-                   configuration.plots.total)
+    for _, plotting_function in configuration.plots.total:
+        plotting_function(all_hfo_detections_with_analytics)

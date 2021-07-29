@@ -2,7 +2,7 @@ import argparse
 import sys
 from snn_hfo_ieeg.stages.shared_config import Configuration, MeasurementMode
 from snn_hfo_ieeg.entrypoint.hfo_detection import CustomOverrides
-from snn_hfo_ieeg.stages.plotting.plot_factory import ChannelPlotKind, Plots, TotalPlotKind
+from snn_hfo_ieeg.stages.plotting.plot_loader import find_plotting_functions
 
 
 def parse_arguments():
@@ -29,22 +29,11 @@ def parse_arguments():
     return parser.parse_args()
 
 
-def _convert_all_to_enum_if_possible(variants, enum):
-    upper_variants = [variant.upper() for variant in variants]
-    valid_names = enum.__members__.keys()
-    return [enum[plot_name]
-            for plot_name in upper_variants if plot_name in valid_names]
-
-
-def _sort_plot_arguments(plot_arguments):
-    channel_plot_kinds = _convert_all_to_enum_if_possible(
-        plot_arguments, ChannelPlotKind)
-    total_plot_kinds = _convert_all_to_enum_if_possible(
-        plot_arguments, TotalPlotKind)
-    return Plots(
-        channel=channel_plot_kinds,
-        total=total_plot_kinds
-    )
+def _get_selected_plots(plot_names):
+    try:
+        return find_plotting_functions(plot_names)
+    except ValueError as error:
+        sys.exit(f'run.py: error: {error}')
 
 
 def convert_arguments_to_config(arguments):
@@ -52,7 +41,7 @@ def convert_arguments_to_config(arguments):
         data_path=arguments.data_path,
         measurement_mode=MeasurementMode[arguments.mode.upper()],
         hidden_neuron_count=arguments.hidden_neurons,
-        plots=_sort_plot_arguments(arguments.plot)
+        plots=_get_selected_plots(arguments.plot)
     )
 
 

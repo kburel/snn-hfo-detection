@@ -1,5 +1,4 @@
 from brian2.units import second
-from snn_hfo_ieeg.stages.plotting.plot import plot_for_channel
 from snn_hfo_ieeg.stages.filter import filter_stage
 from snn_hfo_ieeg.stages.snn.stage import snn_stage
 from snn_hfo_ieeg.functions.hfo_detection import detect_hfo
@@ -41,5 +40,6 @@ def run_all_hfo_detection_stages(channel_data, duration, configuration):
                                window_size=HFO_DETECTION_WINDOW_SIZE)
     user_facing_hfo_detection = _convert_inner_hfo_detection_to_user_facing_one(
         hfo_detection, filtered_spikes, spike_monitor_hidden)
-    plot_for_channel(user_facing_hfo_detection, configuration.plots.channel)
+    for _, plotting_function in configuration.plots.channel:
+        plotting_function(user_facing_hfo_detection)
     return user_facing_hfo_detection

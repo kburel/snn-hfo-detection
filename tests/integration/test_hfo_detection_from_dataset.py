@@ -1,12 +1,11 @@
+from snn_hfo_ieeg.stages.plotting.plot_loader import PlottingFunctions
 import pytest
 import numpy as np
 from snn_hfo_ieeg.user_facing_data import HfoDetection, Periods, Analytics, HfoDetectionWithAnalytics
 from snn_hfo_ieeg.stages.shared_config import Configuration, MeasurementMode
 from snn_hfo_ieeg.entrypoint.hfo_detection import run_hfo_detection_with_configuration
-from snn_hfo_ieeg.stages.plotting.plot_factory import Plots
 from tests.utility import are_hfo_detections_equal, are_lists_approximately_equal
 from tests.integration.utility import get_hfo_directory, EMPTY_CUSTOM_OVERRIDES
-from snn_hfo_ieeg.stages.filter import FilteredSpikes
 
 
 def _generate_test_configuration(dataset_name, measurement_mode=MeasurementMode.IEEG,):
@@ -14,7 +13,7 @@ def _generate_test_configuration(dataset_name, measurement_mode=MeasurementMode.
         data_path=get_hfo_directory(dataset_name),
         measurement_mode=measurement_mode,
         hidden_neuron_count=86,
-        plots=Plots(
+        plots=PlottingFunctions(
             channel=[],
             total=[]
         )
