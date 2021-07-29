@@ -1,6 +1,7 @@
+from copy import deepcopy
 from typing import List, NamedTuple
 import numpy as np
-from snn_hfo_ieeg.functions.hfo_detection import HfoDetection
+from snn_hfo_ieeg.functions.hfo_detection import HfoDetection, HfoDetectionWithAnalytics
 from snn_hfo_ieeg.stages.all import run_all_hfo_detection_stages
 from snn_hfo_ieeg.stages.loading.patient_data import load_patient_data, extract_channel_data
 from snn_hfo_ieeg.stages.loading.folder_discovery import get_patient_interval_paths
@@ -13,17 +14,44 @@ class CustomOverrides(NamedTuple):
     intervals: List[int]
 
 
-class HfoDetectionRun(NamedTuple):
+class Metadata(NamedTuple):
     patient: int
     interval: int
     channel: int
     duration: float
-    hfo_detection: HfoDetection
+
+
+class HfoDetector():
+    def __init__(self, hfo_detection_cb, hfo_detection_with_analytics_cb):
+        self._hfo_detection_cb = hfo_detection_cb
+        self._hfo_detection_with_analytics_cb = hfo_detection_with_analytics_cb
+
+    def run(self) -> HfoDetection:
+        return self._hfo_detection_cb()
+
+    def run_with_analytics(self) -> HfoDetectionWithAnalytics:
+        return self._hfo_detection_with_analytics_cb()
 
 
 def _calculate_duration(signal_time):
     extra_simulation_time = 0.050
     return np.max(signal_time) + extra_simulation_time
+
+
+def _generate_hfo_detection_cb(channel_data, duration, configuration):
+    inner_channel_data = deepcopy(channel_data)
+    inner_configuration = deepcopy(configuration)
+    return lambda: run_all_hfo_detection_stages(
+        channel_data=inner_channel_data,
+        duration=duration,
+        configuration=inner_configuration)
+
+
+def _generate_hfo_detector(channel_data, duration, configuration):
+    hfo_detection_cb = _generate_hfo_detection_cb(
+        channel_data, duration, configuration)
+    return HfoDetector(
+        lambda: hfo_detection_cb().result, hfo_detection_cb)
 
 
 def run_hfo_detection_with_configuration(configuration, custom_overrides, hfo_cb):
@@ -44,17 +72,13 @@ def run_hfo_detection_with_configuration(configuration, custom_overrides, hfo_cb
                     continue
 
                 channel_data = extract_channel_data(patient_data, channel)
-                hfo_detection = run_all_hfo_detection_stages(
-                    channel_data=channel_data,
-                    duration=duration,
-                    configuration=configuration)
-
-                hfo_detection_run = HfoDetectionRun(
+                metadata = Metadata(
                     patient=patient,
                     interval=interval,
                     channel=channel + 1,
-                    hfo_detection=hfo_detection,
                     duration=duration
                 )
+                hfo_detector = _generate_hfo_detector(
+                    channel_data, duration, configuration)
 
-                hfo_cb(hfo_detection_run)
+                hfo_cb(metadata, hfo_detector)

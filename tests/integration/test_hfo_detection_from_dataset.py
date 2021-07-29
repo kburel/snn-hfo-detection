@@ -1,6 +1,6 @@
 import os
 import pytest
-from snn_hfo_ieeg.functions.hfo_detection import HfoDetection, Periods, PlottingData
+from snn_hfo_ieeg.functions.hfo_detection import HfoDetection, Periods, Analytics, HfoDetectionWithAnalytics
 from snn_hfo_ieeg.stages.shared_config import Configuration, MeasurementMode
 from snn_hfo_ieeg.entrypoint.hfo_detection import CustomOverrides, run_hfo_detection_with_configuration
 from tests.utility import are_hfo_detections_equal, get_tests_path
@@ -26,11 +26,12 @@ def _generate_test_configuration(dataset_name, measurement_mode=MeasurementMode.
     )
 
 
-def _assert_dummy_hfo_is_empty(hfo_detection_run):
-    expected_hfo_detection = HfoDetection(
-        total_amount=0,
-        frequency=0,
-        plotting_data=PlottingData(
+def _assert_dummy_hfo_is_empty(_metadata, hfo_detector):
+    expected_hfo_detection = HfoDetectionWithAnalytics(
+        result=HfoDetection(
+            total_amount=0,
+            frequency=0),
+        analytics=Analytics(
             detections=[0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
             analyzed_times=[0., 0.0005, 0.001, 0.0015,
                             0.002, 0.0025, 0.003, 0.0035,
@@ -40,8 +41,9 @@ def _assert_dummy_hfo_is_empty(hfo_detection_run):
                 stop=[]
             )
         ))
+    hfo_detection = hfo_detector.run_with_analytics()
     assert are_hfo_detections_equal(
-        expected_hfo_detection, hfo_detection_run.hfo_detection)
+        expected_hfo_detection, hfo_detection)
 
 
 def test_dummy_data():
@@ -51,10 +53,12 @@ def test_dummy_data():
         hfo_cb=_assert_dummy_hfo_is_empty)
 
 
-def _generate_add_detected_hfo_to_list_cb(list):
-    return lambda hfo_detection_run: list.append(hfo_detection_run.hfo_detection)\
-        if hfo_detection_run.hfo_detection.total_amount != 0 \
-        else None
+def _generate_add_detected_hfo_to_list_cb(detected_hfos):
+    def add_detected_hfo_to_list(_metadata, hfo_detector):
+        hfo_detection_with_analytics = hfo_detector.run_with_analytics()
+        if hfo_detection_with_analytics.result.total_amount != 0:
+            detected_hfos.append(hfo_detection_with_analytics)
+    return add_detected_hfo_to_list
 
 
 def test_iieg_hfo_detection():
@@ -65,10 +69,10 @@ def test_iieg_hfo_detection():
         hfo_cb=_generate_add_detected_hfo_to_list_cb(detected_hfos))
     assert len(detected_hfos) == 1
     hfo = detected_hfos[0]
-    assert hfo.total_amount == 1
-    assert hfo.frequency == pytest.approx(0.01998021)
-    assert hfo.plotting_data.periods.start == [pytest.approx(0)]
-    assert hfo.plotting_data.periods.stop == [pytest.approx(0.0605)]
+    assert hfo.result.total_amount == 1
+    assert hfo.result.frequency == pytest.approx(0.01998021)
+    assert hfo.analytics.periods.start == [pytest.approx(0)]
+    assert hfo.analytics.periods.stop == [pytest.approx(0.0605)]
 
 
 def _assert_contains_at_least(expected_values, actual_values, accuracy):
@@ -85,13 +89,13 @@ def test_ecog_hfo_detection():
         hfo_cb=_generate_add_detected_hfo_to_list_cb(detected_hfos))
     assert len(detected_hfos) == 1
     hfo = detected_hfos[0]
-    assert 6 <= hfo.total_amount <= 8
+    assert 6 <= hfo.result.total_amount <= 8
     ecog_accuracy = 0.02
-    assert hfo.frequency == pytest.approx(0.09327177, abs=ecog_accuracy)
+    assert hfo.result.frequency == pytest.approx(0.09327177, abs=ecog_accuracy)
     _assert_contains_at_least(expected_values=[4.36, 9.85, 15.64, 36.13, 43.52, 53.64],
-                              actual_values=hfo.plotting_data.periods.start,
+                              actual_values=hfo.analytics.periods.start,
                               accuracy=ecog_accuracy)
 
     _assert_contains_at_least(expected_values=[4.4605, 9.9405, 15.7305, 36.2205, 43.6205, 53.73],
-                              actual_values=hfo.plotting_data.periods.stop,
+                              actual_values=hfo.analytics.periods.stop,
                               accuracy=ecog_accuracy)

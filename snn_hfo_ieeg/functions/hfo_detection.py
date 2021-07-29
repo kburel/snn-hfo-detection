@@ -26,7 +26,7 @@ class Periods(NamedTuple):
     stop: np.array
 
 
-class PlottingData(NamedTuple):
+class Analytics(NamedTuple):
     '''
     Convenience data that can be used for plotting.
 
@@ -54,12 +54,24 @@ class HfoDetection(NamedTuple):
         The measured frequency of HFOs per second. This is the most important value.
     total_amount : int
         Total amount of detected HFOs over the entire dataset.
-    plotting_data : PlottingData
-        Convenience data that a user can use for their plotting.
     '''
     frequency: float
     total_amount: int
-    plotting_data: PlottingData
+
+
+class HfoDetectionWithAnalytics(NamedTuple):
+    '''
+    The result of the SNNs HFO detection
+
+    Parameters
+    -----
+    result : HfoDetection
+        The HFO detection result
+    analytics : Analytics
+        Convenience data that a user can use for their plotting.
+    '''
+    result: HfoDetection
+    analytics: Analytics
 
 
 def _did_snn_find_hfo(spike_times, window):
@@ -128,10 +140,12 @@ def detect_hfo(duration, spike_times, signal_times, step_size, window_size):
     periods = _find_periods(binary_hfo_signal, signal_times)
     flat_periods = _flatten_periods(periods)
 
-    return HfoDetection(
-        total_amount=len(periods),
-        frequency=len(periods)/duration,
-        plotting_data=PlottingData(
+    return HfoDetectionWithAnalytics(
+        result=HfoDetection(
+            total_amount=len(periods),
+            frequency=len(periods)/duration,
+        ),
+        analytics=Analytics(
             detections=binary_hfo_signal,
             analyzed_times=signal_times,
             periods=flat_periods
