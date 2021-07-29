@@ -18,11 +18,12 @@ class PlottingFunctions(NamedTuple):
 
 
 def _get_plotting_functions(module):
-    all_functions = getmembers(module, isfunction)
+    all_names_and_functions = getmembers(module, isfunction)
     potential_matches = [PLOTTING_REGEX.match(
-        name) for name, _fn in all_functions]
-    actual_matches = [(potential_match.group(1), function[1])
-                      for potential_match, function in zip(potential_matches, all_functions)
+        name) for name, _fn in all_names_and_functions]
+    functions = [fn for _name, fn in all_names_and_functions]
+    actual_matches = [(potential_match.group(1), function)
+                      for potential_match, function in zip(potential_matches, functions)
                       if potential_match is not None]
     return [PlottingFunction(name, function) for name, function in actual_matches]
 
