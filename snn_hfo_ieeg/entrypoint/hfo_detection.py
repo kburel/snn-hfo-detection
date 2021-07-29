@@ -6,6 +6,8 @@ from snn_hfo_ieeg.stages.all import run_all_hfo_detection_stages
 from snn_hfo_ieeg.stages.loading.patient_data import load_patient_data, extract_channel_data
 from snn_hfo_ieeg.stages.loading.folder_discovery import get_patient_interval_paths
 
+_SNN_CACHE = {}
+
 
 class CustomOverrides(NamedTuple):
     duration: float
@@ -44,7 +46,8 @@ def _generate_hfo_detection_cb(channel_data, duration, configuration):
     return lambda: run_all_hfo_detection_stages(
         channel_data=inner_channel_data,
         duration=duration,
-        configuration=inner_configuration)
+        configuration=inner_configuration,
+        snn_cache=_SNN_CACHE)
 
 
 def _generate_hfo_detector(channel_data, duration, configuration):

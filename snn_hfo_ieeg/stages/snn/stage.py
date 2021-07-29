@@ -1,6 +1,6 @@
 from functools import reduce
 import warnings
-from brian2 import start_scope, run, SpikeGeneratorGroup, SpikeMonitor
+from brian2 import Network, run, SpikeGeneratorGroup, SpikeMonitor, store, restore
 from brian2.units import us, amp, second
 from teili.core.groups import Neurons, Connections
 from teili.models.builder.neuron_equation_builder import NeuronEquationBuilder
@@ -73,24 +73,31 @@ def _create_synapses(input_layer, hidden_layer, model_paths, neuron_counts):
     return synapses
 
 
-def snn_stage(filtered_spikes, duration, configuration):
+def snn_stage(filtered_spikes, duration, configuration, cache):
     warnings.simplefilter("ignore", DeprecationWarning)
-    start_scope()
+    if len(cache) == 0:
+        cache['model_paths'] = load_model_paths()
+        cache['neuron_counts'] = _read_neuron_counts(configuration)
+        cache['hidden_layer'] = _create_hidden_layer(
+            cache['model_paths'], cache['neuron_counts'].hidden)
+        cache['spike_monitor_hidden'] = SpikeMonitor(cache['hidden_layer'])
+        cache['network'] = Network(
+            cache['hidden_layer'], cache['spike_monitor_hidden'])
+        cache['network'].store()
 
-    model_paths = load_model_paths()
-    neuron_counts = _read_neuron_counts(configuration)
+    cache['network'].restore()
     input_layer = _create_input_layer(
-        filtered_spikes, neuron_counts.input)
-    hidden_layer = _create_hidden_layer(
-        model_paths, neuron_counts.hidden)
-    # Do not remove the following variable, otherwise its lifetime is too narrow
-    _synapses = _create_synapses(
+        filtered_spikes, cache['neuron_counts'].input)
+    cache['network'].add(input_layer)
+    synapses = _create_synapses(
         input_layer,
-        hidden_layer,
-        model_paths,
-        neuron_counts)
+        cache['hidden_layer'],
+        cache['model_paths'],
+        cache['neuron_counts'])
 
-    spike_monitor_hidden = SpikeMonitor(hidden_layer)
-    run(duration * second)
+    cache['network'].add(synapses)
+    cache['network'].run(duration * second)
+    cache['network'].remove(input_layer)
+    cache['network'].remove(synapses)
 
-    return spike_monitor_hidden
+    return cache['spike_monitor_hidden']
