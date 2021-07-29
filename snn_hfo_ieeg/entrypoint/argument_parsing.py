@@ -2,6 +2,7 @@ import argparse
 import sys
 from snn_hfo_ieeg.stages.shared_config import Configuration, MeasurementMode
 from snn_hfo_ieeg.entrypoint.hfo_detection import CustomOverrides
+from snn_hfo_ieeg.plotting.plot_kinds import PlotKind
 
 
 def parse_arguments():
@@ -23,6 +24,8 @@ def parse_arguments():
                         help='Which patients should be processed. By default, all patients will be processed')
     parser.add_argument('--intervals', type=int, default=None, nargs='+',
                         help='Which intervals should be processed. By default, all intervals will be processed. Only works when --patients was called beforehand with exactly one patient number.')
+    parser.add_argument('--plot', type=str, default=None, nargs='+',
+                        help='Which plots should be generated during the HFO detection. Possible values: TODO')
     return parser.parse_args()
 
 
@@ -30,7 +33,8 @@ def convert_arguments_to_config(arguments):
     return Configuration(
         data_path=arguments.data_path,
         measurement_mode=MeasurementMode[arguments.mode.upper()],
-        hidden_neuron_count=arguments.hidden_neurons
+        hidden_neuron_count=arguments.hidden_neurons,
+        plots=PlotKind[arguments.plot.upper()]
     )
 
 

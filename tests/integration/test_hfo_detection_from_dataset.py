@@ -24,6 +24,7 @@ def _generate_test_configuration(dataset_name, measurement_mode=MeasurementMode.
         data_path=_get_hfo_directory(dataset_name),
         measurement_mode=measurement_mode,
         hidden_neuron_count=86,
+        plots=[]
     )
 
 
