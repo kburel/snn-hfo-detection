@@ -1,9 +1,12 @@
 import os
+from snn_hfo_ieeg.stages.plotting.total.plot_total_dummy import TotalDebugError
+from snn_hfo_ieeg.stages.plotting.channel.plot_channel_dummy import ChannelDebugError
 import pytest
 import numpy as np
 from snn_hfo_ieeg.functions.hfo_detection import HfoDetection, Periods, Analytics, HfoDetectionWithAnalytics
 from snn_hfo_ieeg.stages.shared_config import Configuration, MeasurementMode
 from snn_hfo_ieeg.entrypoint.hfo_detection import CustomOverrides, run_hfo_detection_with_configuration
+from snn_hfo_ieeg.stages.plotting.plot_factory import ChannelPlotKind, Plots, TotalPlotKind
 from tests.utility import are_hfo_detections_equal, are_lists_approximately_equal, get_tests_path
 
 EMPTY_CUSTOM_OVERRIDES = CustomOverrides(
@@ -24,7 +27,10 @@ def _generate_test_configuration(dataset_name, measurement_mode=MeasurementMode.
         data_path=_get_hfo_directory(dataset_name),
         measurement_mode=measurement_mode,
         hidden_neuron_count=86,
-        plots=[]
+        plots=Plots(
+            channel=[],
+            total=[]
+        )
     )
 
 
@@ -102,3 +108,45 @@ def test_ecog_hfo_detection():
                                          hfo.analytics.periods.stop)
 
     np.random.seed(None)
+
+
+def _hfo_runner_cb(_metadata, hfo_detector):
+    hfo_detector.run()
+
+
+def _empty_cb(_metadata, _hfo_detector):
+    return None
+
+
+def _run_hfo_detection_with_plots_and_cb(plots, hfo_cb):
+    run_hfo_detection_with_configuration(
+        configuration=Configuration(
+            data_path=_get_hfo_directory("hfo"),
+            measurement_mode=MeasurementMode.IEEG,
+            hidden_neuron_count=86,
+            plots=plots
+        ),
+        custom_overrides=EMPTY_CUSTOM_OVERRIDES,
+        hfo_cb=hfo_cb)
+
+
+def test_channel_plotting_is_called_when_hfo_detector_is_called():
+    with pytest.raises(ChannelDebugError):
+        _run_hfo_detection_with_plots_and_cb(Plots(
+            channel=[ChannelPlotKind.INTERNAL_CHANNEL_DEBUG],
+            total=[]
+        ), hfo_cb=_hfo_runner_cb)
+
+
+def test_channel_plotting_is_not_called_when_hfo_detector_is_not_called():
+    _run_hfo_detection_with_plots_and_cb(Plots(
+        channel=[ChannelPlotKind.INTERNAL_CHANNEL_DEBUG],
+        total=[]
+    ), hfo_cb=_empty_cb)
+
+def test_total_plotting_is_called():
+    with pytest.raises(TotalDebugError):
+        _run_hfo_detection_with_plots_and_cb(Plots(
+            channel=[],
+            total=[TotalPlotKind.INTERNAL_TOTAL_DEBUG]
+        ), hfo_cb=_empty_cb)

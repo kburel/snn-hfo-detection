@@ -1,15 +1,15 @@
 from enum import Enum, auto
 from typing import NamedTuple, List
-from snn_hfo_ieeg.stages.plotting.channel.plot_channel_dummy import plot_channel_dummy
-from snn_hfo_ieeg.stages.plotting.total.plot_total_dummy import plot_total_dummy
+from snn_hfo_ieeg.stages.plotting.channel.plot_channel_dummy import plot_internal_channel_debug
+from snn_hfo_ieeg.stages.plotting.total.plot_total_dummy import plot_internal_total_debug
 
 
 class ChannelPlotKind(Enum):
-    TODO = auto()
+    INTERNAL_CHANNEL_DEBUG = auto()
 
 
 class TotalPlotKind(Enum):
-    TODO = auto()
+    INTERNAL_TOTAL_DEBUG = auto()
 
 
 class Plots(NamedTuple):
@@ -17,18 +17,18 @@ class Plots(NamedTuple):
     total: List[ChannelPlotKind]
 
 
-def _get_plotting_fn_for_total(plot_kind):
-    if plot_kind is TotalPlotKind.TODO:
-        return plot_total_dummy
-    raise ValueError(
-        f'plot_kind must be valid TotalPlotKind. Expected one of {TotalPlotKind}, but got {plot_kind}')
-
-
 def _get_plotting_fn_for_channel(plot_kind):
-    if plot_kind is ChannelPlotKind.TODO:
-        return plot_channel_dummy
+    if plot_kind is ChannelPlotKind.INTERNAL_CHANNEL_DEBUG:
+        return plot_internal_channel_debug
     raise ValueError(
         f'plot_kind must be valid ChannelPlotKind. Expected one of {ChannelPlotKind}, but got {plot_kind}')
+
+
+def _get_plotting_fn_for_total(plot_kind):
+    if plot_kind is TotalPlotKind.INTERNAL_TOTAL_DEBUG:
+        return plot_internal_total_debug
+    raise ValueError(
+        f'plot_kind must be valid TotalPlotKind. Expected one of {TotalPlotKind}, but got {plot_kind}')
 
 
 def get_plotting_fns(plot_kinds, get_plotting_fn_cb):
