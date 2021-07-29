@@ -31,7 +31,7 @@ def parse_arguments():
 
 def _convert_all_to_enum_if_possible(variants, enum):
     upper_variants = [variant.upper() for variant in variants]
-    valid_names = enum.__members__.keys
+    valid_names = enum.__members__.keys()
     return [enum[plot_name]
             for plot_name in upper_variants if plot_name in valid_names]
 
