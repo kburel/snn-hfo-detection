@@ -1,4 +1,4 @@
-from snn_hfo_ieeg.plotting.plot_kinds import PlotKind
+from snn_hfo_ieeg.plotting.plot_factory import PlotKind
 from typing import List, NamedTuple
 from enum import Enum, auto
 

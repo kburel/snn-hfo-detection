@@ -2,7 +2,7 @@ import argparse
 import sys
 from snn_hfo_ieeg.stages.shared_config import Configuration, MeasurementMode
 from snn_hfo_ieeg.entrypoint.hfo_detection import CustomOverrides
-from snn_hfo_ieeg.plotting.plot_kinds import PlotKind
+from snn_hfo_ieeg.plotting.plot_factory import PlotKind
 
 
 def parse_arguments():
