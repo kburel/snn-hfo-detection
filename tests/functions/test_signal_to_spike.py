@@ -4,18 +4,33 @@ from tests.utility import *
 
 
 @pytest.mark.parametrize(
-    'signal, time, window, step_size, chosen_samples, scaling_factor, expected_mean_threshold',
+    'signals, time, window, step_size, sample_ratio, scaling_factor, expected_mean_threshold',
     [(np.array([0, 1]),
-      np.array([0, 1]), 1, 1, 1, 0.1, 0.1),
-     (np.array([-0.6, -2, -5, 10, 20, 0, -3, 0.4]),
-      np.arange(0, 0.8, 0.1), 1, 1, 50, 0.6, 15.0),
+      np.array([0, 1]), 1, 1, 0.9, 0.1, 0.1),
+     (np.array([-0.6, -2, -5, 10, 20, 0.2, -3, 0.4]),
+      np.arange(0, 0.8, 0.1), 1, 1, 0.9, 0.6, 15.0),
      (np.arange(-20, 20, 0.1),
-      np.arange(0, 4, 0.01), 1, 1, 50, 0.6, 5.985)]
+      np.arange(0, 4, 0.01), 1, 1, 0.4, 0.6, 5.985)]
 )
-def test_find_thresholds(signal, time, window, step_size, chosen_samples, scaling_factor, expected_mean_threshold):
+def test_find_thresholds(signals, time, window, step_size, sample_ratio, scaling_factor, expected_mean_threshold):
     mean_threshold = find_thresholds(
-        signal, time, window, step_size, chosen_samples, scaling_factor)
+        signals, time, window, step_size, sample_ratio, scaling_factor)
     assert expected_mean_threshold == pytest.approx(mean_threshold)
+
+
+@pytest.mark.parametrize(
+    'sample_ratio',
+    [-1, 0, 1, 2]
+)
+def test_find_thresholds_does_not_accept_invalid_percentages(sample_ratio):
+    with pytest.raises(ValueError):
+        find_thresholds(
+            signals=np.array([0, 1]),
+            times=np.array([0, 1]),
+            window_size=1,
+            step_size=1,
+            sample_ratio=sample_ratio,
+            scaling_factor=0.1)
 
 
 @pytest.mark.parametrize(
