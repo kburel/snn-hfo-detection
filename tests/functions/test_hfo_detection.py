@@ -1,14 +1,16 @@
 import pytest
-from snn_hfo_ieeg.functions.hfo_detection import Periods, detect_hfo, HfoDetection, PlottingData
+from snn_hfo_ieeg.functions.hfo_detection import Periods, detect_hfo, HfoDetectionWithAnalytics, HfoDetection, Analytics
 from tests.utility import *
 
 
 @pytest.mark.parametrize(
     'duration, spike_monitor, original_time_vector, step_size, window_size, expected_hfo_detection',
-    [(1, [0], np.array([0]), 0.1, 0.1, HfoDetection(
-        total_amount=1,
-        frequency=1,
-        plotting_data=PlottingData(
+    [(1, [0], np.array([0]), 0.1, 0.1, HfoDetectionWithAnalytics(
+        result=HfoDetection(
+            total_amount=1,
+            frequency=1,
+        ),
+        analytics=Analytics(
             detections=[1],
             analyzed_times=[0],
             periods=Periods(
@@ -16,10 +18,12 @@ from tests.utility import *
                 stop=[0]
             )
         ))),
-     (1, [0.5], np.array([0.5]), 0.1, 0.5, HfoDetection(
-         total_amount=1,
-         frequency=1,
-         plotting_data=PlottingData(
+     (1, [0.5], np.array([0.5]), 0.1, 0.5, HfoDetectionWithAnalytics(
+         result=HfoDetection(
+             total_amount=1,
+             frequency=1,
+         ),
+         analytics=Analytics(
              detections=[1],
              analyzed_times=[0.5],
              periods=Periods(
@@ -27,10 +31,12 @@ from tests.utility import *
                  stop=[0.5]
              )
          ))),
-     (2, [-0.5], np.array([-0.5]), -0.1, -0.05, HfoDetection(
-         total_amount=0,
-         frequency=0,
-         plotting_data=PlottingData(
+     (2, [-0.5], np.array([-0.5]), -0.1, -0.05, HfoDetectionWithAnalytics(
+         result=HfoDetection(
+             total_amount=0,
+             frequency=0,
+         ),
+         analytics=Analytics(
              detections=[0],
              analyzed_times=[-0.5],
              periods=Periods(
@@ -38,10 +44,12 @@ from tests.utility import *
                  stop=[]
              )
          ))),
-     (0.001, np.arange(0, 300, 5e-4), [0.2, 0.3], 0.01, 0.05, HfoDetection(
-         total_amount=0,
-         frequency=0,
-         plotting_data=PlottingData(
+     (0.001, np.arange(0, 300, 5e-4), [0.2, 0.3], 0.01, 0.05, HfoDetectionWithAnalytics(
+         result=HfoDetection(
+             total_amount=0,
+             frequency=0,
+         ),
+         analytics=Analytics(
              detections=[0, 0],
              analyzed_times=[0.2, 0.3],
              periods=Periods(
