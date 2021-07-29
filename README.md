@@ -112,8 +112,10 @@ Analyze all available data in iEEG mode with an SNN with 100 hidden neurons:
 poetry run ieeg ./run.py --hidden-neurons 100
 ```
 
+ 
 Only analyze channels 2, 3 and 5 in eCoG mode:
 ```bash
+# Since the channels are imported from matlab, they are 1 based
 poetry run ecog ./run.py ecog --channels 2 3 5
 ```
 
