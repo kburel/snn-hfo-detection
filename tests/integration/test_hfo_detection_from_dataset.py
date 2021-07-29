@@ -2,6 +2,7 @@ import os
 import pytest
 from snn_hfo_ieeg.user_facing_data import HfoDetection, Periods, Analytics, HfoDetectionWithAnalytics
 from snn_hfo_ieeg.stages.shared_config import Configuration, MeasurementMode
+from snn_hfo_ieeg.stages.filter import FilteredSpikes
 from snn_hfo_ieeg.entrypoint.hfo_detection import CustomOverrides, run_hfo_detection_with_configuration
 from tests.utility import are_hfo_detections_equal, get_tests_path
 
@@ -40,7 +41,8 @@ def _assert_dummy_hfo_is_empty(_metadata, hfo_detector):
                 start=[],
                 stop=[]
             ),
-            filtered_spikes=[]
+            filtered_spikes=FilteredSpikes(
+                ripple=None, fast_ripple=None)  # Not inspected
         ))
     hfo_detection = hfo_detector.run_with_analytics()
     assert are_hfo_detections_equal(
