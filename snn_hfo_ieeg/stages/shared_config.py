@@ -1,6 +1,6 @@
-from snn_hfo_ieeg.plotting.plot_factory import PlotKind
-from typing import List, NamedTuple
+from typing import NamedTuple
 from enum import Enum, auto
+from snn_hfo_ieeg.stages.plotting.plot_factory import Plots
 
 
 class MeasurementMode(Enum):
@@ -13,4 +13,4 @@ class Configuration(NamedTuple):
     data_path: str
     measurement_mode: MeasurementMode
     hidden_neuron_count: int
-    plots: List[PlotKind]
+    plots: Plots

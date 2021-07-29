@@ -2,7 +2,7 @@ import argparse
 import sys
 from snn_hfo_ieeg.stages.shared_config import Configuration, MeasurementMode
 from snn_hfo_ieeg.entrypoint.hfo_detection import CustomOverrides
-from snn_hfo_ieeg.plotting.plot_factory import PlotKind
+from snn_hfo_ieeg.stages.plotting.plot_factory import ChannelPlotKind, Plots, TotalPlotKind
 
 
 def parse_arguments():
@@ -29,12 +29,30 @@ def parse_arguments():
     return parser.parse_args()
 
 
+def _convert_all_to_enum_if_possible(variants, enum):
+    upper_variants = [variant.upper() for variant in variants]
+    valid_names = enum.__members__.keys
+    return [enum[plot_name]
+            for plot_name in upper_variants if plot_name in valid_names]
+
+
+def _sort_plot_arguments(plot_arguments):
+    channel_plot_kinds = _convert_all_to_enum_if_possible(
+        plot_arguments, ChannelPlotKind)
+    total_plot_kinds = _convert_all_to_enum_if_possible(
+        plot_arguments, TotalPlotKind)
+    return Plots(
+        channel=channel_plot_kinds,
+        total=total_plot_kinds
+    )
+
+
 def convert_arguments_to_config(arguments):
     return Configuration(
         data_path=arguments.data_path,
         measurement_mode=MeasurementMode[arguments.mode.upper()],
         hidden_neuron_count=arguments.hidden_neurons,
-        plots=PlotKind[arguments.plot.upper()]
+        plots=_sort_plot_arguments(arguments.plot)
     )
 
 
