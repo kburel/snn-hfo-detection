@@ -86,8 +86,59 @@ poetry run ./run.py --help
 ``` 
 And if you're still stuck, feel free to open an [issue](https://github.com/kburel/SNN_HFO_iEEG/issues/new) and we will help.
 
+## Usage Examples
+Show help:
+```bash
+poetry run ./run.py --help
+```
 
-## Support
+When running, you need to specify how the data was obtained in order to run the right analyzers. We support the following modes:
+- **ieeg**: Data was obtained via iEEG, the ripple bandwidth (80-250 Hz) and the fast ripple bandwidth (250-500 Hz) will be analyzed
+- **ecog**: Data was obtained via eCoG, only the fast ripple bandwidth will be analyzed
+- **scalp**: Data was obtained over the scalp via EEG, only the ripple bandwidth will be analyzed
+
+Analyze all available data in iEEG mode:
+```bash
+poetry run ieeg ./run.py
+```
+
+Run in iEEG mode with custom data path:
+```bash
+poetry run ./run.py ieeg --data-path path/to/data
+```
+
+Analyze all available data in iEEG mode with an SNN with 100 hidden neurons:
+```bash
+poetry run ieeg ./run.py --hidden-neurons 100
+```
+
+Only analyze channels 2, 3 and 5 in eCoG mode:
+```bash
+poetry run ecog ./run.py ecog --channels 2 3 5
+```
+
+Only analyze the first 100 seconds of the datasets in scalp mode:
+```bash
+poetry run scalp ./run.py scalp --duration 100
+```
+
+Only analyze patients 1 and 2 in iEEG mode:
+```bash
+poetry run ieeg ./run.py ieeg --patients 1 2
+```
+
+Only analyze the intervals 2, 3, 4, 6, 7 and 8 of patient 2 in iEEG mode:
+```bash
+# This only works when exactly one patient was specified with --patients
+poetry run ./run.py ieeg --patients 2 --intervals 2 3 4 6 7 
+```
+
+All options can be freely combined. For example, the following will construct an SNN with 256 neurons and
+analyze the intervals 3 and 4 of patient 6 in the channels 1 and 2
+while only looking at the first 300 seconds in iEEG mode for data in ./ieeg-data:
+```bash
+poetry run ./run.py iieg --data-path ./ieeg-data --hidden-neurons 256 --patients 6 --intervals 3 4 --channels 1 2 --duration 300
+```
 
 ## This code has been written originally by:
 * Karla Burelo
