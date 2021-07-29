@@ -72,10 +72,14 @@ def test_ieeg_hfo_detection():
         hfo_cb=_generate_add_detected_hfo_to_list_cb(detected_hfos))
     assert len(detected_hfos) == 1
     hfo = detected_hfos[0]
-    assert hfo.result.total_amount == 1
-    assert hfo.result.frequency == pytest.approx(0.01998021)
-    assert hfo.analytics.periods.start == [pytest.approx(0)]
-    assert hfo.analytics.periods.stop == [pytest.approx(0.0605)]
+    assert hfo.result.total_amount == 7
+    assert hfo.result.frequency == pytest.approx(0.13986154)
+
+    assert are_lists_approximately_equal([0.0, 3.5, 6.43, 10.59, 14.29, 17.41, 24.2],
+                                         hfo.analytics.periods.start)
+
+    assert are_lists_approximately_equal([0.0605, 3.5905, 6.5405, 10.7205, 14.3905, 17.5305, 24.2905],
+                                         hfo.analytics.periods.stop)
 
     np.random.seed(None)
 
