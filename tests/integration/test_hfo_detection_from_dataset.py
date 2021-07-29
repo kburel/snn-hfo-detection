@@ -121,7 +121,7 @@ def _empty_cb(_metadata, _hfo_detector):
 def _run_hfo_detection_with_plots_and_cb(plots, hfo_cb):
     run_hfo_detection_with_configuration(
         configuration=Configuration(
-            data_path=_get_hfo_directory("hfo"),
+            data_path=_get_hfo_directory('dummy'),
             measurement_mode=MeasurementMode.IEEG,
             hidden_neuron_count=86,
             plots=plots
@@ -143,6 +143,7 @@ def test_channel_plotting_is_not_called_when_hfo_detector_is_not_called():
         channel=[ChannelPlotKind.INTERNAL_CHANNEL_DEBUG],
         total=[]
     ), hfo_cb=_empty_cb)
+
 
 def test_total_plotting_is_called():
     with pytest.raises(TotalDebugError):
