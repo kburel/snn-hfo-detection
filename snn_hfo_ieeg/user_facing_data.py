@@ -73,7 +73,7 @@ class Analytics(NamedTuple):
     spike_times : np.array
         Times when a neuron spiked.
     spike_times : np.array
-        Times when a neuron spiked.
+        Times when a neuron spiked in seconds.
     neuron_ids : np.array
         The IDs of the neurons that fired at the time of spike_times. The indices match.
     '''
