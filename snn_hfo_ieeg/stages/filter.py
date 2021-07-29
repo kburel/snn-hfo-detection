@@ -1,15 +1,31 @@
-from typing import NamedTuple
+from typing import NamedTuple, Optional
 import numpy as np
 from snn_hfo_ieeg.stages.loading.patient_data import ChannelData
 from snn_hfo_ieeg.functions.filter import butter_bandpass_filter
-from snn_hfo_ieeg.functions.signal_to_spike import find_thresholds, signal_to_spike_refractory
+from snn_hfo_ieeg.functions.signal_to_spike import SpikeTrains, find_thresholds, signal_to_spike_refractory
 from snn_hfo_ieeg.stages.shared_config import MeasurementMode
 
 
 SAMPLING_FREQUENCY = 2000
 
 
-class FilterParameters(NamedTuple):
+class FilteredSpikes(NamedTuple):
+    '''
+    Spikes in the filtered bandwidths. If some of these are None, it means
+    that they are not suited for analysis in the specified MeasurementMode
+
+    Parameters
+    -------
+    ripple : Optional[SpikeTrains]
+        Spikes in the ripple bandwidth (80-250 Hz).
+    fast_ripple: Optional[SpikeTrains]
+        Spikes in the fast ripple bandwidth (250-500 Hz).
+    '''
+    ripple: Optional[SpikeTrains]
+    fast_ripple: Optional[SpikeTrains]
+
+
+class _FilterParameters(NamedTuple):
     '''
     Parameters
     -------
@@ -49,23 +65,23 @@ def _filter_signal_to_spike(filter_parameters):
 
 def _filter_spikes_according_to_measurement_mode(measurement_mode, ripple, fast_ripple):
     if measurement_mode is MeasurementMode.IEEG:
-        return [ripple, fast_ripple]
+        return FilteredSpikes(ripple=ripple, fast_ripple=fast_ripple)
     if measurement_mode is MeasurementMode.ECOG:
-        return [fast_ripple]
+        return FilteredSpikes(ripple=None, fast_ripple=fast_ripple)
     if measurement_mode is MeasurementMode.SCALP:
-        return [ripple]
+        return FilteredSpikes(ripple=ripple, fast_ripple=None)
     raise ValueError(
         f'configuration.measurement_mode has an invalid value. Allowed values: {MeasurementMode}, instead got: {measurement_mode}')
 
 
 def filter_stage(channel_data, configuration):
-    ripple = _filter_signal_to_spike(FilterParameters(
+    ripple = _filter_signal_to_spike(_FilterParameters(
         channel_data=channel_data,
         lowcut=80,
         highcut=250,
         scaling_factor=0.6
     ))
-    fast_ripple = _filter_signal_to_spike(FilterParameters(
+    fast_ripple = _filter_signal_to_spike(_FilterParameters(
         channel_data=channel_data,
         lowcut=250,
         highcut=500,
