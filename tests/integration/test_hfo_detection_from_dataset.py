@@ -61,7 +61,7 @@ def _generate_add_detected_hfo_to_list_cb(detected_hfos):
     return add_detected_hfo_to_list
 
 
-def test_iieg_hfo_detection():
+def test_ieeg_hfo_detection():
     detected_hfos = []
     run_hfo_detection_with_configuration(
         configuration=_generate_test_configuration('ieeg'),
