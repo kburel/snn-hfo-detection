@@ -6,7 +6,7 @@ from snn_hfo_ieeg.stages.all import run_all_hfo_detection_stages
 from snn_hfo_ieeg.stages.loading.patient_data import load_patient_data, extract_channel_data
 from snn_hfo_ieeg.stages.loading.folder_discovery import get_patient_interval_paths
 
-_SNN_CACHE = {}
+_SNN_CACHE = None
 
 
 class CustomOverrides(NamedTuple):
