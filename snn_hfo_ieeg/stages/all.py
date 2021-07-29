@@ -21,4 +21,4 @@ def run_all_hfo_detection_stages(channel_data, duration, configuration):
                                              signal_times=channel_data.signal_time,
                                              step_size=HFO_DETECTION_STEP_SIZE,
                                              window_size=HFO_DETECTION_WINDOW_SIZE)
-    plot_for_channel(hfo_detecton_with_analytics, configuration.plots)
+    plot_for_channel(hfo_detecton_with_analytics, configuration.plots.channel)
