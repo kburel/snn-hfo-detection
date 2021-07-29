@@ -9,7 +9,7 @@ HFO_DETECTION_STEP_SIZE = 0.01
 HFO_DETECTION_WINDOW_SIZE = 0.05
 
 
-def _convert_inner_hfo_detection_to_user_facing_one(hfo_detection, filtered_spikes):
+def _convert_inner_hfo_detection_to_user_facing_one(hfo_detection, filtered_spikes, spike_monitor_hidden):
     return HfoDetectionWithAnalytics(
         result=HfoDetection(
             total_amount=hfo_detection.result.total_amount,
@@ -19,7 +19,9 @@ def _convert_inner_hfo_detection_to_user_facing_one(hfo_detection, filtered_spik
             detections=hfo_detection.analytics.detections,
             analyzed_times=hfo_detection.analytics.analyzed_times,
             periods=hfo_detection.analytics.periods,
-            filtered_spikes=filtered_spikes
+            filtered_spikes=filtered_spikes,
+            spike_times=spike_monitor_hidden.t/second,
+            neuron_ids=spike_monitor_hidden.i,
         )
     )
 
@@ -31,11 +33,13 @@ def run_all_hfo_detection_stages(channel_data, duration, configuration):
         duration=duration,
         configuration=configuration)
 
-    hfo_detecton_with_analytics = detect_hfo(duration=duration,
-                                             spike_times=(
-                                                 spike_monitor_hidden.t/second),
-                                             signal_times=channel_data.signal_time,
-                                             step_size=HFO_DETECTION_STEP_SIZE,
-                                             window_size=HFO_DETECTION_WINDOW_SIZE)
-    plot_for_channel(hfo_detecton_with_analytics, configuration.plots.channel)
-    return _convert_inner_hfo_detection_to_user_facing_one(hfo_detecton_with_analytics, filtered_spikes)
+    hfo_detection = detect_hfo(duration=duration,
+                               spike_times=(
+                                   spike_monitor_hidden.t/second),
+                               signal_times=channel_data.signal_time,
+                               step_size=HFO_DETECTION_STEP_SIZE,
+                               window_size=HFO_DETECTION_WINDOW_SIZE)
+    user_facing_hfo_detection = _convert_inner_hfo_detection_to_user_facing_one(
+        hfo_detection, filtered_spikes, spike_monitor_hidden)
+    plot_for_channel(user_facing_hfo_detection, configuration.plots.channel)
+    return user_facing_hfo_detection

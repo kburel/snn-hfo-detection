@@ -35,8 +35,10 @@ def _assert_dummy_hfo_is_empty(_metadata, hfo_detector):
                 start=[],
                 stop=[]
             ),
-            filtered_spikes=FilteredSpikes(
-                ripple=None, fast_ripple=None)  # Not inspected
+            # Not inspected
+            filtered_spikes=None,
+            spike_times=None,
+            neuron_ids=None
         ))
     hfo_detection = hfo_detector.run_with_analytics()
     assert are_hfo_detections_equal(
