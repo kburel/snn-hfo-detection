@@ -8,6 +8,9 @@ def parse_arguments():
     parser = argparse.ArgumentParser(description='Perform an hfo test run')
     default_data_path = 'data/'
     default_hidden_neurons = 86
+    parser.add_argument('mode', type=str,
+                        help='Which measurement mode was used to capture the data. Possible values: iEEG, eCoG or scalp.\
+                        Note that eCoG will use signals in the fast ripple channel (250-500 Hz), scalp will use the ripple channel (80-250 Hz) and iEEG will use both')
     parser.add_argument('--data-path', type=str, default=default_data_path,
                         help=f'Specifies the path to the directory containing the test data. Default is {default_data_path}')
     parser.add_argument('--hidden-neurons', type=int, default=default_hidden_neurons,
@@ -20,9 +23,6 @@ def parse_arguments():
                         help='Which patients should be processed. By default, all patients will be processed')
     parser.add_argument('--intervals', type=int, default=None, nargs='+',
                         help='Which intervals should be processed. By default, all intervals will be processed. Only works when --patients was called beforehand with exactly one patient number.')
-    parser.add_argument('mode', type=str,
-                        help='Which measurement mode was used to capture the data. Possible values: iEEG, eCoG or scalp.\
-                        Note that eCoG will use signals in the fast ripple channel (250-500 Hz), scalp will use the ripple channel (80-250 Hz) and iEEG will use both')
     return parser.parse_args()
 
 
