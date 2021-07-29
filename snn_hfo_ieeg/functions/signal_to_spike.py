@@ -33,7 +33,7 @@ def find_thresholds(signals, times, window_size, step_size, sample_ratio, scalin
     sample_ratio : float
         the percentage of the highest samples in the time window that will be used to
         calculate the mean maximum amplitude.
-     scaling_factr : float
+     scaling_factor : float
         a percentage of the calculated threshold
     '''
     if step_size > window_size:
@@ -58,6 +58,11 @@ def find_thresholds(signals, times, window_size, step_size, sample_ratio, scalin
         raise ValueError(
             f'signals and times need to have corresponding indices, but signals has length {len(signals)} while times has length {len(times)}')
 
+    if not 0 < sample_ratio < 1:
+        raise ValueError(
+            f'sample_ratio must be a value between 0 and 1, but was {sample_ratio}'
+        )
+
     num_timesteps = int(np.ceil(duration / step_size))
     max_min_amplitude = np.zeros((num_timesteps, 2))
     for interval_nr, interval_start in enumerate(np.arange(start=0, stop=duration, step=step_size)):
@@ -72,9 +77,7 @@ def find_thresholds(signals, times, window_size, step_size, sample_ratio, scalin
     threshold_up = np.mean(np.sort(max_min_amplitude[:, 0])[:chosen_samples])
     threshold_dn = np.mean(
         np.sort(max_min_amplitude[:, 1] * -1)[:chosen_samples])
-    mean_threshold = scaling_factor*(threshold_up + threshold_dn)
-
-    return mean_threshold
+    return scaling_factor*(threshold_up + threshold_dn)
 
 
 # ========================================================================================

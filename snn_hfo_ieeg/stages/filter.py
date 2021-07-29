@@ -38,7 +38,7 @@ def _filter_signal_to_spike(filter_parameters):
                                         times=filter_parameters.channel_data.signal_time,
                                         window_size=1,
                                         step_size=1,
-                                        chosen_samples=50,
+                                        sample_ratio=1/6,
                                         scaling_factor=filter_parameters.scaling_factor))
     return signal_to_spike_refractory(interpfact=35000,
                                       times=filter_parameters.channel_data.signal_time,
