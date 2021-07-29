@@ -85,19 +85,20 @@ def snn_stage(filtered_spikes, duration, configuration, cache):
             cache['hidden_layer'], cache['spike_monitor_hidden'])
         cache['network'].store()
 
-    cache['network'].restore()
+    network = cache['network']
+    network.restore()
     input_layer = _create_input_layer(
         filtered_spikes, cache['neuron_counts'].input)
-    cache['network'].add(input_layer)
+    network.add(input_layer)
     synapses = _create_synapses(
         input_layer,
         cache['hidden_layer'],
         cache['model_paths'],
         cache['neuron_counts'])
 
-    cache['network'].add(synapses)
-    cache['network'].run(duration * second)
-    cache['network'].remove(input_layer)
-    cache['network'].remove(synapses)
+    network.add(synapses)
+    network.run(duration * second)
+    network.remove(input_layer)
+    network.remove(synapses)
 
     return cache['spike_monitor_hidden']
