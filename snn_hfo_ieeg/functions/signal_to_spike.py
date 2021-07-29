@@ -15,19 +15,26 @@ class SpikeTrains(NamedTuple):
     down: np.array
 
 
-def find_thresholds(signals, times, window_size, step_size, chosen_samples, scaling_factor):
+def find_thresholds(signals, times, window_size, step_size, sample_ratio, scaling_factor):
     '''
     This functions retuns the mean threshold for your signals, based on the calculated
     mean noise floor and a user-specified scaling facotr that depeneds on the type of signals,
     characteristics of patterns, etc.
 
-    :signals (array): amplitude of the signals
-    :times (array): time vector
-    :window (float): time window [same units as time vector] where the maximum amplitude of the signals
-                    will be calculated
-    :chosen_samples (int): from the maximum values in each window time, only these number of
-                        samples will be used to calculate the mean maximum amplitude.
-    : scaling_factr (float): a percentage of the calculated threshold
+    Parameters
+    -------
+    signals : array
+        amplitude of the signals
+    times : array
+        time vector
+    window : float
+        time window [same units as time vector] where the maximum amplitude
+        of the signals will be calculated
+    sample_ratio : float
+        the percentage of the highest samples in the time window that will be used to
+        calculate the mean maximum amplitude.
+     scaling_factr : float
+        a percentage of the calculated threshold
     '''
     if step_size > window_size:
         raise ValueError(
@@ -61,6 +68,7 @@ def find_thresholds(signals, times, window_size, step_size, chosen_samples, scal
         max_min_amplitude[interval_nr, 0] = max_amplitude
         max_min_amplitude[interval_nr, 1] = min_amplitude
 
+    chosen_samples = len(max_min_amplitude[:, 0]) * sample_ratio
     threshold_up = np.mean(np.sort(max_min_amplitude[:, 0])[:chosen_samples])
     threshold_dn = np.mean(
         np.sort(max_min_amplitude[:, 1] * -1)[:chosen_samples])
