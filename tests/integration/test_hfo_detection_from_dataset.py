@@ -12,7 +12,8 @@ EMPTY_CUSTOM_OVERRIDES = CustomOverrides(
     intervals=None,
 )
 
-ACCURACY = 0.025
+PERIOD_ACCURACY = 0.1
+FREQUENCY_ACCURACY = 0.02
 
 
 def _get_hfo_directory(dataset_name):
@@ -80,14 +81,13 @@ def test_ieeg_hfo_detection():
         hfo_cb=_generate_add_detected_hfo_to_list_cb(detected_hfos))
     assert len(detected_hfos) == 1
     hfo = detected_hfos[0]
-    assert 6 <= hfo.result.total_amount <= 8
-    assert hfo.result.frequency == pytest.approx(0.12, abs=ACCURACY)
+    assert hfo.result.frequency == pytest.approx(0.12, abs=FREQUENCY_ACCURACY)
 
     _assert_contains_at_least([0.0, 3.5, 6.43, 10.59, 14.29, 17.42, 24.2],
-                              hfo.analytics.periods.start, accuracy=ACCURACY)
+                              hfo.analytics.periods.start, accuracy=PERIOD_ACCURACY)
 
     _assert_contains_at_least([0.06, 3.59, 6.54, 10.72, 14.39, 17.53, 24.29],
-                              hfo.analytics.periods.stop, accuracy=ACCURACY)
+                              hfo.analytics.periods.stop, accuracy=PERIOD_ACCURACY)
 
 
 def test_ecog_hfo_detection():
@@ -99,11 +99,10 @@ def test_ecog_hfo_detection():
         hfo_cb=_generate_add_detected_hfo_to_list_cb(detected_hfos))
     assert len(detected_hfos) == 1
     hfo = detected_hfos[0]
-    assert 5 <= hfo.result.total_amount <= 7
-    assert hfo.result.frequency == pytest.approx(0.07, abs=ACCURACY)
+    assert hfo.result.frequency == pytest.approx(0.07, abs=FREQUENCY_ACCURACY)
 
     _assert_contains_at_least([4.36, 9.85, 15.64, 36.13, 43.52, 53.64],
-                              hfo.analytics.periods.start, accuracy=ACCURACY)
+                              hfo.analytics.periods.start, accuracy=PERIOD_ACCURACY)
 
     _assert_contains_at_least([4.46, 9.94, 15.73, 36.22, 43.62, 53.73],
-                              hfo.analytics.periods.stop, accuracy=ACCURACY)
+                              hfo.analytics.periods.stop, accuracy=PERIOD_ACCURACY)
