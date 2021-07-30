@@ -1,18 +1,18 @@
 import os
 import pytest
-import numpy as np
 from snn_hfo_ieeg.user_facing_data import HfoDetection, Periods, Analytics, HfoDetectionWithAnalytics
 from snn_hfo_ieeg.stages.shared_config import Configuration, MeasurementMode
 from snn_hfo_ieeg.stages.filter import FilteredSpikes
 from snn_hfo_ieeg.entrypoint.hfo_detection import CustomOverrides, run_hfo_detection_with_configuration
-from tests.utility import are_hfo_detections_equal, are_lists_approximately_equal, get_tests_path
-
+from tests.utility import are_hfo_detections_equal, get_tests_path
 EMPTY_CUSTOM_OVERRIDES = CustomOverrides(
     duration=None,
     channels=None,
     patients=None,
     intervals=None,
 )
+
+ACCURACY = 0.02
 
 
 def _get_hfo_directory(dataset_name):
@@ -65,9 +65,14 @@ def _generate_add_detected_hfo_to_list_cb(detected_hfos):
     return add_detected_hfo_to_list
 
 
-def test_ieeg_hfo_detection():
-    np.random.seed(100)
+def _assert_contains_at_least(actual, expected, accuracy):
+    approx_actual = [pytest.approx(element, abs=accuracy)
+                     for element in actual]
+    for element in expected:
+        assert element in approx_actual
 
+
+def test_ieeg_hfo_detection():
     detected_hfos = []
     run_hfo_detection_with_configuration(
         configuration=_generate_test_configuration('ieeg'),
@@ -75,21 +80,17 @@ def test_ieeg_hfo_detection():
         hfo_cb=_generate_add_detected_hfo_to_list_cb(detected_hfos))
     assert len(detected_hfos) == 1
     hfo = detected_hfos[0]
-    assert hfo.result.total_amount == 7
-    assert hfo.result.frequency == pytest.approx(0.13986154)
+    assert 6 <= hfo.result.total_amount <= 8
+    assert hfo.result.frequency == pytest.approx(0.12, abs=ACCURACY)
 
-    assert are_lists_approximately_equal([0.0, 3.5, 6.43, 10.59, 14.29, 17.42, 24.2],
-                                         hfo.analytics.periods.start, accuracy=0.01)
+    _assert_contains_at_least([0.0, 3.5, 6.43, 10.59, 14.29, 17.42, 24.2],
+                              hfo.analytics.periods.start, accuracy=ACCURACY)
 
-    assert are_lists_approximately_equal([0.0605, 3.5905, 6.5405, 10.7205, 14.3905, 17.5305, 24.2905],
-                                         hfo.analytics.periods.stop)
-
-    np.random.seed(None)
+    _assert_contains_at_least([0.06, 3.59, 6.54, 10.72, 14.39, 17.53, 24.29],
+                              hfo.analytics.periods.stop, accuracy=ACCURACY)
 
 
 def test_ecog_hfo_detection():
-    np.random.seed(100)
-
     detected_hfos = []
     run_hfo_detection_with_configuration(
         configuration=_generate_test_configuration(
@@ -98,13 +99,11 @@ def test_ecog_hfo_detection():
         hfo_cb=_generate_add_detected_hfo_to_list_cb(detected_hfos))
     assert len(detected_hfos) == 1
     hfo = detected_hfos[0]
-    assert hfo.result.total_amount == 6
-    assert hfo.result.frequency == pytest.approx(0.07994723482501549)
+    assert 5 <= hfo.result.total_amount <= 7
+    assert hfo.result.frequency == pytest.approx(0.07, abs=ACCURACY)
 
-    assert are_lists_approximately_equal([4.36, 9.85, 15.64, 36.13, 43.52, 53.64],
-                                         hfo.analytics.periods.start)
+    assert _contains_at_least([4.36, 9.85, 15.64, 36.13, 43.52, 53.64],
+                              hfo.analytics.periods.start, accuracy=ACCURACY)
 
-    assert are_lists_approximately_equal([4.4605, 9.9405, 15.7305, 36.2205, 43.6205, 53.73],
-                                         hfo.analytics.periods.stop)
-
-    np.random.seed(None)
+    assert _contains_at_least([4.46, 9.94, 15.73, 36.22, 43.62, 53.73],
+                              hfo.analytics.periods.stop, accuracy=ACCURACY)
