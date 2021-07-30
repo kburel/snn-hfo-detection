@@ -7,6 +7,7 @@ from snn_hfo_ieeg.stages.shared_config import MeasurementMode
 
 
 SAMPLING_FREQUENCY = 2000
+CALIBRATION_TIME = 1
 
 
 class FilteredSpikes(NamedTuple):
@@ -37,11 +38,14 @@ class _FilterParameters(NamedTuple):
         highcut frequency
     scaling_factor: float
         new scaling factor
+    calibration_time: float
+        time that should be used to find thresholds
     '''
     channel_data: ChannelData
     lowcut: int
     highcut: int
     scaling_factor: float
+    calibration_time: float
 
 
 def _filter_signal_to_spike(filter_parameters):
