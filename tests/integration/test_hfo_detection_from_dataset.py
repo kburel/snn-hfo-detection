@@ -13,7 +13,7 @@ EMPTY_CUSTOM_OVERRIDES = CustomOverrides(
 )
 
 PERIOD_ACCURACY = 0.1
-FREQUENCY_ACCURACY = 0.025
+FREQUENCY_ACCURACY = 0.035
 
 
 def _get_hfo_directory(dataset_name):
