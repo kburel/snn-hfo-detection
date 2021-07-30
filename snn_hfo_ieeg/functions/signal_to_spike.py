@@ -31,7 +31,7 @@ def find_thresholds(signals, times, window_size, step_size, sample_ratio, scalin
         time window [same units as time vector] where the maximum amplitude
         of the signals will be calculated
     sample_ratio : float
-        the percentage of the highest samples in the time window that will be used to
+        the percentage of time windows that will be used to
         calculate the mean maximum amplitude.
      scaling_factor : float
         a percentage of the calculated threshold
