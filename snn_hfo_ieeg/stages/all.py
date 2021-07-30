@@ -25,12 +25,13 @@ def _convert_inner_hfo_detection_to_user_facing_one(hfo_detection, filtered_spik
     )
 
 
-def run_all_hfo_detection_stages(channel_data, duration, configuration):
+def run_all_hfo_detection_stages(channel_data, duration, configuration, snn_cache):
     filtered_spikes = filter_stage(channel_data, configuration)
     spike_monitor_hidden = snn_stage(
         filtered_spikes=filtered_spikes,
         duration=duration,
-        configuration=configuration)
+        configuration=configuration,
+        cache=snn_cache)
 
     hfo_detection = detect_hfo(duration=duration,
                                spike_times=(

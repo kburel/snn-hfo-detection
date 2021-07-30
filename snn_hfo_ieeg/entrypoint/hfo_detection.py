@@ -40,22 +40,26 @@ def _calculate_duration(signal_time):
     return np.max(signal_time) + extra_simulation_time
 
 
-def _generate_hfo_detection_cb(channel_data, duration, configuration):
+def _generate_hfo_detection_cb(channel_data, duration, configuration, snn_cache):
     inner_channel_data = deepcopy(channel_data)
     inner_configuration = deepcopy(configuration)
     return lambda: run_all_hfo_detection_stages(
         channel_data=inner_channel_data,
         duration=duration,
-        configuration=inner_configuration)
+        configuration=inner_configuration,
+        snn_cache=snn_cache)
 
 
-def _generate_hfo_detector(channel_data, duration, configuration):
+def _generate_hfo_detector(channel_data, duration, configuration, snn_cache):
     hfo_detection_cb = _generate_hfo_detection_cb(
-        channel_data, duration, configuration)
+        channel_data, duration, configuration, snn_cache)
     return HfoDetector(hfo_detection_cb)
 
 
 def run_hfo_detection_with_configuration(configuration, custom_overrides, hfo_cb):
+    # Cache needs this lifetime
+    snn_cache = None
+
     patient_intervals_paths = get_patient_interval_paths(
         configuration.data_path)
     should_collect_all_data = len(configuration.plots.total) != 0
@@ -82,7 +86,7 @@ def run_hfo_detection_with_configuration(configuration, custom_overrides, hfo_cb
                     duration=duration
                 )
                 hfo_detector = _generate_hfo_detector(
-                    channel_data, duration, configuration)
+                    channel_data, duration, configuration, snn_cache)
 
                 hfo_cb(metadata, hfo_detector)
                 if should_collect_all_data and hfo_detector.last_run is not None:
