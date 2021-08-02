@@ -73,7 +73,7 @@ def find_thresholds(signals, times, window_size, step_size, sample_ratio, scalin
         max_min_amplitude[interval_nr, 0] = max_amplitude
         max_min_amplitude[interval_nr, 1] = min_amplitude
 
-    chosen_samples = int(np.round(num_timesteps * sample_ratio))
+    chosen_samples = max(int(np.round(num_timesteps * sample_ratio)), 1)
     threshold_up = np.mean(np.sort(max_min_amplitude[:, 0])[:chosen_samples])
     threshold_dn = np.mean(
         np.sort(max_min_amplitude[:, 1] * -1)[:chosen_samples])
