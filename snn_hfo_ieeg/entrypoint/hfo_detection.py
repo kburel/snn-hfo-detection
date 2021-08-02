@@ -93,5 +93,5 @@ def run_hfo_detection_with_configuration(configuration, custom_overrides, hfo_cb
                     patient_hfos.append(
                         hfo_detector.last_run)
 
-        for _, plotting_function in configuration.plots.total:
+        for _, plotting_function in configuration.plots.patient:
             plotting_function(patient_hfos)
