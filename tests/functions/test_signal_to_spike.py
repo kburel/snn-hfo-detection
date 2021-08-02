@@ -4,17 +4,17 @@ from tests.utility import *
 
 
 @pytest.mark.parametrize(
-    'signals, time, window, step_size, sample_ratio, scaling_factor, expected_mean_threshold',
+    'signals, time, window, sample_ratio, scaling_factor, expected_mean_threshold',
     [(np.array([0, 1]),
-      np.array([0, 1]), 1, 1, 0.9, 0.1, 0.1),
+      np.array([0, 1]), 1, 0.9, 0.1, 0.1),
      (np.array([-0.6, -2, -5, 10, 20, 0.2, -3, 0.4]),
-      np.arange(0, 0.8, 0.1), 1, 1, 0.9, 0.6, 15.0),
+      np.arange(0, 0.8, 0.1), 1, 0.9, 0.6, 15.0),
      (np.arange(-20, 20, 0.1),
-      np.arange(0, 4, 0.01), 1, 1, 0.4, 0.6, -6)]
+      np.arange(0, 4, 0.01), 1, 0.4, 0.6, -6)]
 )
-def test_find_thresholds(signals, time, window, step_size, sample_ratio, scaling_factor, expected_mean_threshold):
+def test_find_thresholds(signals, time, window, sample_ratio, scaling_factor, expected_mean_threshold):
     mean_threshold = find_thresholds(
-        signals, time, window, step_size, sample_ratio, scaling_factor)
+        signals, time, window, sample_ratio, scaling_factor)
     assert expected_mean_threshold == pytest.approx(mean_threshold)
 
 
@@ -28,13 +28,12 @@ def test_find_thresholds_does_not_accept_invalid_percentages(sample_ratio):
             signals=np.array([0, 1]),
             times=np.array([0, 1]),
             window_size=1,
-            step_size=1,
             sample_ratio=sample_ratio,
             scaling_factor=0.1)
 
 
 @pytest.mark.parametrize(
-    'interpfact, time, amplitude, thr_up, thr_dn, refractory_period, expected_spike_trains',
+    'interpolation_factor, time, amplitude, thr_up, thr_dn, refractory_period, expected_spike_trains',
     [(1, [0, 1], [1, 0], 3, 0.5, 0.01, SpikeTrains(up=[], down=[])),
      (10, [0, 1, 2], [0, 10, -20], 3, 0.5, 0.01, SpikeTrains(up=[0.3157894736842105, 0.631578947368421, 0.9473684210526315],
                                                              down=[1.0526315789473684, 1.1578947368421053,
@@ -46,9 +45,9 @@ def test_find_thresholds_does_not_accept_invalid_percentages(sample_ratio):
                                                                                        3.007537688442211, 3.6090452261306534],
                                                                                    down=[0.0]))]
 )
-def test_signal_to_spike_refractory(interpfact, time, amplitude, thr_up, thr_dn, refractory_period, expected_spike_trains):
+def test_signal_to_spike_refractory(interpolation_factor, time, amplitude, thr_up, thr_dn, refractory_period, expected_spike_trains):
     spike_trains = signal_to_spike_refractory(
-        interpfact, time, amplitude, thr_up, thr_dn, refractory_period)
+        interpolation_factor, time, amplitude, thr_up, thr_dn, refractory_period)
     assert are_lists_approximately_equal(
         spike_trains.up, expected_spike_trains.up)
     assert are_lists_approximately_equal(

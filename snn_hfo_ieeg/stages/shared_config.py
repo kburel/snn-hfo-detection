@@ -13,4 +13,5 @@ class Configuration(NamedTuple):
     data_path: str
     measurement_mode: MeasurementMode
     hidden_neuron_count: int
+    calibration_time: float
     plots: PlottingFunctions

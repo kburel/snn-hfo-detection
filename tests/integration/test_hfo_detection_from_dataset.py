@@ -16,6 +16,7 @@ def _generate_test_configuration(dataset_name, measurement_mode=MeasurementMode.
         data_path=get_hfo_directory(dataset_name),
         measurement_mode=measurement_mode,
         hidden_neuron_count=86,
+        calibration_time=10,
         plots=PlottingFunctions(
             channel=[],
             patient=[]
@@ -77,7 +78,7 @@ def test_ieeg_hfo_detection():
         hfo_cb=_generate_add_detected_hfo_to_list_cb(detected_hfos))
     assert len(detected_hfos) == 1
     hfo = detected_hfos[0]
-    assert hfo.result.frequency == pytest.approx(0.12, abs=FREQUENCY_ACCURACY)
+    assert hfo.result.frequency == pytest.approx(0.14, abs=FREQUENCY_ACCURACY)
 
     _assert_contains_at_least([0.0, 3.5, 6.43, 10.59, 14.29, 17.42, 24.2],
                               hfo.analytics.periods.start, accuracy=PERIOD_ACCURACY)

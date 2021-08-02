@@ -15,7 +15,7 @@ class SpikeTrains(NamedTuple):
     down: np.array
 
 
-def find_thresholds(signals, times, window_size, step_size, sample_ratio, scaling_factor):
+def find_thresholds(signals, times, window_size, sample_ratio, scaling_factor):
     '''
     This functions retuns the mean threshold for your signals, based on the calculated
     mean noise floor and a user-specified scaling facotr that depeneds on the type of signals,
@@ -36,9 +36,6 @@ def find_thresholds(signals, times, window_size, step_size, sample_ratio, scalin
      scaling_factor : float
         a percentage of the calculated threshold
     '''
-    if step_size > window_size:
-        raise ValueError(
-            f'step_size needs to be at most windows_size, but got: step_size={step_size}, window_size={step_size}')
     min_time = np.min(times)
     if np.min(times) < 0:
         raise ValueError(
@@ -63,9 +60,9 @@ def find_thresholds(signals, times, window_size, step_size, sample_ratio, scalin
             f'sample_ratio must be a value between 0 and 1, but was {sample_ratio}'
         )
 
-    num_timesteps = int(np.ceil(duration / step_size))
+    num_timesteps = int(np.ceil(duration / window_size))
     max_min_amplitude = np.zeros((num_timesteps, 2))
-    for interval_nr, interval_start in enumerate(np.arange(start=0, stop=duration, step=step_size)):
+    for interval_nr, interval_start in enumerate(np.arange(start=0, stop=duration, step=window_size)):
         interval_end = interval_start + window_size
         index = np.where((times >= interval_start) & (times <= interval_end))
         max_amplitude = np.max(signals[index])
@@ -73,7 +70,7 @@ def find_thresholds(signals, times, window_size, step_size, sample_ratio, scalin
         max_min_amplitude[interval_nr, 0] = max_amplitude
         max_min_amplitude[interval_nr, 1] = min_amplitude
 
-    chosen_samples = int(np.round(num_timesteps * sample_ratio))
+    chosen_samples = max(int(np.round(num_timesteps * sample_ratio)), 1)
     threshold_up = np.mean(np.sort(max_min_amplitude[:, 0])[:chosen_samples])
     threshold_dn = np.mean(
         np.sort(max_min_amplitude[:, 1] * -1)[:chosen_samples])
@@ -83,7 +80,7 @@ def find_thresholds(signals, times, window_size, step_size, sample_ratio, scalin
 # ========================================================================================
 # Signal to spike conversion with refractory period
 # ========================================================================================
-def signal_to_spike_refractory(interpfact, times, amplitude, thr_up, thr_dn, refractory_period):
+def signal_to_spike_refractory(interpolation_factor, times, amplitude, thr_up, thr_dn, refractory_period):
     '''
     This functions retuns two spike trains, when the signal crosses the specified threshold in
     a rising direction (UP spikes) and when it crosses the specified threshold in a falling
@@ -91,7 +88,7 @@ def signal_to_spike_refractory(interpfact, times, amplitude, thr_up, thr_dn, ref
 
     :times (array): time vector
     :amplitude (array): amplitude of the signal
-    :interpfact (int): upsampling factor, new sampling frequency
+    :interpolation_factor (int): upsampling factor, new sampling frequency
     :thr_up (float): threshold crossing in a rising direction
     :thr_dn (float): threshold crossing in a falling direction
     :refractory_period (float): period in which no spike will be generated [same units as time vector]
@@ -101,7 +98,7 @@ def signal_to_spike_refractory(interpfact, times, amplitude, thr_up, thr_dn, ref
     spike_dn = []
 
     intepolated_time = sc.interpolate.interp1d(times, amplitude)
-    rangeint = np.round((np.max(times) - np.min(times))*interpfact)
+    rangeint = np.round((np.max(times) - np.min(times))*interpolation_factor)
     xnew = np.linspace(np.min(times), np.max(
         times), num=int(rangeint), endpoint=True)
     data = np.reshape([xnew, intepolated_time(xnew)], (2, len(xnew))).T
@@ -111,11 +108,11 @@ def signal_to_spike_refractory(interpfact, times, amplitude, thr_up, thr_dn, ref
         if((actual_dc + thr_up) < data[i, 1]):
             spike_up.append(data[i, 0])  # spike up
             actual_dc = data[i, 1]        # update current dc value
-            i += int(refractory_period * interpfact)
+            i += int(refractory_period * interpolation_factor)
         elif((actual_dc - thr_dn) > data[i, 1]):
             spike_dn.append(data[i, 0])  # spike dn
             actual_dc = data[i, 1]        # update curre
-            i += int(refractory_period * interpfact)
+            i += int(refractory_period * interpolation_factor)
         else:
             i += 1
 
