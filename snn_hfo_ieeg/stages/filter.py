@@ -48,22 +48,35 @@ class _FilterParameters(NamedTuple):
     calibration_time: float
 
 
+def _get_signal_times_in_calibration_time(signal, filter_parameters):
+    signal_times = zip(signal, filter_parameters.channel_data.signal_time)
+    signal_times_in_calibration = [(signal, time) for signal, time
+                                   in signal_times
+                                   if time <= filter_parameters.calibration_time]
+    signals = [signal for signal, _ in signal_times_in_calibration]
+    times = [time for _, time in signal_times_in_calibration]
+    return signals, times
+
+
 def _filter_signal_to_spike(filter_parameters):
     signal = butter_bandpass_filter(data=filter_parameters.channel_data.wideband_signal,
                                     lowcut=filter_parameters.lowcut,
                                     highcut=filter_parameters.highcut,
                                     sampling_frequency=SAMPLING_FREQUENCY,
                                     order=2)
-    threshold = np.ceil(find_thresholds(signals=signal,
-                                        times=filter_parameters.channel_data.signal_time,
-                                        window_size=1,
-                                        step_size=1,
-                                        sample_ratio=1/6,
-                                        scaling_factor=filter_parameters.scaling_factor))
+
+    calibration_signals, calibration_times = _get_signal_times_in_calibration_time(
+        signal, filter_parameters)
+    thresholds = np.ceil(find_thresholds(signals=calibration_signals,
+                                         times=calibration_times,
+                                         window_size=1,
+                                         step_size=1,
+                                         sample_ratio=1/6,
+                                         scaling_factor=filter_parameters.scaling_factor))
     return signal_to_spike_refractory(interpfact=35000,
                                       times=filter_parameters.channel_data.signal_time,
                                       amplitude=signal,
-                                      thr_up=threshold, thr_dn=threshold,
+                                      thr_up=thresholds, thr_dn=thresholds,
                                       refractory_period=3e-4)
 
 
