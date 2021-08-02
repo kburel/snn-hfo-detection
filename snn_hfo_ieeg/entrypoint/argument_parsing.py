@@ -25,7 +25,7 @@ def parse_arguments():
     parser.add_argument('--intervals', type=int, default=None, nargs='+',
                         help='Which intervals should be processed. By default, all intervals will be processed. Only works when --patients was called beforehand with exactly one patient number.')
     parser.add_argument('--plot', type=str, default=None, nargs='+',
-                        help='Which plots should be generated during the HFO detection. Possible values: TODO')
+                        help='Which plots should be generated during the HFO detection. Possible values: raster')
     return parser.parse_args()
 
 
