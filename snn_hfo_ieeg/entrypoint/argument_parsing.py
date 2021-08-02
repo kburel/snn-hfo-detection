@@ -2,6 +2,7 @@ import argparse
 import sys
 from snn_hfo_ieeg.stages.shared_config import Configuration, MeasurementMode
 from snn_hfo_ieeg.entrypoint.hfo_detection import CustomOverrides
+from snn_hfo_ieeg.stages.plotting.plot_loader import find_plotting_functions
 
 
 def parse_arguments():
@@ -9,6 +10,9 @@ def parse_arguments():
     default_data_path = 'data/'
     default_hidden_neurons = 86
     default_calibration = 10
+    parser.add_argument('mode', type=str,
+                        help='Which measurement mode was used to capture the data. Possible values: iEEG, eCoG or scalp.\
+                        Note that eCoG will use signals in the fast ripple channel (250-500 Hz), scalp will use the ripple channel (80-250 Hz) and iEEG will use both')
     parser.add_argument('--data-path', type=str, default=default_data_path,
                         help=f'Specifies the path to the directory containing the test data. Default is {default_data_path}')
     parser.add_argument('--hidden-neurons', type=int, default=default_hidden_neurons,
@@ -23,10 +27,16 @@ def parse_arguments():
                         help='Which patients should be processed. By default, all patients will be processed')
     parser.add_argument('--intervals', type=int, default=None, nargs='+',
                         help='Which intervals should be processed. By default, all intervals will be processed. Only works when --patients was called beforehand with exactly one patient number.')
-    parser.add_argument('mode', type=str,
-                        help='Which measurement mode was used to capture the data. Possible values: iEEG, eCoG or scalp.\
-                        Note that eCoG will use signals in the fast ripple channel (250-500 Hz), scalp will use the ripple channel (80-250 Hz) and iEEG will use both')
+    parser.add_argument('--plot', type=str, default=None, nargs='+',
+                        help='Which plots should be generated during the HFO detection. Possible values: raster')
     return parser.parse_args()
+
+
+def _get_selected_plots(plot_names):
+    try:
+        return find_plotting_functions(plot_names)
+    except ValueError as error:
+        sys.exit(f'run.py: error: {error}')
 
 
 def convert_arguments_to_config(arguments):
@@ -34,7 +44,8 @@ def convert_arguments_to_config(arguments):
         data_path=arguments.data_path,
         measurement_mode=MeasurementMode[arguments.mode.upper()],
         hidden_neuron_count=arguments.hidden_neurons,
-        calibration_time=arguments.calibration
+        calibration_time=arguments.calibration,
+        plots=_get_selected_plots(arguments.plot)
     )
 
 

@@ -7,7 +7,6 @@ def test_filters_patient_directories():
     tests_path = get_tests_path()
     test_data_path = os.path.join(tests_path, 'stages', 'loading', 'test_data')
     patients = get_patient_interval_paths(test_data_path)
-    print(patients)
     expected_patients: Patients = {
         0: {
             0: os.path.join(test_data_path, 'P0', 'I0.mat'),

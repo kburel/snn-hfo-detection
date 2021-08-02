@@ -1,5 +1,6 @@
 from typing import NamedTuple
 from enum import Enum, auto
+from snn_hfo_ieeg.stages.plotting.plot_loader import PlottingFunctions
 
 
 class MeasurementMode(Enum):
@@ -13,3 +14,4 @@ class Configuration(NamedTuple):
     measurement_mode: MeasurementMode
     hidden_neuron_count: int
     calibration_time: float
+    plots: PlottingFunctions

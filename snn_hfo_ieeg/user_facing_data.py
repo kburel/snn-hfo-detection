@@ -70,12 +70,19 @@ class Analytics(NamedTuple):
         The start and end times in which HFOs were detected.
     filtered_spikes : FilteredSpikes
         The spike trains of the filtered bandwidths used for this detection
-
+    spike_times : np.array
+        Times when a neuron spiked.
+    spike_times : np.array
+        Times when a neuron spiked in seconds.
+    neuron_ids : np.array
+        The IDs of the neurons that fired at the time of spike_times. The indices match.
     '''
     detections: np.array
     analyzed_times: np.array
     periods: Periods
     filtered_spikes: FilteredSpikes
+    spike_times: np.array
+    neuron_ids: np.array
 
 
 class HfoDetectionWithAnalytics(NamedTuple):

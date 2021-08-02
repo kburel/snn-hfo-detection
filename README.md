@@ -42,26 +42,15 @@ Interictal HFOs have proven more specific in localizing the seizure onset zone (
 <a id="7">[9]</a> Sharifshazileh M., Burelo K., Sarnthein J., and  Indiveri G. An electronic neuromorphic system for real-time detection of high
 frequency oscillations (HFOs) in intracranial EEG. NatCom (accepted) (2021)
 
-
-
 ## How the detector works:
-### **Input Parameters**: 
-The parameters are read from two pre-created "**.mat**" files. 
-The "parameters/adm.mat" file contains the parameters used for the signal to spike converison phase of the SNN HFO detector. 
-The "parameters/network.mat" file contains the parameters used for the SNN architecture.
 For more details regarding the architecture and SNN HFO detector see https://arxiv.org/abs/2009.11245
 
-### **Input Data**: 
-The data has to be structured in the following way:
-```
-iEEG_data = {}
-iEEG_data['chb']: matrix of iEEG signal, each column is the iEEG signal from each recorded channel.
-iEEG_data['t']: array containing the time vector of the recorded signal
-```
-The SNN HFO detector will run for all the channel from a single recorded interval and it will save the results in the dictionary "test_results".
+## Input data format: 
+The file containing the interval data must be a matlab file with the following variables:
+- `times`: array containing the times of the recorded signal in seconds
+- `channels`: matrix of iEEG signal. Each row is a channel, each column the signal at the time of the corresponding index
 
-The Filtered signal as well as the generated UP and DN spikes can be accessed trough the dictionaries "signal"  and  "spikes" respectively.
-
+You can see valid example files at [tests/integration/data](https://github.com/kburel/snn-hfo-detection/tree/main/tests/integration/data)
 ## Instructions
 This project uses [poetry](https://python-poetry.org/) to manage its dependencies. You can download it via
 ```bash
@@ -141,6 +130,15 @@ while only looking at the first 300 seconds in iEEG mode for data in ./ieeg-data
 ```bash
 poetry run ./run.py iieg --data-path ./ieeg-data --hidden-neurons 256 --patients 6 --intervals 3 4 --channels 1 2 --duration 300
 ```
+
+## Plotting
+The output can be plotting during the run in various ways by using `--plot`. The specified plots are created either after every channel
+or at the very end. Note that multiple plots can be speficied.
+
+### Per channel plots
+- **raster**: Classic neuron ID to spike time raster plot. On gets drawn when an HFO was detected.
+
+### Total data plots
 
 ## This code has been written originally by:
 * Karla Burelo

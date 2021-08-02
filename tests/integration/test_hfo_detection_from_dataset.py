@@ -1,32 +1,26 @@
-import os
 import pytest
 from snn_hfo_ieeg.user_facing_data import HfoDetection, Periods, Analytics, HfoDetectionWithAnalytics
 from snn_hfo_ieeg.stages.shared_config import Configuration, MeasurementMode
-from snn_hfo_ieeg.stages.filter import FilteredSpikes
-from snn_hfo_ieeg.entrypoint.hfo_detection import CustomOverrides, run_hfo_detection_with_configuration
-from tests.utility import are_hfo_detections_equal, get_tests_path
-EMPTY_CUSTOM_OVERRIDES = CustomOverrides(
-    duration=None,
-    channels=None,
-    patients=None,
-    intervals=None,
-)
+from snn_hfo_ieeg.entrypoint.hfo_detection import run_hfo_detection_with_configuration
+from snn_hfo_ieeg.stages.plotting.plot_loader import PlottingFunctions
+from tests.utility import are_hfo_detections_equal
+from tests.integration.utility import get_hfo_directory, EMPTY_CUSTOM_OVERRIDES
+
 
 PERIOD_ACCURACY = 1.5
 FREQUENCY_ACCURACY = 0.035
 
 
-def _get_hfo_directory(dataset_name):
-    tests_path = get_tests_path()
-    return os.path.join(tests_path, 'integration', 'data', dataset_name)
-
-
 def _generate_test_configuration(dataset_name, measurement_mode=MeasurementMode.IEEG,):
     return Configuration(
-        data_path=_get_hfo_directory(dataset_name),
+        data_path=get_hfo_directory(dataset_name),
         measurement_mode=measurement_mode,
         hidden_neuron_count=86,
-        calibration_time=10
+        calibration_time=10,
+        plots=PlottingFunctions(
+            channel=[],
+            total=[]
+        )
     )
 
 
@@ -44,8 +38,10 @@ def _assert_dummy_hfo_is_empty(_metadata, hfo_detector):
                 start=[],
                 stop=[]
             ),
-            filtered_spikes=FilteredSpikes(
-                ripple=None, fast_ripple=None)  # Not inspected
+            # Not inspected
+            filtered_spikes=None,
+            spike_times=None,
+            neuron_ids=None
         ))
     hfo_detection = hfo_detector.run_with_analytics()
     assert are_hfo_detections_equal(
