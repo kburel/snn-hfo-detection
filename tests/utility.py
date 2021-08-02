@@ -3,8 +3,8 @@ import pytest
 import numpy as np
 
 
-def are_lists_approximately_equal(first_list, second_list):
-    return np.all(first_list == [pytest.approx(_) for _ in second_list])
+def are_lists_approximately_equal(first_list, second_list, accuracy=None):
+    return np.all(first_list == [pytest.approx(_, abs=accuracy) for _ in second_list])
 
 
 def are_hfo_detections_equal(first_hfo, second_hfo):
