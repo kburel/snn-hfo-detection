@@ -80,7 +80,7 @@ def find_thresholds(signals, times, window_size, sample_ratio, scaling_factor):
 # ========================================================================================
 # Signal to spike conversion with refractory period
 # ========================================================================================
-def signal_to_spike_refractory(interpfact, times, amplitude, thr_up, thr_dn, refractory_period):
+def signal_to_spike_refractory(interpolation_factor, times, amplitude, thr_up, thr_dn, refractory_period):
     '''
     This functions retuns two spike trains, when the signal crosses the specified threshold in
     a rising direction (UP spikes) and when it crosses the specified threshold in a falling
@@ -88,7 +88,7 @@ def signal_to_spike_refractory(interpfact, times, amplitude, thr_up, thr_dn, ref
 
     :times (array): time vector
     :amplitude (array): amplitude of the signal
-    :interpfact (int): upsampling factor, new sampling frequency
+    :interpolation_factor (int): upsampling factor, new sampling frequency
     :thr_up (float): threshold crossing in a rising direction
     :thr_dn (float): threshold crossing in a falling direction
     :refractory_period (float): period in which no spike will be generated [same units as time vector]
@@ -98,7 +98,7 @@ def signal_to_spike_refractory(interpfact, times, amplitude, thr_up, thr_dn, ref
     spike_dn = []
 
     intepolated_time = sc.interpolate.interp1d(times, amplitude)
-    rangeint = np.round((np.max(times) - np.min(times))*interpfact)
+    rangeint = np.round((np.max(times) - np.min(times))*interpolation_factor)
     xnew = np.linspace(np.min(times), np.max(
         times), num=int(rangeint), endpoint=True)
     data = np.reshape([xnew, intepolated_time(xnew)], (2, len(xnew))).T
@@ -108,11 +108,11 @@ def signal_to_spike_refractory(interpfact, times, amplitude, thr_up, thr_dn, ref
         if((actual_dc + thr_up) < data[i, 1]):
             spike_up.append(data[i, 0])  # spike up
             actual_dc = data[i, 1]        # update current dc value
-            i += int(refractory_period * interpfact)
+            i += int(refractory_period * interpolation_factor)
         elif((actual_dc - thr_dn) > data[i, 1]):
             spike_dn.append(data[i, 0])  # spike dn
             actual_dc = data[i, 1]        # update curre
-            i += int(refractory_period * interpfact)
+            i += int(refractory_period * interpolation_factor)
         else:
             i += 1
 
