@@ -52,8 +52,8 @@ def _get_signal_times_in_calibration_time(signal, filter_parameters):
     signal_times_in_calibration = [(signal, time) for signal, time
                                    in signal_times
                                    if time <= filter_parameters.calibration_time]
-    signals = [signal for signal, _ in signal_times_in_calibration]
-    times = [time for _, time in signal_times_in_calibration]
+    signals = np.array([signal for signal, _ in signal_times_in_calibration])
+    times = np.array([time for _, time in signal_times_in_calibration])
     return signals, times
 
 
