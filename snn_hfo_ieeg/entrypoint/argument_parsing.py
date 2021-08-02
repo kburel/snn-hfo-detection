@@ -16,7 +16,7 @@ def parse_arguments():
     parser.add_argument('--duration', type=float, default=None,
                         help='How many seconds of the dataset should be processed. By default, the entire dataset will be processed')
     parser.add_argument('--calibration', type=float, default=default_calibration,
-                        help=f'How many seconds of the dataset should be used for calibration of HFO thresholds. Default is {default_calibration} s. Calibration time is allowed to be bigger than duration.')
+                        help=f'How many seconds of the dataset should be used for calibration of HFO thresholds. Default is {default_calibration} s. If calibration is bigger than duration, the entire duration will be used for calibration.')
     parser.add_argument('--channels', type=int, default=None, nargs='+',
                         help='Which channels of the dataset should be processed, using 1 based indexing. By default, all channels will be processed')
     parser.add_argument('--patients', type=int, default=None, nargs='+',
