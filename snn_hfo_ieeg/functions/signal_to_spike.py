@@ -15,7 +15,7 @@ class SpikeTrains(NamedTuple):
     down: np.array
 
 
-def find_thresholds(signals, times, window_size, step_size, sample_ratio, scaling_factor):
+def find_thresholds(signals, times, window_size, sample_ratio, scaling_factor):
     '''
     This functions retuns the mean threshold for your signals, based on the calculated
     mean noise floor and a user-specified scaling facotr that depeneds on the type of signals,
@@ -36,9 +36,6 @@ def find_thresholds(signals, times, window_size, step_size, sample_ratio, scalin
      scaling_factor : float
         a percentage of the calculated threshold
     '''
-    if step_size > window_size:
-        raise ValueError(
-            f'step_size needs to be at most windows_size, but got: step_size={step_size}, window_size={step_size}')
     min_time = np.min(times)
     if np.min(times) < 0:
         raise ValueError(
@@ -63,9 +60,9 @@ def find_thresholds(signals, times, window_size, step_size, sample_ratio, scalin
             f'sample_ratio must be a value between 0 and 1, but was {sample_ratio}'
         )
 
-    num_timesteps = int(np.ceil(duration / step_size))
+    num_timesteps = int(np.ceil(duration / window_size))
     max_min_amplitude = np.zeros((num_timesteps, 2))
-    for interval_nr, interval_start in enumerate(np.arange(start=0, stop=duration, step=step_size)):
+    for interval_nr, interval_start in enumerate(np.arange(start=0, stop=duration, step=window_size)):
         interval_end = interval_start + window_size
         index = np.where((times >= interval_start) & (times <= interval_end))
         max_amplitude = np.max(signals[index])

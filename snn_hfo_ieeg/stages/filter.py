@@ -69,7 +69,6 @@ def _filter_signal_to_spike(filter_parameters):
     thresholds = np.ceil(find_thresholds(signals=calibration_signals,
                                          times=calibration_times,
                                          window_size=1,
-                                         step_size=1,
                                          sample_ratio=1/6,
                                          scaling_factor=filter_parameters.scaling_factor))
     return signal_to_spike_refractory(interpfact=35000,
