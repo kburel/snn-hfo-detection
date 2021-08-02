@@ -8,7 +8,7 @@ def parse_arguments():
     parser = argparse.ArgumentParser(description='Perform an hfo test run')
     default_data_path = 'data/'
     default_hidden_neurons = 86
-    default_calibration = 1
+    default_calibration = 10
     parser.add_argument('--data-path', type=str, default=default_data_path,
                         help=f'Specifies the path to the directory containing the test data. Default is {default_data_path}')
     parser.add_argument('--hidden-neurons', type=int, default=default_hidden_neurons,
