@@ -1,4 +1,4 @@
-from typing import NamedTuple
+from typing import NamedTuple, Optional
 from enum import Enum, auto
 from snn_hfo_ieeg.stages.plotting.plot_loader import PlottingFunctions
 
@@ -15,3 +15,5 @@ class Configuration(NamedTuple):
     hidden_neuron_count: int
     calibration_time: float
     plots: PlottingFunctions
+    saving_path: Optional[str]
+    disable_saving: bool

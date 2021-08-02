@@ -3,6 +3,7 @@ from snn_hfo_ieeg.stages.filter import filter_stage
 from snn_hfo_ieeg.stages.snn.stage import snn_stage
 from snn_hfo_ieeg.functions.hfo_detection import detect_hfo
 from snn_hfo_ieeg.user_facing_data import HfoDetection, HfoDetectionWithAnalytics, Analytics
+from snn_hfo_ieeg.stages.saving import save_hfo_detection
 
 HFO_DETECTION_STEP_SIZE = 0.01
 HFO_DETECTION_WINDOW_SIZE = 0.05
@@ -43,4 +44,8 @@ def run_all_hfo_detection_stages(channel_data, duration, configuration, snn_cach
         hfo_detection, filtered_spikes, spike_monitor_hidden)
     for _, plotting_function in configuration.plots.channel:
         plotting_function(user_facing_hfo_detection)
+
+    if not configuration.disable_saving:
+        save_hfo_detection(user_facing_hfo_detection,
+                           configuration.saving_path)
     return user_facing_hfo_detection

@@ -25,7 +25,9 @@ def _run_hfo_detection_with_plot_and_cb(plot_name, hfo_cb):
             calibration_time=10
         ),
         custom_overrides=EMPTY_CUSTOM_OVERRIDES,
-        hfo_cb=hfo_cb)
+        hfo_cb=hfo_cb,
+        disable_saving=True,
+        saving_path=None)
 
 
 def test_channel_plotting_is_called_when_hfo_detector_is_called():

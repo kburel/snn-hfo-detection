@@ -20,7 +20,9 @@ def _generate_test_configuration(dataset_name, measurement_mode=MeasurementMode.
         plots=PlottingFunctions(
             channel=[],
             patient=[]
-        )
+        ),
+        disable_saving=True,
+        saving_path=None
     )
 
 
