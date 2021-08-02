@@ -1,5 +1,5 @@
 from copy import deepcopy
-from typing import List, NamedTuple
+from typing import List, NamedTuple, Optional
 import numpy as np
 from snn_hfo_ieeg.stages.all import run_all_hfo_detection_stages
 from snn_hfo_ieeg.user_facing_data import HfoDetection, HfoDetectionWithAnalytics
@@ -8,10 +8,10 @@ from snn_hfo_ieeg.stages.loading.folder_discovery import get_patient_interval_pa
 
 
 class CustomOverrides(NamedTuple):
-    duration: float
-    channels: List[int]
-    patients: List[int]
-    intervals: List[int]
+    duration: Optional[float]
+    channels: Optional[List[int]]
+    patients: Optional[List[int]]
+    intervals: Optional[List[int]]
 
 
 class Metadata(NamedTuple):
