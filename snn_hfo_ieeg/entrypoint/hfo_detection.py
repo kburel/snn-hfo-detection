@@ -22,15 +22,17 @@ class Metadata(NamedTuple):
 
 
 class HfoDetector():
-    def __init__(self, hfo_detection_cb, hfo_detection_with_analytics_cb):
-        self._hfo_detection_cb = hfo_detection_cb
+    def __init__(self, hfo_detection_with_analytics_cb):
         self._hfo_detection_with_analytics_cb = hfo_detection_with_analytics_cb
+        self.last_run = None
 
     def run(self) -> HfoDetection:
-        return self._hfo_detection_cb()
+        return self.run_with_analytics().result
 
     def run_with_analytics(self) -> HfoDetectionWithAnalytics:
-        return self._hfo_detection_with_analytics_cb()
+        hfo_detection_with_analytics = self._hfo_detection_with_analytics_cb()
+        self.last_run = hfo_detection_with_analytics
+        return hfo_detection_with_analytics
 
 
 def _calculate_duration(signal_time):
@@ -51,8 +53,7 @@ def _generate_hfo_detection_cb(channel_data, duration, configuration, snn_cache)
 def _generate_hfo_detector(channel_data, duration, configuration, snn_cache):
     hfo_detection_cb = _generate_hfo_detection_cb(
         channel_data, duration, configuration, snn_cache)
-    return HfoDetector(
-        lambda: hfo_detection_cb().result, hfo_detection_cb)
+    return HfoDetector(hfo_detection_cb)
 
 
 def run_hfo_detection_with_configuration(configuration, custom_overrides, hfo_cb):
@@ -61,7 +62,8 @@ def run_hfo_detection_with_configuration(configuration, custom_overrides, hfo_cb
 
     patient_intervals_paths = get_patient_interval_paths(
         configuration.data_path)
-
+    should_collect_all_data = len(configuration.plots.total) != 0
+    all_hfo_detections_with_analytics = []
     for patient, intervals in patient_intervals_paths.items():
         if custom_overrides.patients is not None and patient not in custom_overrides.patients:
             continue
@@ -87,3 +89,8 @@ def run_hfo_detection_with_configuration(configuration, custom_overrides, hfo_cb
                     channel_data, duration, configuration, snn_cache)
 
                 hfo_cb(metadata, hfo_detector)
+                if should_collect_all_data and hfo_detector.last_run is not None:
+                    all_hfo_detections_with_analytics.append(
+                        hfo_detector.last_run)
+    for _, plotting_function in configuration.plots.total:
+        plotting_function(all_hfo_detections_with_analytics)
