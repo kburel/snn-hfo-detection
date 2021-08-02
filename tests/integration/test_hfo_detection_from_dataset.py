@@ -18,7 +18,7 @@ def _generate_test_configuration(dataset_name, measurement_mode=MeasurementMode.
         hidden_neuron_count=86,
         plots=PlottingFunctions(
             channel=[],
-            total=[]
+            patient=[]
         )
     )
 
