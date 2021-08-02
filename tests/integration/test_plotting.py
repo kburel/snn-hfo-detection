@@ -17,12 +17,15 @@ def _empty_cb(_metadata, _hfo_detector):
 
 def _run_hfo_detection_with_plot_and_cb(plot_name, hfo_cb):
     run_hfo_detection_with_configuration(
+        metadata=None,
         configuration=Configuration(
             data_path=get_hfo_directory('dummy'),
             measurement_mode=MeasurementMode.IEEG,
             hidden_neuron_count=86,
             plots=find_plotting_functions([plot_name]),
-            calibration_time=10
+            calibration_time=10,
+            saving_path=None,
+            disable_saving=True
         ),
         custom_overrides=EMPTY_CUSTOM_OVERRIDES,
         hfo_cb=hfo_cb,

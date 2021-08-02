@@ -30,9 +30,10 @@ class HfoDetector():
         return self.run_with_analytics().result
 
     def run_with_analytics(self) -> HfoDetectionWithAnalytics:
-        hfo_detection_with_analytics = self._hfo_detection_with_analytics_cb()
-        self.last_run = hfo_detection_with_analytics
-        return hfo_detection_with_analytics
+        if self.last_run is None:
+            hfo_detection_with_analytics = self._hfo_detection_with_analytics_cb()
+            self.last_run = hfo_detection_with_analytics
+        return self.last_run
 
 
 def _calculate_duration(signal_time):
@@ -40,19 +41,22 @@ def _calculate_duration(signal_time):
     return np.max(signal_time) + extra_simulation_time
 
 
-def _generate_hfo_detection_cb(channel_data, duration, configuration, snn_cache):
+def _generate_hfo_detection_cb(metadata, channel_data, duration, configuration, snn_cache):
     inner_channel_data = deepcopy(channel_data)
     inner_configuration = deepcopy(configuration)
+    inner_metada = deepcopy(metadata)
+    inner_snn_cache = deepcopy(snn_cache)
     return lambda: run_all_hfo_detection_stages(
+        metadata=inner_metada,
         channel_data=inner_channel_data,
         duration=duration,
         configuration=inner_configuration,
-        snn_cache=snn_cache)
+        snn_cache=inner_snn_cache)
 
 
-def _generate_hfo_detector(channel_data, duration, configuration, snn_cache):
+def _generate_hfo_detector(metadata, channel_data, duration, configuration, snn_cache):
     hfo_detection_cb = _generate_hfo_detection_cb(
-        channel_data, duration, configuration, snn_cache)
+        metadata, channel_data, duration, configuration, snn_cache)
     return HfoDetector(hfo_detection_cb)
 
 
@@ -86,7 +90,7 @@ def run_hfo_detection_with_configuration(configuration, custom_overrides, hfo_cb
                     duration=duration
                 )
                 hfo_detector = _generate_hfo_detector(
-                    channel_data, duration, configuration, snn_cache)
+                    metadata, channel_data, duration, configuration, snn_cache)
 
                 hfo_cb(metadata, hfo_detector)
                 if should_collect_patient_data and hfo_detector.last_run is not None:
