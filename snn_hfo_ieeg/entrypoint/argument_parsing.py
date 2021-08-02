@@ -8,12 +8,15 @@ def parse_arguments():
     parser = argparse.ArgumentParser(description='Perform an hfo test run')
     default_data_path = 'data/'
     default_hidden_neurons = 86
+    default_calibration = 1
     parser.add_argument('--data-path', type=str, default=default_data_path,
                         help=f'Specifies the path to the directory containing the test data. Default is {default_data_path}')
     parser.add_argument('--hidden-neurons', type=int, default=default_hidden_neurons,
                         help=f'How many neurons should be in the hidden layer. Default is {default_hidden_neurons}')
     parser.add_argument('--duration', type=float, default=None,
                         help='How many seconds of the dataset should be processed. By default, the entire dataset will be processed')
+    parser.add_argument('--calibration', type=float, default=default_calibration,
+                        help=f'How many seconds of the dataset should be used for calibration. Default is {default_calibration} s. Calibration time is allowed to be bigger than duration.')
     parser.add_argument('--channels', type=int, default=None, nargs='+',
                         help='Which channels of the dataset should be processed, using 1 based indexing. By default, all channels will be processed')
     parser.add_argument('--patients', type=int, default=None, nargs='+',
@@ -30,7 +33,8 @@ def convert_arguments_to_config(arguments):
     return Configuration(
         data_path=arguments.data_path,
         measurement_mode=MeasurementMode[arguments.mode.upper()],
-        hidden_neuron_count=arguments.hidden_neurons
+        hidden_neuron_count=arguments.hidden_neurons,
+        calibration_time=arguments.calibration
     )
 
 

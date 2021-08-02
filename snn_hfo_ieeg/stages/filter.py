@@ -7,7 +7,6 @@ from snn_hfo_ieeg.stages.shared_config import MeasurementMode
 
 
 SAMPLING_FREQUENCY = 2000
-CALIBRATION_TIME = 1
 
 
 class FilteredSpikes(NamedTuple):
@@ -96,13 +95,15 @@ def filter_stage(channel_data, configuration):
         channel_data=channel_data,
         lowcut=80,
         highcut=250,
-        scaling_factor=0.6
+        scaling_factor=0.6,
+        calibration_time=configuration.calibration_time
     ))
     fast_ripple = _filter_signal_to_spike(_FilterParameters(
         channel_data=channel_data,
         lowcut=250,
         highcut=500,
-        scaling_factor=0.3
+        scaling_factor=0.3,
+        calibration_time=configuration.calibration_time
     ))
 
     return _filter_spikes_according_to_measurement_mode(
