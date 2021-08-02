@@ -133,12 +133,12 @@ poetry run ./run.py iieg --data-path ./ieeg-data --hidden-neurons 256 --patients
 
 ## Plotting
 The output can be plotting during the run in various ways by using `--plot`. The specified plots are created either after every channel
-or at the very end. Note that multiple plots can be speficied.
+or after every patient. Note that multiple plots can be speficied.
 
 ### Per channel plots
 - **raster**: Classic neuron ID to spike time raster plot. On gets drawn when an HFO was detected.
 
-### Total data plots
+### Per patient plots
 
 ## This code has been written originally by:
 * Karla Burelo

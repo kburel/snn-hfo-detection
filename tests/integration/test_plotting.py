@@ -3,7 +3,7 @@ from snn_hfo_ieeg.stages.plotting.plot_loader import find_plotting_functions
 from snn_hfo_ieeg.stages.shared_config import Configuration, MeasurementMode
 from snn_hfo_ieeg.entrypoint.hfo_detection import run_hfo_detection_with_configuration
 from snn_hfo_ieeg.stages.plotting.plot_channel import ChannelDebugError
-from snn_hfo_ieeg.stages.plotting.plot_total import TotalDebugError
+from snn_hfo_ieeg.stages.plotting.plot_patient import PatientDebugError
 from tests.integration.utility import get_hfo_directory, EMPTY_CUSTOM_OVERRIDES
 
 
@@ -38,7 +38,7 @@ def test_channel_plotting_is_not_called_when_hfo_detector_is_not_called():
         'internal_channel_debug', hfo_cb=_empty_cb)
 
 
-def test_total_plotting_is_called():
-    with pytest.raises(TotalDebugError):
+def test_patient_plotting_is_called():
+    with pytest.raises(PatientDebugError):
         _run_hfo_detection_with_plot_and_cb(
-            'internal_total_debug', hfo_cb=_empty_cb)
+            'internal_patient_debug', hfo_cb=_empty_cb)
