@@ -1,5 +1,5 @@
 from copy import deepcopy
-from typing import List, NamedTuple
+from typing import List, NamedTuple, Optional
 import numpy as np
 from snn_hfo_ieeg.stages.all import run_all_hfo_detection_stages
 from snn_hfo_ieeg.user_facing_data import HfoDetection, HfoDetectionWithAnalytics
@@ -8,10 +8,10 @@ from snn_hfo_ieeg.stages.loading.folder_discovery import get_patient_interval_pa
 
 
 class CustomOverrides(NamedTuple):
-    duration: float
-    channels: List[int]
-    patients: List[int]
-    intervals: List[int]
+    duration: Optional[float]
+    channels: Optional[List[int]]
+    patients: Optional[List[int]]
+    intervals: Optional[List[int]]
 
 
 class Metadata(NamedTuple):
@@ -62,8 +62,8 @@ def run_hfo_detection_with_configuration(configuration, custom_overrides, hfo_cb
 
     patient_intervals_paths = get_patient_interval_paths(
         configuration.data_path)
-    should_collect_all_data = len(configuration.plots.total) != 0
-    all_hfo_detections_with_analytics = []
+    should_collect_patient_data = len(configuration.plots.patient) != 0
+    patient_hfos = []
     for patient, intervals in patient_intervals_paths.items():
         if custom_overrides.patients is not None and patient not in custom_overrides.patients:
             continue
@@ -89,8 +89,9 @@ def run_hfo_detection_with_configuration(configuration, custom_overrides, hfo_cb
                     channel_data, duration, configuration, snn_cache)
 
                 hfo_cb(metadata, hfo_detector)
-                if should_collect_all_data and hfo_detector.last_run is not None:
-                    all_hfo_detections_with_analytics.append(
+                if should_collect_patient_data and hfo_detector.last_run is not None:
+                    patient_hfos.append(
                         hfo_detector.last_run)
-    for _, plotting_function in configuration.plots.total:
-        plotting_function(all_hfo_detections_with_analytics)
+
+        for _, plotting_function in configuration.plots.patient:
+            plotting_function(patient_hfos)

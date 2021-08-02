@@ -19,7 +19,7 @@ def _generate_test_configuration(dataset_name, measurement_mode=MeasurementMode.
         calibration_time=10,
         plots=PlottingFunctions(
             channel=[],
-            total=[]
+            patient=[]
         )
     )
 
