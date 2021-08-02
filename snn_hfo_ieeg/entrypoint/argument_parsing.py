@@ -22,7 +22,7 @@ def parse_arguments():
                         help='How many seconds of the dataset should be processed. By default, the entire dataset will be processed')
     parser.add_argument('--save', type=str, default=default_data_path,
                         help='Path to where the HFO detections should be saved. Default is {default_data_path}')
-    parser.add_argument('--disable-saving', type=bool, action='store_true',
+    parser.add_argument('--disable-saving', action='store_true',
                         help='Disables HFO detections saving. By default, all HFO detections are saved to the path specified by --save')
     parser.add_argument('--calibration', type=float, default=default_calibration,
                         help=f'How many seconds of the dataset should be used for calibration of HFO thresholds. Default is {default_calibration} s. If calibration is bigger than duration, the entire duration will be used for calibration.')
@@ -32,7 +32,7 @@ def parse_arguments():
                         help='Which patients should be processed. By default, all patients will be processed')
     parser.add_argument('--intervals', type=int, default=None, nargs='+',
                         help='Which intervals should be processed. By default, all intervals will be processed. Only works when --patients was called beforehand with exactly one patient number.')
-    parser.add_argument('--plot', type=str, default=None, nargs='+',
+    parser.add_argument('--plot', type=str, default=[], nargs='+',
                         help='Which plots should be generated during the HFO detection. Possible values: raster')
     return parser.parse_args()
 
@@ -51,7 +51,7 @@ def convert_arguments_to_config(arguments):
         hidden_neuron_count=arguments.hidden_neurons,
         calibration_time=arguments.calibration,
         plots=_get_selected_plots(arguments.plot),
-        saving_path=arguments.saving_path,
+        saving_path=arguments.save,
         disable_saving=arguments.disable_saving
     )
 
