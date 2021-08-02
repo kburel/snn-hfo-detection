@@ -8,7 +8,7 @@ from snn_hfo_ieeg.stages.plotting.plot_loader import find_plotting_functions
 def parse_arguments():
     parser = argparse.ArgumentParser(description='Perform an hfo test run')
     default_data_path = 'data/'
-    default_data_path = 'output/'
+    default_saving_path = 'output/'
     default_hidden_neurons = 86
     default_calibration = 10
     parser.add_argument('mode', type=str,
@@ -20,8 +20,8 @@ def parse_arguments():
                         help=f'How many neurons should be in the hidden layer. Default is {default_hidden_neurons}')
     parser.add_argument('--duration', type=float, default=None,
                         help='How many seconds of the dataset should be processed. By default, the entire dataset will be processed')
-    parser.add_argument('--save', type=str, default=default_data_path,
-                        help='Path to where the HFO detections should be saved. Default is {default_data_path}')
+    parser.add_argument('--save', type=str, default=default_saving_path,
+                        help=f'Path to where the HFO detections should be saved. Default is {default_saving_path}')
     parser.add_argument('--disable-saving', action='store_true',
                         help='Disables HFO detections saving. By default, all HFO detections are saved to the path specified by --save')
     parser.add_argument('--calibration', type=float, default=default_calibration,

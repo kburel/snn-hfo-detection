@@ -46,7 +46,7 @@ def run_all_hfo_detection_stages(metadata, channel_data, duration, configuration
         plotting_function(user_facing_hfo_detection)
 
     if not configuration.disable_saving:
-        save_hfo_detection(user_facing_hfo_detection,
-                           metadata,
-                           configuration.saving_path)
+        save_hfo_detection(user_facing_hfo_detection=user_facing_hfo_detection,
+                           saving_path=configuration.saving_path,
+                           metadata=metadata)
     return user_facing_hfo_detection
