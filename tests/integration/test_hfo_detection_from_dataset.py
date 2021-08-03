@@ -1,3 +1,4 @@
+from snn_hfo_ieeg.stages.plotting.plot import PlotMode
 import pytest
 from snn_hfo_ieeg.user_facing_data import HfoDetection, Periods, Analytics, HfoDetectionWithAnalytics
 from snn_hfo_ieeg.stages.shared_config import Configuration, MeasurementMode
@@ -23,7 +24,9 @@ def _generate_test_configuration(dataset_name, measurement_mode=MeasurementMode.
         ),
         disable_saving=True,
         saving_path=None,
-        loading_path=None
+        loading_path=None,
+        plot_mode=PlotMode.SAVE,
+        plot_path='plots/',
     )
 
 
