@@ -25,8 +25,6 @@ def _run_hfo_detection_with_plot_and_cb(plot_name, hfo_cb):
             calibration_time=10,
             saving_path=None,
             disable_saving=True,
-            disable_saving=True,
-            saving_path=None
         ),
         custom_overrides=EMPTY_CUSTOM_OVERRIDES,
         hfo_cb=hfo_cb)
