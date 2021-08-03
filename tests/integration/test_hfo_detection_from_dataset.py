@@ -22,7 +22,8 @@ def _generate_test_configuration(dataset_name, measurement_mode=MeasurementMode.
             patient=[]
         ),
         disable_saving=True,
-        saving_path=None
+        saving_path=None,
+        loading_path=None
     )
 
 
