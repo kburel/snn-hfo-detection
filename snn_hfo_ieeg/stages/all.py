@@ -1,3 +1,4 @@
+from snn_hfo_ieeg.stages.plotting.plot import persist_channel_plot
 from brian2.units import second
 import numpy as np
 from snn_hfo_ieeg.stages.filter import filter_stage
@@ -43,8 +44,9 @@ def run_all_hfo_detection_stages(metadata, channel_data, duration, configuration
                                window_size=HFO_DETECTION_WINDOW_SIZE)
     user_facing_hfo_detection = _convert_inner_hfo_detection_to_user_facing_one(
         hfo_detection, filtered_spikes, spike_monitor_hidden)
-    for _, plotting_function in configuration.plots.channel:
-        plotting_function(user_facing_hfo_detection)
+    for plotting_fn in configuration.plots.channel:
+        plotting_fn.function(user_facing_hfo_detection)
+        persist_channel_plot(plotting_fn.name, metadata, configuration)
 
     if not configuration.disable_saving:
         save_hfo_detection(user_facing_hfo_detection=user_facing_hfo_detection,

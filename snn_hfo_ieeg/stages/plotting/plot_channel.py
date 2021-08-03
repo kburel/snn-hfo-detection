@@ -1,4 +1,4 @@
-import matplotlib.pyplot as p
+import matplotlib.pyplot as plt
 from brian2.units import second, ms
 
 
@@ -17,8 +17,7 @@ def plot_internal_channel_debug(hfo_detection):
 def plot_raster(hfo_detection):
     if hfo_detection.result.total_amount == 0:
         return
-    p.plot(hfo_detection.analytics.spike_times*second/ms,
+    plt.plot(hfo_detection.analytics.spike_times*second/ms,
            hfo_detection.analytics.neuron_ids, '.k')
-    p.xlabel('Time (ms)')
-    p.ylabel('Neuron index')
-    p.show()
+    plt.xlabel('Time (ms)')
+    plt.ylabel('Neuron index')
