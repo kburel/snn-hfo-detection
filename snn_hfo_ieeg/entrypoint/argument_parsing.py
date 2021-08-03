@@ -1,14 +1,16 @@
 import argparse
 import sys
-from snn_hfo_ieeg.stages.shared_config import Configuration, MeasurementMode
+from snn_hfo_ieeg.stages.shared_config import Configuration, MeasurementMode, PlotMode
 from snn_hfo_ieeg.entrypoint.hfo_detection import CustomOverrides
-from snn_hfo_ieeg.stages.plotting.plot_loader import find_plotting_functions
+from snn_hfo_ieeg.plotting.plot_loader import find_plotting_functions
 
 
 def parse_arguments():
     parser = argparse.ArgumentParser(description='Perform an hfo test run')
     default_data_path = 'data/'
     default_saving_path = 'saved_data/'
+    default_plot_path = 'plots/'
+    default_plot_mode = PlotMode.SAVE.name
     default_hidden_neurons = 86
     default_calibration = 10
     parser.add_argument('mode', type=str,
@@ -33,6 +35,10 @@ def parse_arguments():
                         help='Which intervals should be processed. By default, all intervals will be processed. Only works when --patients was called beforehand with exactly one patient number.')
     parser.add_argument('--plot', type=str, default=[], nargs='+',
                         help='Which plots should be generated during the HFO detection. Possible values: raster')
+    parser.add_argument('--plot-mode', type=str, default=default_plot_mode,
+                        help=f'How to handle plots. Possible values: save, show, both. Default is {default_plot_mode}')
+    parser.add_argument('--plot-path', type=str, default=default_plot_path,
+                        help=f'Location to save plots to when --plot-mode is set to "save". Default is {default_plot_path}')
 
     persistence_group = parser.add_mutually_exclusive_group()
     persistence_group.add_argument('--save', type=str, default=default_saving_path,
@@ -59,7 +65,9 @@ def convert_arguments_to_config(arguments):
         plots=_get_selected_plots(arguments.plot),
         saving_path=arguments.save,
         disable_saving=arguments.disable_saving,
-        loading_path=arguments.load
+        loading_path=arguments.load,
+        plot_path=arguments.plot_path,
+        plot_mode=PlotMode[arguments.plot_mode.upper()],
     )
 
 

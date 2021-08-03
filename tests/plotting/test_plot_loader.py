@@ -1,6 +1,6 @@
 import pytest
-from snn_hfo_ieeg.stages.plotting.plot_loader import find_plotting_functions
-from snn_hfo_ieeg.stages.plotting.plot_channel import ChannelDebugError
+from snn_hfo_ieeg.plotting.plot_loader import find_plotting_functions
+from snn_hfo_ieeg.plotting.plot_channel import ChannelDebugError
 
 VALID_PLOT_NAME = 'internal_channel_debug'
 
@@ -38,7 +38,8 @@ def test_return_scorrect_plot_fn():
 
 
 def test_returns_plots_with_multiple_names():
-    plots = find_plotting_functions([VALID_PLOT_NAME, 'internal_patient_debug'])
+    plots = find_plotting_functions(
+        [VALID_PLOT_NAME, 'internal_patient_debug'])
     assert len(plots.channel) == 1
     assert len(plots.patient) == 1
 
