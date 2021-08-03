@@ -8,7 +8,7 @@ from snn_hfo_ieeg.stages.plotting.plot_loader import find_plotting_functions
 def parse_arguments():
     parser = argparse.ArgumentParser(description='Perform an hfo test run')
     default_data_path = 'data/'
-    default_saving_path = 'output/'
+    default_saving_path = 'saved_data/'
     default_hidden_neurons = 86
     default_calibration = 10
     parser.add_argument('mode', type=str,

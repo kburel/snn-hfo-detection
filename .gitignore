@@ -131,7 +131,7 @@ dmypy.json
 # Default dataset path
 /data/
 # Default saving path
-/output/
+/saved_data/
 
 # Type stubs
 typings/
