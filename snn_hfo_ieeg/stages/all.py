@@ -1,4 +1,5 @@
 from brian2.units import second
+import numpy as np
 from snn_hfo_ieeg.stages.filter import filter_stage
 from snn_hfo_ieeg.stages.snn.stage import snn_stage
 from snn_hfo_ieeg.functions.hfo_detection import detect_hfo
@@ -20,8 +21,8 @@ def _convert_inner_hfo_detection_to_user_facing_one(hfo_detection, filtered_spik
             analyzed_times=hfo_detection.analytics.analyzed_times,
             periods=hfo_detection.analytics.periods,
             filtered_spikes=filtered_spikes,
-            spike_times=spike_monitor_hidden.t/second,
-            neuron_ids=spike_monitor_hidden.i,
+            spike_times=np.array(spike_monitor_hidden.t/second),
+            neuron_ids=np.array(spike_monitor_hidden.i),
         )
     )
 
