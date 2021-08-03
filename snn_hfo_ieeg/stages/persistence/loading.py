@@ -29,6 +29,8 @@ def _deserialize_inner_matlab(item, type: NamedTuple):
         elif _has_annotations(property_type):
             params[property_name] = _deserialize_inner_matlab(
                 value, property_type)
+        elif isinstance(value, (list, np.ndarray)) and isinstance(value[0], (list, np.ndarray)):
+            params[property_name] = property_type(value[0])
         elif property_type is int:
             params[property_name] = int(float(value))
         else:

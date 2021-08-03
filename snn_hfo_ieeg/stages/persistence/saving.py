@@ -33,8 +33,9 @@ def _convert_to_dict(object):
         for key, item in object.items():
             object[key] = _convert_to_dict(item)
         return object
-    # Needed because of https://stackoverflow.com/questions/38934433/maximum-recursion-depth-exceeded-when-using-scipy-io-savemat
-    return str(object)
+    if object is None:
+        return str(object)
+    return object
 
 
 def _create_parent_directory(path):
