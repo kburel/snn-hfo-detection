@@ -1,5 +1,5 @@
 import numpy as np
-import shutil
+from shutil import rmtree
 from snn_hfo_ieeg.user_facing_data import Analytics, FilteredSpikes, HfoDetection, HfoDetectionWithAnalytics, Periods, SpikeTrains
 from snn_hfo_ieeg.stages.saving import save_hfo_detection, load_hfo_detection
 from snn_hfo_ieeg.entrypoint.hfo_detection import Metadata
@@ -56,4 +56,4 @@ def test_saved_can_be_loaded():
     try:
         _assert_saved_can_be_loaded()
     finally:
-        shutil.rmtree(SAVING_PATH)
+        rmtree(SAVING_PATH)
