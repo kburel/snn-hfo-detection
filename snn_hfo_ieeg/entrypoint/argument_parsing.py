@@ -10,7 +10,7 @@ def parse_arguments():
     default_data_path = 'data/'
     default_saving_path = 'saved_data/'
     default_plot_path = 'plots/'
-    default_plot_mode = 'save'
+    default_plot_mode = str(PlotMode.SAVE)
     default_hidden_neurons = 86
     default_calibration = 10
     parser.add_argument('mode', type=str,
