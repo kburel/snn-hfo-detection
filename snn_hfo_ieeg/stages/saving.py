@@ -1,6 +1,8 @@
 import os
-import scipy.io as sio
 from pathlib import Path
+from typing import NamedTuple
+import scipy.io as sio
+from snn_hfo_ieeg.user_facing_data import HfoDetectionWithAnalytics
 
 
 def _is_namedtuple(obj) -> bool:
@@ -36,7 +38,7 @@ def _convert_to_dict(object):
     return str(object)
 
 
-def _get_file_path(saving_path, metadata):
+def _get_file_path(saving_path, metadata) -> str:
     parent_directory = os.path.join(saving_path,
                                     f'P{metadata.patient}',
                                     f'I{metadata.interval}')
@@ -56,3 +58,19 @@ def save_hfo_detection(user_facing_hfo_detection, saving_path, metadata):
     _create_parent_directory(filepath)
     dictionary = _convert_to_dict(user_facing_hfo_detection)
     sio.savemat(filepath, dictionary)
+
+
+def _from_dict(dictionary: dict, type: NamedTuple) -> HfoDetectionWithAnalytics:
+    params = {}
+    for key, item in dictionary.items():
+        item_type = type.__annotations__[key]
+        typed_item = _from_dict(item, item_type) if isinstance(
+            item, dict) else item_type(item)
+        params[key] = typed_item
+    return type(**params)
+
+
+def load_hfo_detection(loading_path, metadata) -> HfoDetectionWithAnalytics:
+    filepath = _get_file_path(loading_path, metadata)
+    dictionary = sio.loadmat(filepath)
+    return _from_dict(dictionary, HfoDetectionWithAnalytics)
