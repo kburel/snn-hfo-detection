@@ -1,4 +1,5 @@
 from copy import deepcopy
+from snn_hfo_ieeg.stages.persistence.loading import load_hfo_detection
 from typing import List, NamedTuple, Optional
 import numpy as np
 from snn_hfo_ieeg.stages.all import run_all_hfo_detection_stages
@@ -42,9 +43,12 @@ def _calculate_duration(signal_time):
 
 
 def _generate_hfo_detection_cb(metadata, channel_data, duration, configuration, snn_cache):
-    inner_channel_data = deepcopy(channel_data)
     inner_configuration = deepcopy(configuration)
     inner_metada = deepcopy(metadata)
+    if configuration.loading_path is not None:
+        return lambda: load_hfo_detection(inner_configuration.loading_path, inner_metada)
+
+    inner_channel_data = deepcopy(channel_data)
     inner_snn_cache = deepcopy(snn_cache)
     return lambda: run_all_hfo_detection_stages(
         metadata=inner_metada,

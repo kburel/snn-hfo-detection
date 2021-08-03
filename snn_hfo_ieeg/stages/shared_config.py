@@ -17,3 +17,4 @@ class Configuration(NamedTuple):
     plots: PlottingFunctions
     saving_path: Optional[str]
     disable_saving: bool
+    loading_path: Optional[str]
