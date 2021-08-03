@@ -17,7 +17,7 @@ def _save_plot(plot_name, parent_directory):
 
 
 def _should_show_plot(configuration):
-    return configuration.plot_mode is PlotMode.SAVE or configuration.plot_mode is PlotMode.BOTH
+    return configuration.plot_mode is PlotMode.SHOW or configuration.plot_mode is PlotMode.BOTH
 
 
 def _should_save_plot(configuration):
