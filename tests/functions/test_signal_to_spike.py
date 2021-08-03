@@ -48,9 +48,9 @@ def test_find_thresholds_does_not_accept_invalid_percentages(sample_ratio):
 def test_signal_to_spike_refractory(interpolation_factor, time, amplitude, thr_up, thr_dn, refractory_period, expected_spike_trains):
     spike_trains = signal_to_spike_refractory(
         interpolation_factor, time, amplitude, thr_up, thr_dn, refractory_period)
-    assert are_lists_approximately_equal(
+    assert_are_lists_approximately_equal(
         spike_trains.up, expected_spike_trains.up)
-    assert are_lists_approximately_equal(
+    assert_are_lists_approximately_equal(
         spike_trains.down, expected_spike_trains.down)
 
 
@@ -61,5 +61,5 @@ def test_signal_to_spike_refractory(interpolation_factor, time, amplitude, thr_u
 def test_concatenate_spikes(spikes, expected_concatenation):
     spike_times, neuron_ids = concatenate_spikes(spikes)
     expected_spike_times, expected_neuron_ids = expected_concatenation
-    assert are_lists_approximately_equal(spike_times, expected_spike_times)
-    assert are_lists_approximately_equal(neuron_ids, expected_neuron_ids)
+    assert_are_lists_approximately_equal(spike_times, expected_spike_times)
+    assert_are_lists_approximately_equal(neuron_ids, expected_neuron_ids)

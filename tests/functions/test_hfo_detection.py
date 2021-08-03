@@ -61,7 +61,7 @@ from tests.utility import *
 def test_hfo_detection(duration, spike_monitor, original_time_vector, step_size, window_size, expected_hfo_detection):
     hfo_detection = detect_hfo(duration, spike_monitor,
                                original_time_vector, step_size, window_size)
-    assert are_hfo_detections_equal(expected_hfo_detection, hfo_detection)
+    assert_are_hfo_detections_equal(expected_hfo_detection, hfo_detection)
 
 
 def test_hfo_detection_fails_when_step_size_is_bigger_than_window():
