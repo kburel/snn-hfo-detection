@@ -1,7 +1,7 @@
 from typing import NamedTuple, Optional
 from enum import Enum, auto
 from snn_hfo_ieeg.plotting.plot_loader import PlottingFunctions
-from snn_hfo_ieeg.plotting.plot import PlotMode
+from snn_hfo_ieeg.plotting.persistence import PlotMode
 
 
 class MeasurementMode(Enum):
