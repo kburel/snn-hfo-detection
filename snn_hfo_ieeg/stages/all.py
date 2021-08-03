@@ -4,7 +4,7 @@ from snn_hfo_ieeg.stages.filter import filter_stage
 from snn_hfo_ieeg.stages.snn.stage import snn_stage
 from snn_hfo_ieeg.functions.hfo_detection import detect_hfo
 from snn_hfo_ieeg.user_facing_data import HfoDetection, HfoDetectionWithAnalytics, Analytics
-from snn_hfo_ieeg.stages.saving import save_hfo_detection
+from snn_hfo_ieeg.stages.persistence.saving import save_hfo_detection
 
 HFO_DETECTION_STEP_SIZE = 0.01
 HFO_DETECTION_WINDOW_SIZE = 0.05

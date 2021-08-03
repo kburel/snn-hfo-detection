@@ -1,7 +1,8 @@
 from shutil import rmtree
 import numpy as np
 from snn_hfo_ieeg.user_facing_data import Analytics, FilteredSpikes, HfoDetection, HfoDetectionWithAnalytics, Periods, SpikeTrains
-from snn_hfo_ieeg.stages.saving import save_hfo_detection, load_hfo_detection
+from snn_hfo_ieeg.stages.persistence.saving import save_hfo_detection
+from snn_hfo_ieeg.stages.persistence.loading import load_hfo_detection
 from snn_hfo_ieeg.entrypoint.hfo_detection import Metadata
 from tests.utility import assert_are_hfo_detections_equal
 
