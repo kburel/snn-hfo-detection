@@ -17,17 +17,14 @@ def parse_arguments():
     parser.add_argument('--data-path', type=str, default=default_data_path,
                         help=f'Specifies the path to the directory containing the test data. Default is {default_data_path}')
     parser.add_argument('--hidden-neurons', type=int, default=default_hidden_neurons,
-                        help=f'How many neurons should be in the hidden layer. Default is {default_hidden_neurons}')
+                        help=f'How many neurons should be in the hidden layer. Default is {default_hidden_neurons}. Ignored when loading data with --load')
     parser.add_argument('--duration', type=float, default=None,
-                        help='How many seconds of the dataset should be processed. By default, the entire dataset will be processed')
-    parser.add_argument('--save', type=str, default=default_saving_path,
-                        help=f'Path to where the HFO detections should be saved. Default is {default_saving_path}')
-    parser.add_argument('--load', type=str, default=None, nargs='?', const=default_saving_path,
-                        help=f'Path to where the HFO detections where saved with --save. By default, no previously saved data will be loaded. If --load was specified with no path, {default_saving_path} will by used.')
+                        help='How many seconds of the dataset should be processed. By default, the entire dataset will be processed. Ignored when loading data with --load')
+
     parser.add_argument('--disable-saving', action='store_true',
                         help='Disables HFO detections saving. By default, all HFO detections are saved to the path specified by --save')
     parser.add_argument('--calibration', type=float, default=default_calibration,
-                        help=f'How many seconds of the dataset should be used for calibration of HFO thresholds. Default is {default_calibration} s. If calibration is bigger than duration, the entire duration will be used for calibration.')
+                        help=f'How many seconds of the dataset should be used for calibration of HFO thresholds. Default is {default_calibration} s. If calibration is bigger than duration, the entire duration will be used for calibration. Ignored when loading data with --load')
     parser.add_argument('--channels', type=int, default=None, nargs='+',
                         help='Which channels of the dataset should be processed, using 1 based indexing. By default, all channels will be processed')
     parser.add_argument('--patients', type=int, default=None, nargs='+',
@@ -36,6 +33,13 @@ def parse_arguments():
                         help='Which intervals should be processed. By default, all intervals will be processed. Only works when --patients was called beforehand with exactly one patient number.')
     parser.add_argument('--plot', type=str, default=[], nargs='+',
                         help='Which plots should be generated during the HFO detection. Possible values: raster')
+
+    persistence_group = parser.add_mutually_exclusive_group()
+    persistence_group.add_argument('--save', type=str, default=default_saving_path,
+                                   help=f'Path to where the HFO detections should be saved. Default is {default_saving_path} if --load was not specified.')
+    persistence_group.add_argument('--load', type=str, default=None, nargs='?', const=default_saving_path,
+                                   help=f'Path to where the HFO detections where saved with --save. By default, no previously saved data will be loaded. If --load was specified with no path, {default_saving_path} will by used.')
+
     return parser.parse_args()
 
 
