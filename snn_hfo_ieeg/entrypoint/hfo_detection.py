@@ -6,7 +6,7 @@ from snn_hfo_ieeg.user_facing_data import HfoDetection, HfoDetectionWithAnalytic
 from snn_hfo_ieeg.stages.loading.patient_data import load_patient_data, extract_channel_data
 from snn_hfo_ieeg.stages.loading.folder_discovery import get_patient_interval_paths
 from snn_hfo_ieeg.stages.persistence.loading import load_hfo_detection
-from snn_hfo_ieeg.stages.plotting.plot import persist_patient_plot
+from snn_hfo_ieeg.stages.plotting.plot import persist_patient_plot, persist_channel_plot
 
 
 class CustomOverrides(NamedTuple):
@@ -98,9 +98,15 @@ def run_hfo_detection_with_configuration(configuration, custom_overrides, hfo_cb
                     metadata, channel_data, duration, configuration, snn_cache)
 
                 hfo_cb(metadata, hfo_detector)
-                if should_collect_patient_data and hfo_detector.last_run is not None:
-                    patient_hfos.append(
-                        hfo_detector.last_run)
+
+                if hfo_detector.last_run is not None:
+                    for plotting_fn in configuration.plots.channel:
+                        plotting_fn.function(hfo_detector.last_run)
+                        persist_channel_plot(
+                            plotting_fn.name, metadata, configuration)
+                    if should_collect_patient_data:
+                        patient_hfos.append(
+                            hfo_detector.last_run)
 
         for plotting_fn in configuration.plots.patient:
             plotting_fn.function(patient_hfos)
