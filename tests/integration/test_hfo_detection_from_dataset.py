@@ -1,5 +1,5 @@
-from snn_hfo_ieeg.plotting.plot import PlotMode
 import pytest
+from snn_hfo_ieeg.plotting.plot import PlotMode
 from snn_hfo_ieeg.user_facing_data import HfoDetection, Periods, Analytics, HfoDetectionWithAnalytics
 from snn_hfo_ieeg.stages.shared_config import Configuration, MeasurementMode
 from snn_hfo_ieeg.entrypoint.hfo_detection import run_hfo_detection_with_configuration
