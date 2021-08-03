@@ -37,5 +37,5 @@ def persist_patient_plot(plot_name, patient, configuration):
     if _should_show_plot(configuration):
         plt.show()
     if _should_save_plot(configuration):
-        parent_dir = path.join(configuration.plot_path, f'P{metadata.patient}')
+        parent_dir = path.join(configuration.plot_path, f'P{patient}')
         _save_plot(plot_name, parent_dir)
