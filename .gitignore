@@ -132,6 +132,8 @@ dmypy.json
 /data/
 # Default saving path
 /saved_data/
+# Default plot path
+/plots/
 
 # Type stubs
 typings/
