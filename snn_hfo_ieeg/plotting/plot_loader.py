@@ -1,8 +1,8 @@
 import re
 from typing import NamedTuple, Callable, List
 from inspect import getmembers, isfunction
-from snn_hfo_ieeg.stages.plotting import plot_channel
-from snn_hfo_ieeg.stages.plotting import plot_patient
+from snn_hfo_ieeg.plotting import plot_channel
+from snn_hfo_ieeg.plotting import plot_patient
 
 PLOTTING_REGEX = re.compile(r'^plot_([\w_]+)$')
 

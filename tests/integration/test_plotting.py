@@ -1,10 +1,10 @@
-from snn_hfo_ieeg.stages.plotting.plot import PlotMode
+from snn_hfo_ieeg.plotting.plot import PlotMode
 import pytest
-from snn_hfo_ieeg.stages.plotting.plot_loader import find_plotting_functions
+from snn_hfo_ieeg.plotting.plot_loader import find_plotting_functions
 from snn_hfo_ieeg.stages.shared_config import Configuration, MeasurementMode
 from snn_hfo_ieeg.entrypoint.hfo_detection import run_hfo_detection_with_configuration
-from snn_hfo_ieeg.stages.plotting.plot_channel import ChannelDebugError
-from snn_hfo_ieeg.stages.plotting.plot_patient import PatientDebugError
+from snn_hfo_ieeg.plotting.plot_channel import ChannelDebugError
+from snn_hfo_ieeg.plotting.plot_patient import PatientDebugError
 from tests.integration.utility import get_hfo_directory, EMPTY_CUSTOM_OVERRIDES
 
 
