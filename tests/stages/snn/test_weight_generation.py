@@ -1,6 +1,6 @@
 import pytest
 import numpy as np
-from utility import quarter
+from tests.stages.snn.utility import quarter
 from snn_hfo_ieeg.stages.snn.weight_generation import generate_weights, POSSIBLE_ABSOLUTE_WEIGHTS
 from snn_hfo_ieeg.stages.snn.concatenation import NeuronCount
 
