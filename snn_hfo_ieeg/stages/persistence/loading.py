@@ -1,4 +1,5 @@
 from typing import NamedTuple
+from os import path
 import scipy.io as sio
 from snn_hfo_ieeg.user_facing_data import HfoDetectionWithAnalytics
 from snn_hfo_ieeg.stages.persistence.utility import get_persistence_path
@@ -50,6 +51,9 @@ def _remove_matlab_keys(dictionary):
 
 def load_hfo_detection(loading_path, metadata) -> HfoDetectionWithAnalytics:
     filepath = get_persistence_path(loading_path, metadata)
+    if not path.isfile(filepath):
+        raise ValueError(
+            f'No HFO detection data was saved for patient {metadata.patient}, interval {metadata.interval}, channel {metadata.channel}')
     dictionary = sio.loadmat(filepath)
     _remove_matlab_keys(dictionary)
     return _deserialize_matlab(dictionary, HfoDetectionWithAnalytics)
