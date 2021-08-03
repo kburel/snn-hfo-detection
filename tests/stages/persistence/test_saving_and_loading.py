@@ -12,7 +12,7 @@ SAVED_HFO_DETECTION = HfoDetectionWithAnalytics(
         total_amount=2.0,
     ),
     analytics=Analytics(
-        detections=np.array([1, 2]),
+        detections=np.array([True, True, False]),
         analyzed_times=np.array([0, 1, 2, 3]),
         periods=Periods(
             start=np.array([1, 2]),

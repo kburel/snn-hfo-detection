@@ -85,7 +85,7 @@ def _get_time_indices_in_window(signal_times, window):
 
 
 def get_binary_hfos(duration, spike_times, signal_times, step_size, window_size):
-    binary_hfo_signal = np.zeros(len(signal_times)).astype(int)
+    binary_hfo_signal = np.zeros(len(signal_times)).astype(bool)
 
     for start_time in np.arange(start=0, stop=duration, step=step_size):
         window = Window(start=start_time,
@@ -94,7 +94,7 @@ def get_binary_hfos(duration, spike_times, signal_times, step_size, window_size)
         if _did_snn_find_hfo(spike_times, window):
             hfo_indices = _get_time_indices_in_window(
                 signal_times, window)
-            binary_hfo_signal[hfo_indices] = 1
+            binary_hfo_signal[hfo_indices] = True
     return binary_hfo_signal
 
 

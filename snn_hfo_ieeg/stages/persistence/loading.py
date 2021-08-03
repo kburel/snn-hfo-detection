@@ -1,5 +1,4 @@
 from typing import NamedTuple
-import numpy as np
 import scipy.io as sio
 from snn_hfo_ieeg.user_facing_data import HfoDetectionWithAnalytics
 from snn_hfo_ieeg.stages.persistence.utility import get_persistence_path
