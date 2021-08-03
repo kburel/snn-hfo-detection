@@ -4,7 +4,7 @@ import numpy as np
 
 
 def assert_are_lists_approximately_equal(first_list, second_list, accuracy=None):
-    assert np.all(np.array(first_list, dtype=second_list.dtype) == [
+    assert np.all(np.array(first_list, dtype=np.array(second_list).dtype) == [
                   pytest.approx(_, abs=accuracy) for _ in second_list])
 
 

@@ -47,7 +47,6 @@ def _assert_saved_can_be_loaded():
         loading_path=SAVING_PATH,
         metadata=METADATA
     )
-    print(loaded_hfo_detection)
 
     assert_are_hfo_detections_equal(
         SAVED_HFO_DETECTION, loaded_hfo_detection)
