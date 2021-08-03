@@ -18,8 +18,8 @@ _CUT_TO_FS_RATIO_LIMIT = 0.5
 def test_butter_bandpass(lowcut, highcut, sampling_frequency, expected_coefficients):
     actual_a, actual_b = butter_bandpass(lowcut, highcut, sampling_frequency)
     expected_a, expected_b = expected_coefficients
-    assert are_lists_approximately_equal(actual_a, expected_a)
-    assert are_lists_approximately_equal(actual_b, expected_b)
+    assert_are_lists_approximately_equal(actual_a, expected_a)
+    assert_are_lists_approximately_equal(actual_b, expected_b)
 
 
 def test_butter_bandpass_raises_error_when_fs_is_zero():
@@ -71,4 +71,4 @@ def test_butter_bandpass_passes_when_cut_to_sampling_frequency_ratio_is_okay(sam
 def test_butter_bandpass_filter(data, lowcut, highcut, sampling_frequency, expected_amplitude):
     actual_amplitude = butter_bandpass_filter(
         data, lowcut, highcut, sampling_frequency)
-    assert are_lists_approximately_equal(actual_amplitude, expected_amplitude)
+    assert_are_lists_approximately_equal(actual_amplitude, expected_amplitude)

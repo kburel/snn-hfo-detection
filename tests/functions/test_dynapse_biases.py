@@ -46,4 +46,4 @@ def test_get_current_raises_error_on_zero_current():
 @pytest.mark.filterwarnings('ignore::DeprecationWarning')
 def test_get_current_with_vector(tau, expected_current):
     actual_current = get_current(tau)
-    assert are_lists_approximately_equal(actual_current, expected_current)
+    assert_are_lists_approximately_equal(actual_current, expected_current)

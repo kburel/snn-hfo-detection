@@ -80,7 +80,7 @@ def _deserialize_inner_matlab(item, type: NamedTuple):
         value = params[property_name]
         property_type = outer_property_type.__args__[0] if _is_optional(
             outer_property_type) else outer_property_type
-        if np.all(value == ['None']):
+        if np.all(value == 'None'):
             params[property_name] = None
         elif _has_annotations(property_type):
             params[property_name] = _deserialize_inner_matlab(

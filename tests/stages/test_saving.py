@@ -1,9 +1,9 @@
-import numpy as np
 from shutil import rmtree
+import numpy as np
 from snn_hfo_ieeg.user_facing_data import Analytics, FilteredSpikes, HfoDetection, HfoDetectionWithAnalytics, Periods, SpikeTrains
 from snn_hfo_ieeg.stages.saving import save_hfo_detection, load_hfo_detection
 from snn_hfo_ieeg.entrypoint.hfo_detection import Metadata
-from tests.utility import are_hfo_detections_equal
+from tests.utility import assert_are_hfo_detections_equal
 
 SAVED_HFO_DETECTION = HfoDetectionWithAnalytics(
     result=HfoDetection(
@@ -47,8 +47,9 @@ def _assert_saved_can_be_loaded():
         loading_path=SAVING_PATH,
         metadata=METADATA
     )
+    print(loaded_hfo_detection)
 
-    assert are_hfo_detections_equal(
+    assert_are_hfo_detections_equal(
         SAVED_HFO_DETECTION, loaded_hfo_detection)
 
 
