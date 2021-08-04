@@ -3,6 +3,7 @@ from statistics import mean
 import numpy as np
 import matplotlib.pyplot as plt
 from snn_hfo_ieeg.user_facing_data import HfoDetectionWithAnalytics, Metadata
+color_bars = ['#2f70b6', '#c85a2d', '#6f63b6', '#e26a84']
 
 
 class ChannelData(NamedTuple):
@@ -47,6 +48,8 @@ def plot_mean_hfo_rate(intervals: Intervals):
     hfo_rates = label_to_hfo_rates.values()
     mean_hfo_rates = [mean(_) for _ in hfo_rates]
     standard_deviations = [np.std(_) for _ in hfo_rates]
+    plt.ylabel('Average HFO rate per minute')
+    plt.xlabel('Channel')
     plt.bar(
         x=labels,
         height=mean_hfo_rates,
