@@ -20,6 +20,7 @@ class Metadata(NamedTuple):
     patient: int
     interval: int
     channel: int
+    channel_label: str
     duration: float
 
 
@@ -92,6 +93,7 @@ def run_hfo_detection_with_configuration(configuration, custom_overrides, hfo_cb
                     patient=patient,
                     interval=interval,
                     channel=channel + 1,
+                    channel_label=patient_data.channel_labels[channel],
                     duration=duration
                 )
                 hfo_detector = _generate_hfo_detector(
