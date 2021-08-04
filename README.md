@@ -134,6 +134,7 @@ or after the entire patient. Note that multiple plots can be speficied.
 - **raster**: Classic neuron ID to spike time raster plot. On gets drawn when an HFO was detected.
 
 ### Per patient plots
+- **mean_hfo_rate**: Plots the mean HFO rates of the channels along with their standard deviation
 
 ## This code has been written originally by:
 * Karla Burelo
