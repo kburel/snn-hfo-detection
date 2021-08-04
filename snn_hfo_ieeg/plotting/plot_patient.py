@@ -1,4 +1,6 @@
-from typing import TypedDict, NamedTuple
+from typing import List, TypedDict, NamedTuple
+from statistics import mean
+import numpy as np
 import matplotlib.pyplot as plt
 from snn_hfo_ieeg.user_facing_data import HfoDetectionWithAnalytics, Metadata
 
@@ -10,7 +12,7 @@ class ChannelData(NamedTuple):
 
 class Intervals(TypedDict):
     index: int
-    channel_data: ChannelData
+    channel_data: List[ChannelData]
 
 
 class PatientDebugError(Exception):
@@ -23,3 +25,30 @@ def plot_internal_patient_debug(intervals: Intervals):
     raise PatientDebugError(
         "plot_internal_patient_debug is just here for debugging purposes and should not be called",
         intervals)
+
+
+def _append_or_create(dict, key, value):
+    if key not in dict:
+        dict[key] = [value]
+    else:
+        dict[key].append(value)
+
+
+def plot_mean_hfo_rate(intervals: Intervals):
+    label_to_hfo_rates = {}
+    print(intervals)
+    for channels in intervals.values():
+        for channel in channels:
+            _append_or_create(
+                dict=label_to_hfo_rates,
+                key=channel.metadata.channel_label,
+                value=channel.hfo_detection.result.frequency * 60)
+    labels = label_to_hfo_rates.keys()
+    hfo_rates = label_to_hfo_rates.values()
+    mean_hfo_rates = [mean(_) for _ in hfo_rates]
+    standard_deviations = [np.std(_) for _ in hfo_rates]
+    plt.bar(
+        x=labels,
+        height=mean_hfo_rates,
+        yerr=standard_deviations,
+        capsize=2)
