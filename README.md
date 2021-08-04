@@ -63,7 +63,7 @@ poetry install
 ```
 Place your data in the folder `data/P<patient>` in the form of `P<patient>I<interval>.mat`, e.g.:
 ```bash
-SNN_HFO_iEEG/data/P1/P1I1.mat
+SNN_HFO_iEEG/data/P1/I1.mat
 ```
 then run the code via
 ```bash
