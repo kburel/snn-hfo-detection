@@ -1,8 +1,6 @@
 from typing import NamedTuple
 import numpy as np
 import scipy.io as sio
-import h5py
-from scipy.io.matlab.mio5_utils import chars_to_strings
 
 
 class PatientData(NamedTuple):
