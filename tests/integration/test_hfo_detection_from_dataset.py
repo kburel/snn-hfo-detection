@@ -8,6 +8,7 @@ from tests.utility import assert_are_hfo_detections_equal
 from tests.integration.utility import get_hfo_directory, EMPTY_CUSTOM_OVERRIDES
 
 
+# Empirical values
 PERIOD_ACCURACY = 1.5
 FREQUENCY_ACCURACY = 0.042
 
