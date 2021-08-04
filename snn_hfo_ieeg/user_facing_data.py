@@ -98,3 +98,10 @@ class HfoDetectionWithAnalytics(NamedTuple):
     '''
     result: HfoDetection
     analytics: Analytics
+
+
+class Metadata(NamedTuple):
+    interval: int
+    channel: int
+    channel_label: str
+    duration: float
