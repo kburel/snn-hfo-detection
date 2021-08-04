@@ -53,7 +53,7 @@ def load_hfo_detection(loading_path, metadata) -> HfoDetectionWithAnalytics:
     filepath = get_persistence_path(loading_path, metadata)
     if not path.isfile(filepath):
         raise ValueError(
-            f'No HFO detection data was saved for patient {metadata.patient}, interval {metadata.interval}, channel {metadata.channel}')
+            f'No HFO detection data was saved for interval {metadata.interval}, channel {metadata.channel}')
     dictionary = sio.loadmat(filepath)
     _remove_matlab_keys(dictionary)
     return _deserialize_matlab(dictionary, HfoDetectionWithAnalytics)
