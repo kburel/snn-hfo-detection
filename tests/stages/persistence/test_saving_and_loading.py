@@ -32,7 +32,8 @@ METADATA = Metadata(
     patient=1,
     interval=2,
     channel=3,
-    duration=1.3
+    duration=1.3,
+    channel_label='foo',
 )
 
 SAVING_PATH = 'output_from_test_saved_can_be_loaded/'
