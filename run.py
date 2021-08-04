@@ -7,7 +7,7 @@ from snn_hfo_ieeg.entrypoint.hfo_detection import HfoDetector, Metadata
 
 def _print_hfo(metadata: Metadata, hfo_detector: HfoDetector):
     print(
-        f'Patient {metadata.patient}, interval {metadata.interval}, channel # {metadata.channel}: {metadata.channel_label}')
+        f'Interval {metadata.interval}, channel # {metadata.channel}: {metadata.channel_label}')
     print(f'SNN simulation will run for {metadata.duration} seconds')
     hfo_detection = hfo_detector.run()
     print('Number of HFO events: ', hfo_detection.total_amount)

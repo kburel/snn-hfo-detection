@@ -46,7 +46,7 @@ frequency oscillations (HFOs) in intracranial EEG. NatCom (accepted) (2021)
 For more details regarding the architecture and SNN HFO detector see https://arxiv.org/abs/2009.11245
 
 ## Input data format: 
-The file containing the interval data must be a matlab file with the following variables:
+Each file containing the interval data must be a matlab file with the following variables:
 - `times`: array containing the times of the recorded signal in seconds
 - `channels`: matrix of iEEG signal. Each row is a channel, each column the signal at the time of the corresponding index
 - `channel_labels`: character matrix of the channels' names. Fill it like `channel_labels = ['name_one'; 'name_two'; 'name_three']`.
@@ -61,9 +61,9 @@ then clone this repository, `cd` into it and run
 ```bash
 poetry install
 ```
-Place your data in the folder `data/P<patient>` in the form of `P<patient>I<interval>.mat`, e.g.:
+Place your data in the folder `data/` in the form of `I<interval>.mat`, e.g.:
 ```bash
-SNN_HFO_iEEG/data/P1/I1.mat
+SNN_HFO_iEEG/data/I1.mat
 ```
 then run the code via
 ```bash
@@ -114,27 +114,21 @@ Only analyze the first 100 seconds of the datasets in scalp mode:
 poetry run scalp ./run.py scalp --duration 100
 ```
 
-Only analyze patients 1 and 2 in iEEG mode:
+Only analyze the intervals 2, 3, 4, 6, 7 and 8 in iEEG mode:
 ```bash
-poetry run ieeg ./run.py ieeg --patients 1 2
-```
-
-Only analyze the intervals 2, 3, 4, 6, 7 and 8 of patient 2 in iEEG mode:
-```bash
-# This only works when exactly one patient was specified with --patients
-poetry run ./run.py ieeg --patients 2 --intervals 2 3 4 6 7 
+poetry run ./run.py ieeg --intervals 2 3 4 6 7 
 ```
 
 All options can be freely combined. For example, the following will construct an SNN with 256 neurons and
-analyze the intervals 3 and 4 of patient 6 in the channels 1 and 2
+analyze the intervals 3 and 4 of in the channels 1 and 2
 while only looking at the first 300 seconds in iEEG mode for data in ./ieeg-data:
 ```bash
-poetry run ./run.py iieg --data-path ./ieeg-data --hidden-neurons 256 --patients 6 --intervals 3 4 --channels 1 2 --duration 300
+poetry run ./run.py iieg --data-path ./ieeg-data --hidden-neurons 256 --intervals 3 4 --channels 1 2 --duration 300
 ```
 
 ## Plotting
 The output can be plotting during the run in various ways by using `--plot`. The specified plots are created either after every channel
-or after every patient. Note that multiple plots can be speficied.
+or after the entire patient. Note that multiple plots can be speficied.
 
 ### Per channel plots
 - **raster**: Classic neuron ID to spike time raster plot. On gets drawn when an HFO was detected.

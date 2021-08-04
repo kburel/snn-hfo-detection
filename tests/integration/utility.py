@@ -5,7 +5,6 @@ from tests.utility import get_tests_path
 EMPTY_CUSTOM_OVERRIDES = CustomOverrides(
     duration=None,
     channels=None,
-    patients=None,
     intervals=None,
 )
 

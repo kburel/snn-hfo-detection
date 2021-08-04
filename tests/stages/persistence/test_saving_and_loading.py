@@ -29,7 +29,6 @@ SAVED_HFO_DETECTION = HfoDetectionWithAnalytics(
     ))
 
 METADATA = Metadata(
-    patient=1,
     interval=2,
     channel=3,
     duration=1.3,
