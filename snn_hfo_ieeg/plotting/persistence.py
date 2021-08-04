@@ -33,9 +33,8 @@ def persist_channel_plot(plot_name, metadata, configuration):
         _save_plot(plot_name, parent_dir)
 
 
-def persist_patient_plot(plot_name, patient, configuration):
+def persist_patient_plot(plot_name, configuration):
     if _should_show_plot(configuration):
         plt.show()
     if _should_save_plot(configuration):
-        parent_dir = path.join(configuration.plot_path, f'P{patient}')
-        _save_plot(plot_name, parent_dir)
+        _save_plot(plot_name, configuration.plot_path)

@@ -29,10 +29,8 @@ def parse_arguments():
                         help=f'How many seconds of the dataset should be used for calibration of HFO thresholds. Default is {default_calibration} s. If calibration is bigger than duration, the entire duration will be used for calibration. Ignored when loading data with --load')
     parser.add_argument('--channels', type=int, default=None, nargs='+',
                         help='Which channels of the dataset should be processed, using 1 based indexing. By default, all channels will be processed. Note that you have to provide the channel index, not its label')
-    parser.add_argument('--patients', type=int, default=None, nargs='+',
-                        help='Which patients should be processed. By default, all patients will be processed')
     parser.add_argument('--intervals', type=int, default=None, nargs='+',
-                        help='Which intervals should be processed. By default, all intervals will be processed. Only works when --patients was called beforehand with exactly one patient number.')
+                        help='Which intervals should be processed. By default, all intervals will be processed.')
     parser.add_argument('--plot', type=str, default=[], nargs='+',
                         help='Which plots should be generated during the HFO detection. Possible values: raster')
     parser.add_argument('--plot-mode', type=str, default=default_plot_mode,
@@ -71,20 +69,9 @@ def convert_arguments_to_config(arguments):
     )
 
 
-def _validate_custom_overrides(custom_overrides):
-    if custom_overrides.patients is None and custom_overrides.intervals is not None:
-        sys.exit(
-            'run.py: error: --intervals requires --patients with exactly one patient, but you did not specify any')
-    if custom_overrides.patients is not None and len(custom_overrides.patients) != 1 and custom_overrides.intervals is not None:
-        sys.exit(
-            'run.py: error: --intervals requires --patients with exactly one patient, but you did specified more')
-
-
 def convert_arguments_to_custom_overrides(arguments):
     custom_overrides = CustomOverrides(
         duration=arguments.duration,
         channels=arguments.channels,
-        patients=arguments.patients,
         intervals=arguments.intervals)
-    _validate_custom_overrides(custom_overrides)
     return custom_overrides
