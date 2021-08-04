@@ -46,7 +46,7 @@ frequency oscillations (HFOs) in intracranial EEG. NatCom (accepted) (2021)
 For more details regarding the architecture and SNN HFO detector see https://arxiv.org/abs/2009.11245
 
 ## Input data format: 
-The file containing the interval data must be a matlab file with the following variables:
+Each file containing the interval data must be a matlab file with the following variables:
 - `times`: array containing the times of the recorded signal in seconds
 - `channels`: matrix of iEEG signal. Each row is a channel, each column the signal at the time of the corresponding index
 - `channel_labels`: character matrix of the channels' names. Fill it like `channel_labels = ['name_one'; 'name_two'; 'name_three']`.

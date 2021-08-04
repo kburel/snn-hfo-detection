@@ -29,7 +29,7 @@ def persist_channel_plot(plot_name, metadata, configuration):
         plt.show()
     if _should_save_plot(configuration):
         parent_dir = path.join(
-            configuration.plot_path, f'P{metadata.patient}', f'I{metadata.interval}', f'C{metadata.channel}')
+            configuration.plot_path, f'I{metadata.interval}', f'C{metadata.channel}')
         _save_plot(plot_name, parent_dir)
 
 
