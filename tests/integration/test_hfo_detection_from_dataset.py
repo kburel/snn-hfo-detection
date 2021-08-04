@@ -9,7 +9,7 @@ from tests.integration.utility import get_hfo_directory, EMPTY_CUSTOM_OVERRIDES
 
 
 PERIOD_ACCURACY = 1.5
-FREQUENCY_ACCURACY = 0.041
+FREQUENCY_ACCURACY = 0.042
 
 
 def _generate_test_configuration(dataset_name, measurement_mode=MeasurementMode.IEEG,):
