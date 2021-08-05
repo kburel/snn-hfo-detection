@@ -1,6 +1,5 @@
 from typing import NamedTuple, Optional
 import numpy as np
-from snn_hfo_ieeg.entrypoint.hfo_detection import HfoDetector
 
 
 class SpikeTrains(NamedTuple):
@@ -126,3 +125,18 @@ class HfoDetectionRun(NamedTuple):
     metadata: Metadata
     detector: HfoDetector
     input: ChannelData
+
+
+class HfoDetector():
+    def __init__(self, hfo_detection_with_analytics_cb):
+        self._hfo_detection_with_analytics_cb = hfo_detection_with_analytics_cb
+        self.last_run = None
+
+    def run(self) -> HfoDetection:
+        return self.run_with_analytics().result
+
+    def run_with_analytics(self) -> HfoDetectionWithAnalytics:
+        if self.last_run is None:
+            hfo_detection_with_analytics = self._hfo_detection_with_analytics_cb()
+            self.last_run = hfo_detection_with_analytics
+        return self.last_run

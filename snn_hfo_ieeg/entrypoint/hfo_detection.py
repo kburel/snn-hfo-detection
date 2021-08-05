@@ -2,7 +2,7 @@ from copy import deepcopy
 from typing import List, NamedTuple, Optional
 import numpy as np
 from snn_hfo_ieeg.stages.all import run_all_hfo_detection_stages
-from snn_hfo_ieeg.user_facing_data import HfoDetection, HfoDetectionWithAnalytics, Metadata, HfoDetectionRun
+from snn_hfo_ieeg.user_facing_data import Metadata, HfoDetectionRun, HfoDetector
 from snn_hfo_ieeg.stages.loading.patient_data import load_patient_data, extract_channel_data
 from snn_hfo_ieeg.stages.loading.folder_discovery import get_interval_paths
 from snn_hfo_ieeg.stages.persistence.loading import load_hfo_detection
@@ -14,21 +14,6 @@ class CustomOverrides(NamedTuple):
     duration: Optional[float]
     channels: Optional[List[int]]
     intervals: Optional[List[int]]
-
-
-class HfoDetector():
-    def __init__(self, hfo_detection_with_analytics_cb):
-        self._hfo_detection_with_analytics_cb = hfo_detection_with_analytics_cb
-        self.last_run = None
-
-    def run(self) -> HfoDetection:
-        return self.run_with_analytics().result
-
-    def run_with_analytics(self) -> HfoDetectionWithAnalytics:
-        if self.last_run is None:
-            hfo_detection_with_analytics = self._hfo_detection_with_analytics_cb()
-            self.last_run = hfo_detection_with_analytics
-        return self.last_run
 
 
 def _calculate_duration(signal_time):

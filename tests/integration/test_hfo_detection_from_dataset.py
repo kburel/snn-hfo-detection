@@ -31,16 +31,13 @@ def _generate_test_configuration(dataset_name, measurement_mode=MeasurementMode.
     )
 
 
-def _assert_dummy_hfo_is_empty(_metadata, hfo_detector):
+def _assert_dummy_hfo_is_empty(hfo_detection_run):
     expected_hfo_detection = HfoDetectionWithAnalytics(
         result=HfoDetection(
             total_amount=0,
             frequency=0),
         analytics=Analytics(
             detections=[0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
-            analyzed_times=[0., 0.0005, 0.001, 0.0015,
-                            0.002, 0.0025, 0.003, 0.0035,
-                            0.004, 0.0045],
             periods=Periods(
                 start=[],
                 stop=[]
@@ -50,7 +47,7 @@ def _assert_dummy_hfo_is_empty(_metadata, hfo_detector):
             spike_times=None,
             neuron_ids=None
         ))
-    hfo_detection = hfo_detector.run_with_analytics()
+    hfo_detection = hfo_detection_run.detector.run_with_analytics()
     assert_are_hfo_detections_equal(
         expected_hfo_detection, hfo_detection)
 
@@ -63,8 +60,8 @@ def test_dummy_data():
 
 
 def _generate_add_detected_hfo_to_list_cb(detected_hfos):
-    def add_detected_hfo_to_list(_metadata, hfo_detector):
-        hfo_detection_with_analytics = hfo_detector.run_with_analytics()
+    def add_detected_hfo_to_list(hfo_detection_run):
+        hfo_detection_with_analytics = hfo_detection_run.detector.run_with_analytics()
         if hfo_detection_with_analytics.result.total_amount != 0:
             detected_hfos.append(hfo_detection_with_analytics)
     return add_detected_hfo_to_list
