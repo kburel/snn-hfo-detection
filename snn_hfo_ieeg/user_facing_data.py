@@ -121,12 +121,6 @@ class Metadata(NamedTuple):
     duration: float
 
 
-class HfoDetectionRun(NamedTuple):
-    metadata: Metadata
-    detector: HfoDetector
-    input: ChannelData
-
-
 class HfoDetector():
     def __init__(self, hfo_detection_with_analytics_cb):
         self._hfo_detection_with_analytics_cb = hfo_detection_with_analytics_cb
@@ -140,3 +134,9 @@ class HfoDetector():
             hfo_detection_with_analytics = self._hfo_detection_with_analytics_cb()
             self.last_run = hfo_detection_with_analytics
         return self.last_run
+
+
+class HfoDetectionRun(NamedTuple):
+    metadata: Metadata
+    detector: HfoDetector
+    input: ChannelData
