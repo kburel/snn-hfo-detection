@@ -81,6 +81,7 @@ def _set_layout(fig):
 
 
 def _style_ticks(axes):
+    axes.set_ylim(bottom=0)
     axes.set_xlabel('Electrode label', fontsize=18)
     axes.set_ylabel('HFO rate (event/min)', fontsize=18)
 
@@ -98,7 +99,7 @@ def plot_mean_hfo_rate(intervals: Intervals):
         return
 
     fig, axes = plt.subplots(figsize=(15, 5))
-    
+
     _set_layout(fig)
     _plot_bar(axes, intervals)
     _rotate_labels(axes)
