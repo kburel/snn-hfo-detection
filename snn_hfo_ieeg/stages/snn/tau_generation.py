@@ -11,7 +11,7 @@ OUTLIER_FRACTION = 0.02
 
 def _get_mean_and_standard_deviation_for_range(min, max):
     mean = np.mean([min, max])
-    # 98 % (100% - OUTLIER_FRACTION) of all data lies within 2.3 standard deviations on a normal distribution
+    # 98% (100% - OUTLIER_FRACTION) of all data lies within 2.4 standard deviations on a normal distribution
     standard_deviation = (max - mean) / 2.4
     return mean, standard_deviation
 
