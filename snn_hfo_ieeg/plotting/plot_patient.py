@@ -67,6 +67,7 @@ def plot_mean_hfo_rate(intervals: Intervals):
         yerr=standard_deviations,
         capsize=2)
 
+    axes.set_xticks(labels)
     axes.set_xticklabels(labels, rotation=45,
                          fontsize=16, horizontalalignment='right')
 
