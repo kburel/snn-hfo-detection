@@ -12,12 +12,12 @@ def _append_or_create(dict, key, value):
 
 def _convert_to_labels_to_hfo_rate_dict(intervals):
     label_to_hfo_rates = {}
-    for channels in intervals.values():
-        for channel in channels:
+    for hfo_detection_runs in intervals.values():
+        for hfo_detection_run in hfo_detection_runs:
             _append_or_create(
                 dict=label_to_hfo_rates,
-                key=channel.metadata.channel_label,
-                value=channel.hfo_detection.result.frequency * 60)
+                key=hfo_detection_run.metadata.channel_label,
+                value=hfo_detection_run.hfo_detection.result.frequency * 60)
 
     return label_to_hfo_rates
 
