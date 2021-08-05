@@ -74,23 +74,33 @@ def _rotate_labels(axes):
         label.set_size = 16
 
 
-def plot_mean_hfo_rate(intervals: Intervals):
-    if len(intervals) == 0:
-        return
-
-    fig, axes = plt.subplots(figsize=(15, 5))
+def _set_layout(fig):
     plt.rc('font', family='sans-serif')
     plt.tight_layout()
     fig.subplots_adjust(bottom=0.25, left=0.1, wspace=0.2, hspace=0.2)
 
-    _plot_bar(axes, intervals)
-    _rotate_labels(axes)
 
+def _style_ticks(axes):
     axes.set_xlabel('Electrode label', fontsize=18)
     axes.set_ylabel('HFO rate (event/min)', fontsize=18)
 
     axes.tick_params(axis='y', labelsize=16, length=8)
     axes.tick_params(axis='x', labelsize=16, length=8)
 
+
+def _hide_spines(axes):
     axes.spines['top'].set_visible(False)
     axes.spines['right'].set_visible(False)
+
+
+def plot_mean_hfo_rate(intervals: Intervals):
+    if len(intervals) == 0:
+        return
+
+    fig, axes = plt.subplots(figsize=(15, 5))
+    
+    _set_layout(fig)
+    _plot_bar(axes, intervals)
+    _rotate_labels(axes)
+    _style_ticks(axes)
+    _hide_spines(axes)
