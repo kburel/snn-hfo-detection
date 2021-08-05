@@ -34,10 +34,7 @@ def _append_or_create(dict, key, value):
         dict[key].append(value)
 
 
-def plot_mean_hfo_rate(intervals: Intervals):
-    if len(intervals) == 0:
-        return
-
+def _convert_to_labels_to_hfo_rate_dict(intervals):
     label_to_hfo_rates = {}
     for channels in intervals.values():
         for channel in channels:
@@ -46,18 +43,18 @@ def plot_mean_hfo_rate(intervals: Intervals):
                 key=channel.metadata.channel_label,
                 value=channel.hfo_detection.result.frequency * 60)
 
+    return label_to_hfo_rates
+
+
+def _plot_bar(axes, intervals):
+    label_to_hfo_rates = _convert_to_labels_to_hfo_rate_dict(intervals)
+
     labels = list(label_to_hfo_rates.keys())
     hfo_rates = label_to_hfo_rates.values()
+
     mean_hfo_rates = [mean(_) for _ in hfo_rates]
     standard_deviations = [np.std(_) for _ in hfo_rates] \
         if len(intervals) > 1 else None
-
-    figure_size = (15, 5)
-    fig, axes = plt.subplots(figsize=figure_size)
-    plt.rc('font', family='sans-serif')
-    plt.tight_layout()
-    fig.subplots_adjust(bottom=0.15, wspace=0.2, hspace=0.2)
-
     axes.bar(
         x=labels,
         height=mean_hfo_rates,
@@ -68,9 +65,23 @@ def plot_mean_hfo_rate(intervals: Intervals):
         yerr=standard_deviations,
         capsize=2)
 
-    axes.set_xticks(labels)
-    axes.set_xticklabels(labels, rotation=45,
-                         fontsize=16, horizontalalignment='right')
+
+def plot_mean_hfo_rate(intervals: Intervals):
+    if len(intervals) == 0:
+        return
+
+    fig, axes = plt.subplots(figsize=(15, 5))
+    plt.rc('font', family='sans-serif')
+    plt.tight_layout()
+    fig.subplots_adjust(bottom=0.15, wspace=0.2, hspace=0.2)
+
+    _plot_bar(axes, intervals)
+
+    labels = axes.get_xticklabels()
+    for label in labels:
+        label.set_rotation(45)
+        label.set_horizontalalignment('right')
+        label.set_size = 16
 
     axes.set_xlabel('Electrode label', fontsize=18)
     axes.set_ylabel('HFO rate (event/min)', fontsize=18)
