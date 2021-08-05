@@ -102,8 +102,8 @@ def test_ecog_hfo_detection():
     hfo = detected_hfos[0]
     assert hfo.result.frequency == pytest.approx(0.07, abs=FREQUENCY_ACCURACY)
 
-    _assert_contains_at_least([4.36, 9.85, 15.64, 35.5, 43.52, 53.64],
+    _assert_contains_at_least([4.36, 9.85, 35.5, 43.52, 53.64],
                               hfo.analytics.periods.start, accuracy=PERIOD_ACCURACY)
 
-    _assert_contains_at_least([4.46, 9.94, 15.73, 36, 43.62, 53.73],
+    _assert_contains_at_least([4.46, 9.94, 36, 43.62, 53.73],
                               hfo.analytics.periods.stop, accuracy=PERIOD_ACCURACY)

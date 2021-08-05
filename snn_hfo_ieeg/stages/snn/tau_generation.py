@@ -6,13 +6,13 @@ MAX_TAU = 6
 MIN_DELTA_TAU = 0.3
 MAX_DELTA_TAU = 1
 
-OUTLIER_FRACTION = 0.03
+OUTLIER_FRACTION = 0.02
 
 
 def _get_mean_and_standard_deviation_for_range(min, max):
     mean = np.mean([min, max])
-    # 97% (100% - OUTLIER_FRACTION) of all data lies within 2.2 standard deviations on a normal distribution
-    standard_deviation = (max - mean) / 2.2
+    # 98% (100% - OUTLIER_FRACTION) of all data lies within 2.4 standard deviations on a normal distribution
+    standard_deviation = (max - mean) / 2.4
     return mean, standard_deviation
 
 
