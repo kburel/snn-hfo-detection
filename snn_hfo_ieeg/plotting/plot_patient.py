@@ -56,11 +56,12 @@ def plot_mean_hfo_rate(intervals: Intervals):
     fig, axes = plt.subplots(figsize=figure_size)
     plt.rc('font', family='sans-serif')
     plt.tight_layout()
-    fig.subplots_adjust(wspace=0.2, hspace=0.2)
+    fig.subplots_adjust(bottom=0.15, wspace=0.2, hspace=0.2)
 
     axes.bar(
         x=labels,
         height=mean_hfo_rates,
+        width=0.3,
         edgecolor='k',
         ecolor='#0218f5',
         alpha=0.9, color='#2f70b6',
