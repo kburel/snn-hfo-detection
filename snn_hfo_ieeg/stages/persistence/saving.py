@@ -35,7 +35,7 @@ def _is_np_bool(obj) -> bool:
 
 
 def _is_np_int(obj) -> bool:
-    return isinstance(obj, np.int64)
+    return isinstance(obj, (np.int32, np.int64))
 
 
 def _convert_to_dict(object):
