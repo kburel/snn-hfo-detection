@@ -9,11 +9,11 @@ from snn_hfo_ieeg.plotting.plot_patient import PatientDebugError
 from tests.integration.utility import get_hfo_directory, EMPTY_CUSTOM_OVERRIDES
 
 
-def _hfo_runner_cb(_metadata, hfo_detector):
-    hfo_detector.run()
+def _hfo_runner_cb(_hfo_detection_run):
+    _hfo_detection_run.detector.run()
 
 
-def _empty_cb(_metadata, _hfo_detector):
+def _empty_cb(_hfo_detection_run):
     return None
 
 
