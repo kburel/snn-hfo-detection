@@ -70,7 +70,7 @@ def _generate_add_detected_hfo_to_list_cb(detected_hfos):
     return add_detected_hfo_to_list
 
 
-def _assert_contains_at_least(actual, expected, accuracy):
+def _assert_contains_at_least(expected, actual, accuracy):
     approx_actual = [pytest.approx(element, abs=accuracy)
                      for element in actual]
     for element in expected:
@@ -87,10 +87,10 @@ def test_ieeg_hfo_detection():
     hfo = detected_hfos[0]
     assert hfo.result.frequency == pytest.approx(0.14, abs=FREQUENCY_ACCURACY)
 
-    _assert_contains_at_least([0.0, 3.5, 6.43, 10.59, 14.29, 17.42, 24.2],
+    _assert_contains_at_least([0.0, 3.5, 6.43, 10.59, 14.29, 17.42],
                               hfo.analytics.periods.start, accuracy=PERIOD_ACCURACY)
 
-    _assert_contains_at_least([0.06, 3.59, 6.54, 10.72, 14.39, 17.53, 24.29],
+    _assert_contains_at_least([0.06, 3.59, 6.54, 10.72, 14.39, 17.53],
                               hfo.analytics.periods.stop, accuracy=PERIOD_ACCURACY)
 
 
