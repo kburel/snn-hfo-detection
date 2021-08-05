@@ -18,7 +18,6 @@ def _convert_inner_hfo_detection_to_user_facing_one(hfo_detection, filtered_spik
         ),
         analytics=Analytics(
             detections=hfo_detection.analytics.detections,
-            analyzed_times=hfo_detection.analytics.analyzed_times,
             periods=hfo_detection.analytics.periods,
             filtered_spikes=filtered_spikes,
             spike_times=np.array(spike_monitor_hidden.t/second),

@@ -15,7 +15,6 @@ def assert_are_hfo_detections_equal(first_hfo, second_hfo):
     assert first_hfo.result.total_amount == second_hfo.result.total_amount
     assert first_hfo.result.frequency == pytest.approx(
         second_hfo.result.frequency)
-    assert_are_values_same(lambda hfo: hfo.analytics.analyzed_times)
     assert_are_values_same(lambda hfo: hfo.analytics.detections)
     assert_are_values_same(lambda hfo: hfo.analytics.periods.start)
     assert_are_values_same(lambda hfo: hfo.analytics.periods.stop)

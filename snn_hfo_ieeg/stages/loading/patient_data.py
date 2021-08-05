@@ -1,23 +1,5 @@
-from typing import NamedTuple
-import numpy as np
 import scipy.io as sio
-
-
-class PatientData(NamedTuple):
-    '''
-    Patient measurements
-    '''
-    wideband_signals: np.array
-    signal_time: np.array
-    channel_labels: np.array
-
-
-class ChannelData(NamedTuple):
-    '''
-    Patient measurements for a specific channel
-    '''
-    wideband_signal: np.array
-    signal_time: np.array
+from snn_hfo_ieeg.user_facing_data import PatientData, ChannelData
 
 
 def load_patient_data(full_intervals_path):
