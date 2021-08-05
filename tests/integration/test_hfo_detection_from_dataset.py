@@ -70,7 +70,7 @@ def _generate_add_detected_hfo_to_list_cb(detected_hfos):
     return add_detected_hfo_to_list
 
 
-def _assert_contains_at_least(actual, expected, accuracy):
+def _assert_contains_at_least(expected, actual, accuracy):
     approx_actual = [pytest.approx(element, abs=accuracy)
                      for element in actual]
     for element in expected:
