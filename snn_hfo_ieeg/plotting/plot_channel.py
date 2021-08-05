@@ -2,7 +2,7 @@ import matplotlib.pyplot as plt
 from matplotlib import gridspec
 import numpy as np
 from brian2.units import second, ms
-from snn_hfo_ieeg.user_facing_data import HfoDetectionRun, Analytics
+from snn_hfo_ieeg.user_facing_data import HfoDetectionRun
 
 
 class ChannelDebugError(Exception):
@@ -27,7 +27,8 @@ def plot_raster(hfo_run: HfoDetectionRun):
     plt.ylabel('Neuron index')
 
 
-def _plot_hfo_sample(analytics: Analytics, start, stop):
+def _plot_hfo_sample(hfo_run: HfoDetectionRun, start, stop):
+    analytics = hfo_run.detector.last_run.analytics
     signal_time = analytics.analyzed_times  # time from the detect_with_analytics
     signal_amplitude = np.array([])  # signal from the detect_with_analytics
     # pattern signal in the original data set, retirved from detect_with_analytics

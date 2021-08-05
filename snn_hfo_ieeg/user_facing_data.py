@@ -122,6 +122,8 @@ class Metadata(NamedTuple):
 
 
 class HfoDetector():
+    last_run: Optional[HfoDetectionWithAnalytics]
+
     def __init__(self, hfo_detection_with_analytics_cb):
         self._hfo_detection_with_analytics_cb = hfo_detection_with_analytics_cb
         self.last_run = None
