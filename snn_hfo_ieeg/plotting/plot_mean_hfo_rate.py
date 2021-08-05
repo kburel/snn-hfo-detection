@@ -17,7 +17,7 @@ def _convert_to_labels_to_hfo_rate_dict(intervals):
             _append_or_create(
                 dict=label_to_hfo_rates,
                 key=hfo_detection_run.metadata.channel_label,
-                value=hfo_detection_run.hfo_detection.result.frequency * 60)
+                value=hfo_detection_run.detector.last_run.result.frequency * 60)
 
     return label_to_hfo_rates
 
