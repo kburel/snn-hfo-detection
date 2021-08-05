@@ -40,7 +40,6 @@ class Analytics(NamedTuple):
         The start and end times in which HFOs were detected.
     '''
     detections: np.array
-    analyzed_times: np.array
     periods: Periods
 
 

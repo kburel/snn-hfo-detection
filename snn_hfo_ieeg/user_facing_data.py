@@ -1,5 +1,6 @@
 from typing import NamedTuple, Optional
 import numpy as np
+from snn_hfo_ieeg.entrypoint.hfo_detection import HfoDetector
 
 
 class SpikeTrains(NamedTuple):
@@ -64,8 +65,6 @@ class Analytics(NamedTuple):
     -----
     detections : np.array
         Boolean list of HFO detection. The indices correspond to analyzed_times.
-    analyzed_times : np.array
-        List of all analyzed timestamps.
     periods : Periods
         The start and end times in which HFOs were detected.
     filtered_spikes : FilteredSpikes
@@ -78,7 +77,6 @@ class Analytics(NamedTuple):
         The IDs of the neurons that fired at the time of spike_times. The indices match.
     '''
     detections: np.array
-    analyzed_times: np.array
     periods: Periods
     filtered_spikes: FilteredSpikes
     spike_times: np.array
@@ -100,8 +98,31 @@ class HfoDetectionWithAnalytics(NamedTuple):
     analytics: Analytics
 
 
+class PatientData(NamedTuple):
+    '''
+    Patient measurements
+    '''
+    wideband_signals: np.array
+    signal_time: np.array
+    channel_labels: np.array
+
+
+class ChannelData(NamedTuple):
+    '''
+    Patient measurements for a specific channel
+    '''
+    wideband_signal: np.array
+    signal_time: np.array
+
+
 class Metadata(NamedTuple):
     interval: int
     channel: int
     channel_label: str
     duration: float
+
+
+class HfoDetectionRun(NamedTuple):
+    metadata: Metadata
+    detector: HfoDetector
+    input: ChannelData

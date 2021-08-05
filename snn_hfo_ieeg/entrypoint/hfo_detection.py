@@ -2,7 +2,7 @@ from copy import deepcopy
 from typing import List, NamedTuple, Optional
 import numpy as np
 from snn_hfo_ieeg.stages.all import run_all_hfo_detection_stages
-from snn_hfo_ieeg.user_facing_data import HfoDetection, HfoDetectionWithAnalytics, Metadata
+from snn_hfo_ieeg.user_facing_data import HfoDetection, HfoDetectionWithAnalytics, Metadata, HfoDetectionRun
 from snn_hfo_ieeg.stages.loading.patient_data import load_patient_data, extract_channel_data
 from snn_hfo_ieeg.stages.loading.folder_discovery import get_interval_paths
 from snn_hfo_ieeg.stages.persistence.loading import load_hfo_detection
@@ -87,11 +87,17 @@ def run_hfo_detection_with_configuration(configuration, custom_overrides, hfo_cb
             hfo_detector = _generate_hfo_detector(
                 metadata, channel_data, duration, configuration, snn_cache)
 
-            hfo_cb(metadata, hfo_detector)
+            hfo_detection_run = HfoDetectionRun(
+                input=channel_data,
+                metadata=metadata,
+                detector=hfo_detector
+            )
+
+            hfo_cb(hfo_detection_run)
 
             if hfo_detector.last_run is not None:
                 for plotting_fn in configuration.plots.channel:
-                    plotting_fn.function(hfo_detector.last_run)
+                    plotting_fn.function(hfo_detection_run)
                     persist_channel_plot(
                         plotting_fn.name, metadata, configuration)
                 if should_collect_patient_data:
