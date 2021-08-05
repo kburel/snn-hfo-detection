@@ -1,16 +1,11 @@
-from typing import List, TypedDict, NamedTuple
-from snn_hfo_ieeg.user_facing_data import HfoDetectionWithAnalytics, Metadata
+from typing import List, TypedDict
+from snn_hfo_ieeg.user_facing_data import HfoDetectionRun
 from snn_hfo_ieeg.plotting.plot_mean_hfo_rate import plot_mean_hfo_rate as inner_plot_mean_hfo_rate
-
-
-class ChannelData(NamedTuple):
-    metadata: Metadata
-    hfo_detection: HfoDetectionWithAnalytics
 
 
 class Intervals(TypedDict):
     index: int
-    channel_data: List[ChannelData]
+    channel_data: List[HfoDetectionRun]
 
 
 class PatientDebugError(Exception):

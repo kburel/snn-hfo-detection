@@ -2,33 +2,18 @@ from copy import deepcopy
 from typing import List, NamedTuple, Optional
 import numpy as np
 from snn_hfo_ieeg.stages.all import run_all_hfo_detection_stages
-from snn_hfo_ieeg.user_facing_data import HfoDetection, HfoDetectionWithAnalytics, Metadata
+from snn_hfo_ieeg.user_facing_data import Metadata, HfoDetectionRun, HfoDetector
 from snn_hfo_ieeg.stages.loading.patient_data import load_patient_data, extract_channel_data
 from snn_hfo_ieeg.stages.loading.folder_discovery import get_interval_paths
 from snn_hfo_ieeg.stages.persistence.loading import load_hfo_detection
 from snn_hfo_ieeg.plotting.persistence import persist_patient_plot, persist_channel_plot
-from snn_hfo_ieeg.plotting.plot_patient import ChannelData, Intervals
+from snn_hfo_ieeg.plotting.plot_patient import Intervals
 
 
 class CustomOverrides(NamedTuple):
     duration: Optional[float]
     channels: Optional[List[int]]
     intervals: Optional[List[int]]
-
-
-class HfoDetector():
-    def __init__(self, hfo_detection_with_analytics_cb):
-        self._hfo_detection_with_analytics_cb = hfo_detection_with_analytics_cb
-        self.last_run = None
-
-    def run(self) -> HfoDetection:
-        return self.run_with_analytics().result
-
-    def run_with_analytics(self) -> HfoDetectionWithAnalytics:
-        if self.last_run is None:
-            hfo_detection_with_analytics = self._hfo_detection_with_analytics_cb()
-            self.last_run = hfo_detection_with_analytics
-        return self.last_run
 
 
 def _calculate_duration(signal_time):
@@ -87,18 +72,21 @@ def run_hfo_detection_with_configuration(configuration, custom_overrides, hfo_cb
             hfo_detector = _generate_hfo_detector(
                 metadata, channel_data, duration, configuration, snn_cache)
 
-            hfo_cb(metadata, hfo_detector)
+            hfo_detection_run = HfoDetectionRun(
+                input=channel_data,
+                metadata=metadata,
+                detector=hfo_detector
+            )
+
+            hfo_cb(hfo_detection_run)
 
             if hfo_detector.last_run is not None:
                 for plotting_fn in configuration.plots.channel:
-                    plotting_fn.function(hfo_detector.last_run)
+                    plotting_fn.function(hfo_detection_run)
                     persist_channel_plot(
                         plotting_fn.name, metadata, configuration)
                 if should_collect_patient_data:
-                    channel_hfos.append(
-                        ChannelData(
-                            metadata=metadata,
-                            hfo_detection=hfo_detector.last_run))
+                    channel_hfos.append(hfo_detection_run)
         patient_hfos[interval] = channel_hfos
     for plotting_fn in configuration.plots.patient:
         plotting_fn.function(patient_hfos)

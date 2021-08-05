@@ -33,14 +33,11 @@ class Analytics(NamedTuple):
     Parameters
     -----
     detections : np.array
-        Boolean list of HFO detection. The indices correspond to analyzed_times.
-    analyzed_times : np.array
-        List of all analyzed timestamps.
+        Boolean list of HFO detection. The indices correspond to the input's analyzed times.
     periods : Periods
         The start and end times in which HFOs were detected.
     '''
     detections: np.array
-    analyzed_times: np.array
     periods: Periods
 
 
@@ -147,7 +144,6 @@ def detect_hfo(duration, spike_times, signal_times, step_size, window_size):
         ),
         analytics=Analytics(
             detections=binary_hfo_signal,
-            analyzed_times=signal_times,
             periods=flat_periods
         )
     )

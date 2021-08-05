@@ -12,7 +12,6 @@ from tests.utility import *
         ),
         analytics=Analytics(
             detections=[1],
-            analyzed_times=[0],
             periods=Periods(
                 start=[0],
                 stop=[0]
@@ -25,7 +24,6 @@ from tests.utility import *
          ),
          analytics=Analytics(
              detections=[1],
-             analyzed_times=[0.5],
              periods=Periods(
                  start=[0.5],
                  stop=[0.5]
@@ -38,7 +36,6 @@ from tests.utility import *
          ),
          analytics=Analytics(
              detections=[0],
-             analyzed_times=[-0.5],
              periods=Periods(
                  start=[],
                  stop=[]
@@ -51,7 +48,6 @@ from tests.utility import *
          ),
          analytics=Analytics(
              detections=[0, 0],
-             analyzed_times=[0.2, 0.3],
              periods=Periods(
                  start=[],
                  stop=[]
