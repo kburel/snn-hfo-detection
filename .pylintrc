@@ -85,7 +85,8 @@ disable=line-too-long,
         redefined-builtin,
         too-many-statements,
         too-many-arguments,
-        too-few-public-methods
+        too-few-public-methods,
+        too-many-return-statements
 
 # Enable the message, report, category or checker with the given id(s). You can
 # either give multiple identifier separated by comma (,) or put this option

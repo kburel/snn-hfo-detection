@@ -1,7 +1,13 @@
 import os
+import json
 from pathlib import Path
-import scipy.io as sio
+import numpy as np
 from snn_hfo_ieeg.stages.persistence.utility import get_persistence_path
+
+
+def _create_parent_directory(path):
+    parent_directory = Path(path).parent.absolute()
+    os.makedirs(parent_directory, exist_ok=True)
 
 
 def _is_namedtuple(obj) -> bool:
@@ -24,6 +30,14 @@ def _is_dict(obj) -> bool:
     return isinstance(obj, dict)
 
 
+def _is_np_bool(obj) -> bool:
+    return isinstance(obj, np.bool_)
+
+
+def _is_np_int(obj) -> bool:
+    return isinstance(obj, (np.int32, np.int64))
+
+
 def _convert_to_dict(object):
     if _is_namedtuple(object):
         return _convert_to_dict(object._asdict())
@@ -33,18 +47,18 @@ def _convert_to_dict(object):
         for key, item in object.items():
             object[key] = _convert_to_dict(item)
         return object
+    if _is_np_bool(object):
+        return bool(object)
+    if _is_np_int(object):
+        return int(object)
     if object is None:
         return str(object)
     return object
-
-
-def _create_parent_directory(path):
-    parent_directory = Path(path).parent.absolute()
-    os.makedirs(parent_directory, exist_ok=True)
 
 
 def save_hfo_detection(user_facing_hfo_detection, saving_path, metadata):
     filepath = get_persistence_path(saving_path, metadata)
     _create_parent_directory(filepath)
     dictionary = _convert_to_dict(user_facing_hfo_detection)
-    sio.savemat(filepath, dictionary)
+    with open(filepath, 'w') as file:
+        json.dump(dictionary, file)
