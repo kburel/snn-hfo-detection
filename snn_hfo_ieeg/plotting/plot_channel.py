@@ -176,7 +176,6 @@ def _plot_hfo_sample(hfo_run: HfoDetectionRun, start, stop):
     # Previosuly I have the spikes stored in the dictionary, so I could loop over the keys, I am not sure something similar can be done now
     # In any case the Spikes are the ones returned by detect_with_analytics
 
-    spike_labels = ['FR_dn', 'FR_up', 'Ripple_dn', 'Ripple_up']
     filtered_spikes = [analytics.filtered_spikes.fast_ripple.down,
                        analytics.filtered_spikes.fast_ripple.up,
                        analytics.filtered_spikes.ripple.down,
