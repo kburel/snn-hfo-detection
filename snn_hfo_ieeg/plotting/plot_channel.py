@@ -177,15 +177,18 @@ def _plot_hfo_sample(hfo_run: HfoDetectionRun, start, stop):
     # In any case the Spikes are the ones returned by detect_with_analytics
 
     spike_labels = ['FR_dn', 'FR_up', 'Ripple_dn', 'Ripple_up']
+    filtered_spikes = [analytics.filtered_spikes.fast_ripple.down,
+                       analytics.filtered_spikes.fast_ripple.up,
+                       analytics.filtered_spikes.ripple.down,
+                       analytics.filtered_spikes.ripple.up]
     lineoffsets = 0.2
-    for sl in spike_labels:
-        index_spikes_to_plot = np.where(np.logical_and(Input_spikes['%s' % sl] > start,
-                                                       Input_spikes['%s' % sl] < stop))
-
-        spikes_to_plot = Input_spikes['%s' % sl][index_spikes_to_plot]
+    for spikes in filtered_spikes:
+        times_to_plot = [time for time, spike
+                         in zip(signal_time, spikes)
+                         if start < spike < stop]
     #-------------------%Specify spikes%--------------------------------------#
 
-        axs1.eventplot(spikes_to_plot, color='#000000', linelengths=0.15,
+        axs1.eventplot(times_to_plot, color='#000000', linelengths=0.15,
                        lineoffsets=lineoffsets, linewidth=1.5)
         lineoffsets += 0.2
 
