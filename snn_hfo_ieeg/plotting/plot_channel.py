@@ -29,13 +29,16 @@ def plot_raster(hfo_run: HfoDetectionRun):
 
 def _plot_hfo_sample(hfo_run: HfoDetectionRun, start, stop):
     analytics = hfo_run.detector.last_run.analytics
-    signal_time = analytics.analyzed_times  # time from the detect_with_analytics
-    signal_amplitude = np.array([])  # signal from the detect_with_analytics
+    signal_time = hfo_run.input.signal_time  # time from the detect_with_analytics
+    # signal from the detect_with_analytics
+    signal_amplitude = hfo_run.input.wideband_signal
     # pattern signal in the original data set, retirved from detect_with_analytics
     signal_teacher = analytics.detections
 
-    neuron_spike_monitor = None  # spike monitor from detect_with_analytics
-    neuron_ID_monitor = None  # neuron ID monitor from detect_with_analytics
+    # spike monitor from detect_with_analytics
+    neuron_spike_monitor = analytics.spike_times
+    # neuron ID monitor from detect_with_analytics
+    neuron_ID_monitor = analytics.neuron_ids
 
     #-------------------%Set limits according to the mark%--------------------#
 
@@ -257,7 +260,7 @@ def _plot_hfo_sample(hfo_run: HfoDetectionRun, start, stop):
     plt.show()
 
 
-def plot_hfo_samples(hfo_detection: HfoDetectionWithAnalytics):
-    periods = hfo_detection.analytics.periods
+def plot_hfo_samples(hfo_detection_run: HfoDetectionRun):
+    periods = hfo_detection_run.detector.last_run.analytics.periods
     for start, stop in zip(periods.start, periods.stop):
-        _plot_hfo_sample(hfo_detection.analytics, start, stop)
+        _plot_hfo_sample(hfo_detection_run, start, stop)
