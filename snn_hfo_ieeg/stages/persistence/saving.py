@@ -1,7 +1,7 @@
 import os
 import json
-import numpy as np
 from pathlib import Path
+import numpy as np
 from snn_hfo_ieeg.stages.persistence.utility import get_persistence_path
 
 
