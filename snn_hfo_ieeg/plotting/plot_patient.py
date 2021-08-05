@@ -66,6 +66,14 @@ def _plot_bar(axes, intervals):
         capsize=2)
 
 
+def _rotate_labels(axes):
+    labels = axes.get_xticklabels()
+    for label in labels:
+        label.set_rotation(45)
+        label.set_horizontalalignment('right')
+        label.set_size = 16
+
+
 def plot_mean_hfo_rate(intervals: Intervals):
     if len(intervals) == 0:
         return
@@ -73,15 +81,10 @@ def plot_mean_hfo_rate(intervals: Intervals):
     fig, axes = plt.subplots(figsize=(15, 5))
     plt.rc('font', family='sans-serif')
     plt.tight_layout()
-    fig.subplots_adjust(bottom=0.15, wspace=0.2, hspace=0.2)
+    fig.subplots_adjust(bottom=0.25, left=0.1, wspace=0.2, hspace=0.2)
 
     _plot_bar(axes, intervals)
-
-    labels = axes.get_xticklabels()
-    for label in labels:
-        label.set_rotation(45)
-        label.set_horizontalalignment('right')
-        label.set_size = 16
+    _rotate_labels(axes)
 
     axes.set_xlabel('Electrode label', fontsize=18)
     axes.set_ylabel('HFO rate (event/min)', fontsize=18)
