@@ -34,6 +34,10 @@ def _is_np_bool(obj) -> bool:
     return isinstance(obj, np.bool_)
 
 
+def _is_np_int(obj) -> bool:
+    return isinstance(obj, np.int64)
+
+
 def _convert_to_dict(object):
     if _is_namedtuple(object):
         return _convert_to_dict(object._asdict())
@@ -45,6 +49,8 @@ def _convert_to_dict(object):
         return object
     if _is_np_bool(object):
         return bool(object)
+    if _is_np_int(object):
+        return int(object)
     if object is None:
         return str(object)
     return object
