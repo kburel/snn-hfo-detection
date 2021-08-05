@@ -37,8 +37,6 @@ def _plot_hfo_sample(hfo_run: HfoDetectionRun, start, stop):
 
     # spike monitor from detect_with_analytics
     neuron_spike_monitor = analytics.spike_times
-    # neuron ID monitor from detect_with_analytics
-    neuron_ID_monitor = analytics.neuron_ids
 
     #-------------------%Set limits according to the mark%--------------------#
 
@@ -48,8 +46,8 @@ def _plot_hfo_sample(hfo_run: HfoDetectionRun, start, stop):
         signal_time > start, signal_time < stop))
 
     # This is how I assume we can access the data:
-    signal_R = signal_amplitude.Ripple[indices_time]
-    signal_FR = signal_amplitude.FR[indices_time]
+    signal_r = signal_amplitude.ripple[indices_time]
+    signal_fr = signal_amplitude.fr[indices_time]
     signal_time = signal_time[indices_time]
     signal_teacher = signal_teacher[indices_time]
 
@@ -79,34 +77,34 @@ def _plot_hfo_sample(hfo_run: HfoDetectionRun, start, stop):
     axs2 = fig.add_subplot(gs[3:4, 1:])
 
     # =========================================================================
-    # Plot Wideband, Ripple band and FR band signal
+    # Plot Wideband, Ripple band and fr band signal
     # =========================================================================
     scale_fr = 6
 
     scale_ripple = 3
     shift_ripple = 1
 
-    #-------------------%Plot FR band signal%--------------------------------#
-    axs0.plot(signal_time, signal_FR * scale_fr, color='#8e5766', linewidth=1)
+    #-------------------%Plot fr band signal%--------------------------------#
+    axs0.plot(signal_time, signal_fr * scale_fr, color='#8e5766', linewidth=1)
 
-    ylim_up_FR = np.max(signal_FR) * scale_fr
+    ylim_up_fr = np.max(signal_fr) * scale_fr
 
     #-------------------%Shift up and plot Ripple band signal%---------------#
-    axs0.plot(signal_time, signal_R * scale_ripple +
-              shift_ripple * np.abs(np.min(signal_R*scale_ripple)) + ylim_up_FR, color='#8e5766', linewidth=1)
+    axs0.plot(signal_time, signal_r * scale_ripple +
+              shift_ripple * np.abs(np.min(signal_r*scale_ripple)) + ylim_up_fr, color='#8e5766', linewidth=1)
 
-    ylim_up_R = np.max(signal_R) * scale_ripple + shift_ripple * \
-        np.abs(np.min(signal_R*scale_ripple)) + ylim_up_FR
+    ylim_up_r = np.max(signal_r) * scale_ripple + shift_ripple * \
+        np.abs(np.min(signal_r*scale_ripple)) + ylim_up_fr
 
     #-------------------%Infdicate HFO marking with a line%------------------#
-    axs0.fill_between(signal_time, 2 * np.min(signal_FR) * scale_fr,
-                      2.2 * np.min(signal_FR) * scale_fr, where=signal_teacher == 1,
+    axs0.fill_between(signal_time, 2 * np.min(signal_fr) * scale_fr,
+                      2.2 * np.min(signal_fr) * scale_fr, where=signal_teacher == 1,
                       facecolor='#595959', alpha=0.7, label='teacher')
 
     #-------------------%Set y limits of plot with signals%------------------#
     shift_y_lim_max = 1
-    y_lim_max_signal = shift_y_lim_max * ylim_up_R
-    y_lim_min_signal = 2.4 * np.min(signal_FR) * scale_fr
+    y_lim_max_signal = shift_y_lim_max * ylim_up_r
+    y_lim_min_signal = 2.4 * np.min(signal_fr) * scale_fr
     axs0.set_ylim((y_lim_min_signal,
                    y_lim_max_signal))
 
@@ -116,57 +114,57 @@ def _plot_hfo_sample(hfo_run: HfoDetectionRun, start, stop):
     x_line = 0.003
     x_text_uv = 0.017
     x_label = 0.005
-    #----------------------------%Ripple band signal%------------------------#
+    #----------------------------%ripple band signal%------------------------#
     reference_line_microvolts_ripple = 20
     axs0.annotate("",
                   xy=(start - x_line,
-                      signal_R[0] * scale_ripple +
-                      shift_ripple * np.abs(np.min(signal_R*scale_ripple)) + ylim_up_FR -
+                      signal_r[0] * scale_ripple +
+                      shift_ripple * np.abs(np.min(signal_r*scale_ripple)) + ylim_up_fr -
                       reference_line_microvolts_ripple*scale_ripple/2),
                   xytext=(start - x_line,
-                          signal_R[0] * scale_ripple +
-                          shift_ripple * np.abs(np.min(signal_R*scale_ripple)) + ylim_up_FR +
+                          signal_r[0] * scale_ripple +
+                          shift_ripple * np.abs(np.min(signal_r*scale_ripple)) + ylim_up_fr +
                           reference_line_microvolts_ripple*scale_ripple/2),
                   arrowprops=dict(arrowstyle='-'),
                   annotation_clip=False)
 
     axs0.text(start - x_text_uv,
-              (signal_R[0] * scale_ripple +
-               shift_ripple * np.abs(np.min(signal_R*scale_ripple)) + ylim_up_FR),
+              (signal_r[0] * scale_ripple +
+               shift_ripple * np.abs(np.min(signal_r*scale_ripple)) + ylim_up_fr),
               r'%i $\mu$V' % reference_line_microvolts_ripple, verticalalignment='center',
               rotation=0,
               fontsize=10)
 
-    Ripple_label_position = 1.2 * \
-        (np.mean(np.abs(signal_R[0:10])) * scale_ripple + shift_ripple *
-         np.abs(np.min(signal_R*scale_ripple)) + ylim_up_FR)
+    ripple_label_position = 1.2 * \
+        (np.mean(np.abs(signal_r[0:10])) * scale_ripple + shift_ripple *
+         np.abs(np.min(signal_r*scale_ripple)) + ylim_up_fr)
 
     axs0.text(start + x_label,
-              Ripple_label_position,
-              'Ripple band', verticalalignment='center',
+              ripple_label_position,
+              'ripple band', verticalalignment='center',
               fontsize=12)
 
-    #-------------------%Fast Ripple band signal%----------------------------#
+    #-------------------%Fast ripple band signal%----------------------------#
     reference_line_microvolts_fr = 10
     axs0.annotate("",
                   xy=(start - x_line,
-                      signal_FR[0] * scale_fr - reference_line_microvolts_fr*scale_fr/2),
+                      signal_fr[0] * scale_fr - reference_line_microvolts_fr*scale_fr/2),
                   xytext=(start - x_line,
-                          signal_FR[0] * scale_fr + reference_line_microvolts_fr*scale_fr/2),
+                          signal_fr[0] * scale_fr + reference_line_microvolts_fr*scale_fr/2),
                   arrowprops=dict(arrowstyle='-'),
                   annotation_clip=False)
 
     axs0.text(start - x_text_uv,
-              (signal_FR[0] * scale_fr),
+              (signal_fr[0] * scale_fr),
               r'%i $\mu$V' % reference_line_microvolts_fr, verticalalignment='center',
               rotation=0,
               fontsize=10)
 
-    FR_label_position = 10 * (np.mean(np.abs(signal_FR[0:5])) * scale_fr)
+    fr_label_position = 10 * (np.mean(np.abs(signal_fr[0:5])) * scale_fr)
 
     axs0.text(start + x_label,
-              FR_label_position,
-              'Fast Ripple band', verticalalignment='center',
+              fr_label_position,
+              'Fast ripple band', verticalalignment='center',
               fontsize=12)
 
     # ========================================================================================
@@ -205,7 +203,7 @@ def _plot_hfo_sample(hfo_run: HfoDetectionRun, start, stop):
     # =========================================================================
     # Raster plot
     # =========================================================================
-    axs2.plot(neuron_spike_monitor, neuron_ID_monitor,
+    axs2.plot(neuron_spike_monitor, analytics.neuron_ids,
               '.k', markersize=10, color='#002699')
     axs2.yaxis.set_label_coords(-0.1, 0.5)
     axs2.set_xlabel('Time (ms)', fontsize=12)
