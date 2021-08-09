@@ -22,6 +22,16 @@ def _convert_to_labels_to_hfo_rate_dict(intervals):
     return label_to_hfo_rates
 
 
+def _mark_high_rates(axes, mean_hfo_rates):
+    marked_percentile = 95
+    percentile_value = np.percentile(mean_hfo_rates, marked_percentile)
+    labels = axes.get_xticklabels()
+    for label, mean_hfo_rate in zip(labels, mean_hfo_rates):
+        if mean_hfo_rate >= percentile_value:
+            label.set_color('#e60000')
+            label.set_fontsize(18)
+
+
 def _plot_bar(axes, intervals):
     label_to_hfo_rates = _convert_to_labels_to_hfo_rate_dict(intervals)
 
@@ -40,6 +50,8 @@ def _plot_bar(axes, intervals):
         alpha=0.9, color='#2f70b6',
         yerr=standard_deviations,
         capsize=2)
+
+    _mark_high_rates(axes, mean_hfo_rates)
 
 
 def _rotate_labels(axes):
