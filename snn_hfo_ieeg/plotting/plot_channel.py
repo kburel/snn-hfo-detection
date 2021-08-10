@@ -4,6 +4,7 @@ from matplotlib.widgets import Slider
 import numpy as np
 from brian2.units import second, ms
 from snn_hfo_ieeg.user_facing_data import HfoDetectionRun, PlotMode
+from snn_hfo_ieeg.plotting.persistence import persist_channel_plot
 
 
 class ChannelDebugError(Exception):
@@ -274,4 +275,12 @@ def plot_hfo_samples(hfo_detection_run: HfoDetectionRun):
                          axs0, axs1, axs2)
         fig.canvas.draw_idle()
     slider.on_changed(plot_time)
-    plt.show()
+
+    plot_mode = hfo_detection_run.configuration.plot_mode
+    if (plot_mode is PlotMode.SHOW or plot_mode is PlotMode.BOTH):
+        plt.show()
+    if (plot_mode is PlotMode.SAVE or plot_mode is PlotMode.BOTH):
+        for one_based_index in range(1, len(period_windows) + 1):
+            slider.set_val(one_based_index)
+            persist_channel_plot(
+                f'hfo_sample_period_{one_based_index}', hfo_detection_run.metadata, hfo_detection_run.configuration)
