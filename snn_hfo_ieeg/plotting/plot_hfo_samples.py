@@ -74,7 +74,7 @@ def _plot_bandwidth(bandwidth_axes, hfo_run, start, stop):
     bandwidth_axes.text(start - x_text_uv,
                         (signal_r[0] * scale_ripple +
                          shift_ripple * np.abs(np.min(signal_r*scale_ripple)) + ylim_up_fr),
-                        r'%i $\mu$V' % reference_line_microvolts_ripple, verticalalignment='center',
+                        rf'{reference_line_microvolts_ripple} $\mu$V', verticalalignment='center',
                         rotation=0,
                         fontsize=10)
 
@@ -99,7 +99,7 @@ def _plot_bandwidth(bandwidth_axes, hfo_run, start, stop):
 
     bandwidth_axes.text(start - x_text_uv,
                         (signal_fr[0] * scale_fr),
-                        r'%i $\mu$V' % reference_line_microvolts_fr, verticalalignment='center',
+                        fr'{reference_line_microvolts_fr} $\mu$V', verticalalignment='center',
                         rotation=0,
                         fontsize=10)
 
