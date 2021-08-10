@@ -30,23 +30,16 @@ def plot_raster(hfo_run: HfoDetectionRun):
     save_or_show_channel_plot("raster", hfo_run)
 
 
-def _plot_hfo_sample(hfo_run: HfoDetectionRun, start, stop, bandwidth_axes, spike_train_axes, raster_axes):
+def _plot_bandwidth(bandwidth_axes, hfo_run, start, stop):
     analytics = hfo_run.detector.last_run.analytics
-
     indices_time = np.where((hfo_run.input.signal_time > start) & (
         hfo_run.input.signal_time < stop))
 
-    # This is how I assume we can access the data:
     signal_r = np.array(analytics.filtered_spikes.ripple.signal)[
         indices_time] if analytics.filtered_spikes.ripple is not None else None
     signal_fr = np.array(analytics.filtered_spikes.fast_ripple.signal)[
         indices_time] if analytics.filtered_spikes.fast_ripple is not None else None
     signal_time = hfo_run.input.signal_time[indices_time]
-
-    # ==========================================================================
-    # GRID PLOT
-    # ==========================================================================
-
     # =========================================================================
     # Plot Wideband, Ripple band and fr band signal
     # =========================================================================
@@ -140,6 +133,19 @@ def _plot_hfo_sample(hfo_run: HfoDetectionRun, start, stop, bandwidth_axes, spik
                         'Fast Ripple Band', verticalalignment='center',
                         fontsize=12)
 
+
+def _plot_hfo_sample(hfo_run: HfoDetectionRun, start, stop, bandwidth_axes, spike_train_axes, raster_axes):
+    analytics = hfo_run.detector.last_run.analytics
+
+    # This is how I assume we can access the data:
+
+    # ==========================================================================
+    # GRID PLOT
+    # ==========================================================================
+    _plot_bandwidth(bandwidth_axes=bandwidth_axes,
+                    hfo_run=hfo_run,
+                    start=start,
+                    stop=stop)
     # ========================================================================================
     # Plot spikes
     # ========================================================================================
