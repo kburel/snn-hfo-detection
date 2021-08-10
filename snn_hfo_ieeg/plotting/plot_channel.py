@@ -166,21 +166,8 @@ def _plot_spike_trains(spike_train_axes, hfo_run, start, stop):
                                      verticalalignment='center')
 
 
-def _plot_hfo_sample(hfo_run: HfoDetectionRun, start, stop, bandwidth_axes, spike_train_axes, raster_axes):
+def _plot_raster(raster_axes, hfo_run, start, stop):
     analytics = hfo_run.detector.last_run.analytics
-
-    _plot_bandwidth(bandwidth_axes=bandwidth_axes,
-                    hfo_run=hfo_run,
-                    start=start,
-                    stop=stop)
-    _plot_spike_trains(spike_train_axes=spike_train_axes,
-                       hfo_run=hfo_run,
-                       start=start,
-                       stop=stop)
-
-    # =========================================================================
-    # Raster plot
-    # =========================================================================
     spikes_in_window = [(spike_index, spike_time) for spike_index, spike_time
                         in enumerate(analytics.spike_times)
                         if start < spike_time < stop]
@@ -199,6 +186,22 @@ def _plot_hfo_sample(hfo_run: HfoDetectionRun, start, stop, bandwidth_axes, spik
         np.arange(0, neuron_count, int(neuron_count / 5.0)))
     raster_axes.set_ylabel('Neuron ID', fontsize=12, x=- 0.01)
 
+
+def _plot_hfo_sample(hfo_run: HfoDetectionRun, start, stop, bandwidth_axes, spike_train_axes, raster_axes):
+    analytics = hfo_run.detector.last_run.analytics
+
+    _plot_bandwidth(bandwidth_axes=bandwidth_axes,
+                    hfo_run=hfo_run,
+                    start=start,
+                    stop=stop)
+    _plot_spike_trains(spike_train_axes=spike_train_axes,
+                       hfo_run=hfo_run,
+                       start=start,
+                       stop=stop)
+    _plot_raster(raster_axes=raster_axes,
+                 hfo_run=hfo_run,
+                 start=start,
+                 stop=stop)
     # =========================================================================
     # Set limits
     # =========================================================================
