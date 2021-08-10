@@ -88,7 +88,7 @@ def _plot_hfo_sample(hfo_run: HfoDetectionRun, start, stop, axs0, axs1, axs2):
     # Add amplitude scales and labels
     # =========================================================================
     x_line = 0.003
-    x_text_uv = 0.017
+    x_text_uv = 0.01
     x_label = 0.005
     #----------------------------%ripple band signal%------------------------#
     reference_line_microvolts_ripple = 20
