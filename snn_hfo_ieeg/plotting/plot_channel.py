@@ -237,27 +237,23 @@ def _plot_hfo_sample(hfo_run: HfoDetectionRun, start, stop, axs0, axs1, axs2):
 
 def plot_hfo_samples(hfo_detection_run: HfoDetectionRun):
     periods = hfo_detection_run.detector.last_run.analytics.periods
-    fig_height = 10
-    length_x_axis = 5
-    length_y_axis = 5
-    rows = 7
-    columns = 6
-    height = length_y_axis * rows
-    width = length_x_axis * columns
-    plot_aspect_ratio = float(width)/float(height)
-    fig = plt.figure(figsize=(fig_height * plot_aspect_ratio, fig_height))
+    fig_height = 6
+    fig_width = 10
+    rows = 4
+    columns = 1
+    fig = plt.figure(figsize=(fig_width, fig_height))
 
     plt.rc('font', family='sans-serif')
-    slider_ax = plt.axes([0.1, 0.05, 0.8, 0.05])
 
     spec = gridspec.GridSpec(rows, columns,
-                             width_ratios=[1]*columns,
-                             height_ratios=[1]*rows
-                             )
+                             figure=fig,
+                             hspace=0.7,
+                             wspace=0.3)
 
-    axs0 = fig.add_subplot(spec[1:2, 1:])
-    axs1 = fig.add_subplot(spec[2:3, 1:])
-    axs2 = fig.add_subplot(spec[3:4, 1:])
+    axs0 = fig.add_subplot(spec[0, 0])
+    axs1 = fig.add_subplot(spec[1, 0])
+    axs2 = fig.add_subplot(spec[2, 0])
+    slider_ax = fig.add_subplot(8, 1, 8)
 
     period_windows = list(zip(periods.start, periods.stop))
     slider = Slider(slider_ax,
