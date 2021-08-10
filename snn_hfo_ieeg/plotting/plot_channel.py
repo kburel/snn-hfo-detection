@@ -33,9 +33,6 @@ def _plot_hfo_sample(hfo_run: HfoDetectionRun, start, stop):
     # pattern signal in the original data set, retirved from detect_with_analytics
     signal_teacher = analytics.detections
 
-    # spike monitor from detect_with_analytics
-    neuron_spike_monitor = analytics.spike_times
-
     #-------------------%Set limits according to the mark%--------------------#
 
     #-------------------%Specify signal snippet to be plotted%--------------------------------------#
@@ -201,8 +198,8 @@ def _plot_hfo_sample(hfo_run: HfoDetectionRun, start, stop):
     # =========================================================================
     # Raster plot
     # =========================================================================
-    axs2.plot(neuron_spike_monitor, analytics.neuron_ids,
-              '.', markersize=10,  color='#002699')
+    axs2.plot(analytics.spike_times, analytics.neuron_ids,
+              '.', markersize=1.5,  color='#002699')
     axs2.yaxis.set_label_coords(-0.1, 0.5)
     axs2.set_xlabel('Time (ms)', fontsize=12)
 
