@@ -247,8 +247,7 @@ def plot_hfo_samples(hfo_detection_run: HfoDetectionRun):
 
     spec = gridspec.GridSpec(rows, columns,
                              figure=fig,
-                             hspace=0.7,
-                             wspace=0.3)
+                             hspace=0.7)
 
     axs0 = fig.add_subplot(spec[0, 0])
     axs1 = fig.add_subplot(spec[1, 0])
@@ -257,15 +256,19 @@ def plot_hfo_samples(hfo_detection_run: HfoDetectionRun):
 
     period_windows = list(zip(periods.start, periods.stop))
     slider = Slider(slider_ax,
-                    'Period Index',
-                    0,
-                    len(period_windows),
-                    valinit=0,
-                    valfmt='%0.0f'
-                    )
+                    'Period Index\n(Interactive)',
+                    1,
+                    len(period_windows) + 1,
+                    valinit=1,
+                    valstep=1.0)
 
-    def plot_time(index):
-        start, stop = period_windows[int(np.round(index))]
+    initial_start, initial_stop = period_windows[0]
+    _plot_hfo_sample(hfo_detection_run,
+                     np.float64(initial_start), np.float64(initial_stop),
+                     axs0, axs1, axs2)
+
+    def plot_time(one_based_index):
+        start, stop = period_windows[int(np.round(one_based_index - 1))]
         _plot_hfo_sample(hfo_detection_run,
                          np.float64(start), np.float64(stop),
                          axs0, axs1, axs2)
