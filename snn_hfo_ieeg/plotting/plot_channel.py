@@ -137,7 +137,7 @@ def _plot_hfo_sample(hfo_run: HfoDetectionRun, start, stop):
 
     axs0.text(start + x_label,
               ripple_label_position,
-              'ripple band', verticalalignment='center',
+              'Ripple Band', verticalalignment='center',
               fontsize=12)
 
     #-------------------%Fast ripple band signal%----------------------------#
@@ -160,7 +160,7 @@ def _plot_hfo_sample(hfo_run: HfoDetectionRun, start, stop):
 
     axs0.text(start + x_label,
               fr_label_position,
-              'Fast ripple band', verticalalignment='center',
+              'Fast Ripple Band', verticalalignment='center',
               fontsize=12)
 
     # ========================================================================================
