@@ -1,20 +1,10 @@
 import re
-from typing import NamedTuple, Callable, List
 from inspect import getmembers, isfunction
+from snn_hfo_ieeg.user_facing_data import PlottingFunction, PlottingFunctions
 from snn_hfo_ieeg.plotting import plot_channel
 from snn_hfo_ieeg.plotting import plot_patient
 
 PLOTTING_REGEX = re.compile(r'^plot_([\w_]+)$')
-
-
-class PlottingFunction(NamedTuple):
-    name: str
-    function: Callable
-
-
-class PlottingFunctions(NamedTuple):
-    channel: List[PlottingFunction]
-    patient: List[PlottingFunction]
 
 
 def _get_plotting_functions(module):

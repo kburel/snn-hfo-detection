@@ -1,4 +1,5 @@
-from typing import NamedTuple, Optional
+from typing import NamedTuple, Optional, Callable, List
+from enum import Enum, auto
 import numpy as np
 
 
@@ -143,7 +144,41 @@ class HfoDetector():
         return self.last_run
 
 
+class MeasurementMode(Enum):
+    IEEG = auto()
+    ECOG = auto()
+    SCALP = auto()
+
+
+class PlottingFunction(NamedTuple):
+    name: str
+    function: Callable
+
+
+class PlottingFunctions(NamedTuple):
+    channel: List[PlottingFunction]
+    patient: List[PlottingFunction]
+
+class PlotMode(Enum):
+    SAVE = auto()
+    SHOW = auto()
+    BOTH = auto()
+
+class Configuration(NamedTuple):
+    data_path: str
+    measurement_mode: MeasurementMode
+    hidden_neuron_count: int
+    calibration_time: float
+    plots: PlottingFunctions
+    saving_path: Optional[str]
+    disable_saving: bool
+    loading_path: Optional[str]
+    plot_path: str
+    plot_mode: PlotMode
+
+
 class HfoDetectionRun(NamedTuple):
     metadata: Metadata
     detector: HfoDetector
     input: ChannelData
+    configuration: Configuration

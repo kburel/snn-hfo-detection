@@ -3,7 +3,7 @@ import numpy as np
 from snn_hfo_ieeg.stages.loading.patient_data import ChannelData
 from snn_hfo_ieeg.functions.filter import butter_bandpass_filter
 from snn_hfo_ieeg.functions.signal_to_spike import SpikeTrains, find_thresholds, signal_to_spike_refractory
-from snn_hfo_ieeg.stages.shared_config import MeasurementMode
+from snn_hfo_ieeg.user_facing_data import MeasurementMode
 
 
 SAMPLING_FREQUENCY = 2000

@@ -1,12 +1,6 @@
-from enum import Enum, auto
 from os import path, makedirs
 import matplotlib.pyplot as plt
-
-
-class PlotMode(Enum):
-    SAVE = auto()
-    SHOW = auto()
-    BOTH = auto()
+from snn_hfo_ieeg.user_facing_data import PlotMode
 
 
 def _save_plot(plot_name, parent_directory):

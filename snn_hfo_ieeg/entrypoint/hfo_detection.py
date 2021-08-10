@@ -75,7 +75,8 @@ def run_hfo_detection_with_configuration(configuration, custom_overrides, hfo_cb
             hfo_detection_run = HfoDetectionRun(
                 input=channel_data,
                 metadata=metadata,
-                detector=hfo_detector
+                detector=hfo_detector,
+                configuration=configuration
             )
 
             hfo_cb(hfo_detection_run)
