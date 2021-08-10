@@ -134,21 +134,8 @@ def _plot_bandwidth(bandwidth_axes, hfo_run, start, stop):
                         fontsize=12)
 
 
-def _plot_hfo_sample(hfo_run: HfoDetectionRun, start, stop, bandwidth_axes, spike_train_axes, raster_axes):
+def _plot_spike_trains(spike_train_axes, hfo_run, start, stop):
     analytics = hfo_run.detector.last_run.analytics
-
-    # This is how I assume we can access the data:
-
-    # ==========================================================================
-    # GRID PLOT
-    # ==========================================================================
-    _plot_bandwidth(bandwidth_axes=bandwidth_axes,
-                    hfo_run=hfo_run,
-                    start=start,
-                    stop=stop)
-    # ========================================================================================
-    # Plot spikes
-    # ========================================================================================
 
     # Previosuly I have the spikes stored in the dictionary, so I could loop over the keys, I am not sure something similar can be done now
     # In any case the Spikes are the ones returned by detect_with_analytics
@@ -177,6 +164,19 @@ def _plot_hfo_sample(hfo_run: HfoDetectionRun, start, stop, bandwidth_axes, spik
     labels[1] = 'FR DN'
     spike_train_axes.set_yticklabels(labels, rotation=0, fontsize=10,
                                      verticalalignment='center')
+
+
+def _plot_hfo_sample(hfo_run: HfoDetectionRun, start, stop, bandwidth_axes, spike_train_axes, raster_axes):
+    analytics = hfo_run.detector.last_run.analytics
+
+    _plot_bandwidth(bandwidth_axes=bandwidth_axes,
+                    hfo_run=hfo_run,
+                    start=start,
+                    stop=stop)
+    _plot_spike_trains(spike_train_axes=spike_train_axes,
+                       hfo_run=hfo_run,
+                       start=start,
+                       stop=stop)
 
     # =========================================================================
     # Raster plot
