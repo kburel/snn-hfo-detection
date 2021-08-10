@@ -254,8 +254,6 @@ def _plot_hfo_sample(hfo_run: HfoDetectionRun, start, stop):
     axs2.set_xticklabels(labels, rotation=0, fontsize=10,
                          verticalalignment='top')
 
-    plt.show()
-
 
 def plot_hfo_samples(hfo_detection_run: HfoDetectionRun):
     periods = hfo_detection_run.detector.last_run.analytics.periods
