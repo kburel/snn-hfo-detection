@@ -32,7 +32,7 @@ def parse_arguments():
     parser.add_argument('--intervals', type=int, default=None, nargs='+',
                         help='Which intervals should be processed. By default, all intervals will be processed.')
     parser.add_argument('--plot', type=str, default=[], nargs='+',
-                        help='Which plots should be generated during the HFO detection. Possible values: raster')
+                        help='Which plots should be generated during the HFO detection. Possible values: raster, hfo_samples, mean_hfo_rate')
     parser.add_argument('--plot-mode', type=str, default=default_plot_mode,
                         help=f'How to handle plots. Possible values: save, show, both. Default is {default_plot_mode}')
     parser.add_argument('--plot-path', type=str, default=default_plot_path,
