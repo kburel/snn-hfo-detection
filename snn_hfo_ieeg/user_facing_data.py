@@ -10,6 +10,11 @@ class SpikeTrains(NamedTuple):
     down: np.array
 
 
+class Bandwidth(NamedTuple):
+    signal: np.array
+    spike_trains: SpikeTrains
+
+
 class FilteredSpikes(NamedTuple):
     '''
     Spikes in the filtered bandwidths. If some of these are None, it means
@@ -22,8 +27,8 @@ class FilteredSpikes(NamedTuple):
     fast_ripple: Optional[SpikeTrains]
         Spikes in the fast ripple bandwidth (250-500 Hz).
     '''
-    ripple: Optional[SpikeTrains]
-    fast_ripple: Optional[SpikeTrains]
+    ripple: Optional[Bandwidth]
+    fast_ripple: Optional[Bandwidth]
 
 
 class HfoDetection(NamedTuple):
