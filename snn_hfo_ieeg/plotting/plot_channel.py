@@ -250,14 +250,14 @@ def plot_hfo_samples(hfo_detection_run: HfoDetectionRun):
     plt.rc('font', family='sans-serif')
     slider_ax = plt.axes([0.1, 0.05, 0.8, 0.05])
 
-    gs = gridspec.GridSpec(rows, columns,
-                           width_ratios=[1]*6,
-                           height_ratios=[1]*7
-                           )
+    spec = gridspec.GridSpec(rows, columns,
+                             width_ratios=[1]*columns,
+                             height_ratios=[1]*rows
+                             )
 
-    axs0 = fig.add_subplot(gs[1:2, 1:])
-    axs1 = fig.add_subplot(gs[2:3, 1:])
-    axs2 = fig.add_subplot(gs[3:4, 1:])
+    axs0 = fig.add_subplot(spec[1:2, 1:])
+    axs1 = fig.add_subplot(spec[2:3, 1:])
+    axs2 = fig.add_subplot(spec[3:4, 1:])
 
     period_windows = list(zip(periods.start, periods.stop))
     slider = Slider(slider_ax,
