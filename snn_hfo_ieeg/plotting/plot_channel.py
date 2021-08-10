@@ -43,9 +43,10 @@ def _plot_hfo_sample(hfo_run: HfoDetectionRun, start, stop):
     indices_time = np.where((signal_time > start) & (signal_time < stop))
 
     # This is how I assume we can access the data:
-    signal_r = np.array(analytics.filtered_spikes.ripple.signal)[indices_time]
+    signal_r = np.array(analytics.filtered_spikes.ripple.signal)[
+        indices_time] if analytics.filtered_spikes.ripple is not None else None
     signal_fr = np.array(analytics.filtered_spikes.fast_ripple.signal)[
-        indices_time]
+        indices_time] if analytics.filtered_spikes.fast_ripple is not None else None
     signal_time = signal_time[indices_time]
     signal_teacher = np.array(signal_teacher)[indices_time]
 
@@ -178,12 +179,11 @@ def _plot_hfo_sample(hfo_run: HfoDetectionRun, start, stop):
                        analytics.filtered_spikes.ripple.spike_trains.up]
     lineoffsets = 0.2
     for spikes in filtered_spikes:
-        times_to_plot = [time for time, spike
-                         in zip(signal_time, spikes)
-                         if start < spike < stop]
-    #-------------------%Specify spikes%--------------------------------------#
+        spikes_in_current_window = [spike for spike in spikes
+                                    if start < spike < stop]
 
-        axs1.eventplot(times_to_plot, color='#000000', linelengths=0.15,
+    #-------------------%Specify spikes%--------------------------------------#
+        axs1.eventplot(spikes_in_current_window, color='#000000', linelengths=0.15,
                        lineoffsets=lineoffsets, linewidth=1.5)
         lineoffsets += 0.2
 
@@ -202,7 +202,7 @@ def _plot_hfo_sample(hfo_run: HfoDetectionRun, start, stop):
     # Raster plot
     # =========================================================================
     axs2.plot(neuron_spike_monitor, analytics.neuron_ids,
-              '.k', markersize=10)
+              '.', markersize=10,  color='#002699')
     axs2.yaxis.set_label_coords(-0.1, 0.5)
     axs2.set_xlabel('Time (ms)', fontsize=12)
 
