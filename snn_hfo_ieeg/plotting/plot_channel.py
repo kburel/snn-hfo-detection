@@ -30,7 +30,7 @@ def plot_raster(hfo_run: HfoDetectionRun):
     save_or_show_channel_plot("raster", hfo_run)
 
 
-def _plot_hfo_sample(hfo_run: HfoDetectionRun, start, stop, axs0, axs1, axs2):
+def _plot_hfo_sample(hfo_run: HfoDetectionRun, start, stop, bandwidth_axes, spike_train_axes, raster_axes):
     analytics = hfo_run.detector.last_run.analytics
     signal_time = hfo_run.input.signal_time  # time from the detect_with_analytics
     # pattern signal in the original data set, retirved from detect_with_analytics
@@ -63,28 +63,29 @@ def _plot_hfo_sample(hfo_run: HfoDetectionRun, start, stop, axs0, axs1, axs2):
     shift_ripple = 1
 
     #-------------------%Plot fr band signal%--------------------------------#
-    axs0.plot(signal_time, signal_fr * scale_fr, color='#8e5766', linewidth=1)
+    bandwidth_axes.plot(signal_time, signal_fr * scale_fr,
+                        color='#8e5766', linewidth=1)
 
     ylim_up_fr = np.max(signal_fr) * scale_fr
 
     #-------------------%Shift up and plot Ripple band signal%---------------#
-    axs0.plot(signal_time, signal_r * scale_ripple +
-              shift_ripple * np.abs(np.min(signal_r*scale_ripple)) + ylim_up_fr, color='#8e5766', linewidth=1)
+    bandwidth_axes.plot(signal_time, signal_r * scale_ripple +
+                        shift_ripple * np.abs(np.min(signal_r*scale_ripple)) + ylim_up_fr, color='#8e5766', linewidth=1)
 
     ylim_up_r = np.max(signal_r) * scale_ripple + shift_ripple * \
         np.abs(np.min(signal_r*scale_ripple)) + ylim_up_fr
 
     #-------------------%Infdicate HFO marking with a line%------------------#
-    axs0.fill_between(signal_time, 2 * np.min(signal_fr) * scale_fr,
-                      2.2 * np.min(signal_fr) * scale_fr, where=signal_teacher == 1,
-                      facecolor='#595959', alpha=0.7, label='teacher')
+    bandwidth_axes.fill_between(signal_time, 2 * np.min(signal_fr) * scale_fr,
+                                2.2 * np.min(signal_fr) * scale_fr, where=signal_teacher == 1,
+                                facecolor='#595959', alpha=0.7, label='teacher')
 
     #-------------------%Set y limits of plot with signals%------------------#
     shift_y_lim_max = 1
     y_lim_max_signal = shift_y_lim_max * ylim_up_r
     y_lim_min_signal = 2.4 * np.min(signal_fr) * scale_fr
-    axs0.set_ylim((y_lim_min_signal,
-                   y_lim_max_signal))
+    bandwidth_axes.set_ylim((y_lim_min_signal,
+                             y_lim_max_signal))
 
     # =========================================================================
     # Add amplitude scales and labels
@@ -94,56 +95,56 @@ def _plot_hfo_sample(hfo_run: HfoDetectionRun, start, stop, axs0, axs1, axs2):
     x_label = 0.005
     #----------------------------%ripple band signal%------------------------#
     reference_line_microvolts_ripple = 20
-    axs0.annotate("",
-                  xy=(start - x_line,
-                      signal_r[0] * scale_ripple +
-                      shift_ripple * np.abs(np.min(signal_r*scale_ripple)) + ylim_up_fr -
-                      reference_line_microvolts_ripple*scale_ripple/2),
-                  xytext=(start - x_line,
-                          signal_r[0] * scale_ripple +
-                          shift_ripple * np.abs(np.min(signal_r*scale_ripple)) + ylim_up_fr +
-                          reference_line_microvolts_ripple*scale_ripple/2),
-                  arrowprops=dict(arrowstyle='-'),
-                  annotation_clip=False)
+    bandwidth_axes.annotate("",
+                            xy=(start - x_line,
+                                signal_r[0] * scale_ripple +
+                                shift_ripple * np.abs(np.min(signal_r*scale_ripple)) + ylim_up_fr -
+                                reference_line_microvolts_ripple*scale_ripple/2),
+                            xytext=(start - x_line,
+                                    signal_r[0] * scale_ripple +
+                                    shift_ripple * np.abs(np.min(signal_r*scale_ripple)) + ylim_up_fr +
+                                    reference_line_microvolts_ripple*scale_ripple/2),
+                            arrowprops=dict(arrowstyle='-'),
+                            annotation_clip=False)
 
-    axs0.text(start - x_text_uv,
-              (signal_r[0] * scale_ripple +
-               shift_ripple * np.abs(np.min(signal_r*scale_ripple)) + ylim_up_fr),
-              r'%i $\mu$V' % reference_line_microvolts_ripple, verticalalignment='center',
-              rotation=0,
-              fontsize=10)
+    bandwidth_axes.text(start - x_text_uv,
+                        (signal_r[0] * scale_ripple +
+                         shift_ripple * np.abs(np.min(signal_r*scale_ripple)) + ylim_up_fr),
+                        r'%i $\mu$V' % reference_line_microvolts_ripple, verticalalignment='center',
+                        rotation=0,
+                        fontsize=10)
 
     ripple_label_position = 1.2 * \
         (np.mean(np.abs(signal_r[0:10])) * scale_ripple + shift_ripple *
          np.abs(np.min(signal_r*scale_ripple)) + ylim_up_fr)
 
-    axs0.text(start + x_label,
-              ripple_label_position,
-              'Ripple Band', verticalalignment='center',
-              fontsize=12)
+    bandwidth_axes.text(start + x_label,
+                        ripple_label_position,
+                        'Ripple Band', verticalalignment='center',
+                        fontsize=12)
 
     #-------------------%Fast ripple band signal%----------------------------#
     reference_line_microvolts_fr = 10
-    axs0.annotate("",
-                  xy=(start - x_line,
-                      signal_fr[0] * scale_fr - reference_line_microvolts_fr*scale_fr/2),
-                  xytext=(start - x_line,
-                          signal_fr[0] * scale_fr + reference_line_microvolts_fr*scale_fr/2),
-                  arrowprops=dict(arrowstyle='-'),
-                  annotation_clip=False)
+    bandwidth_axes.annotate("",
+                            xy=(start - x_line,
+                                signal_fr[0] * scale_fr - reference_line_microvolts_fr*scale_fr/2),
+                            xytext=(start - x_line,
+                                    signal_fr[0] * scale_fr + reference_line_microvolts_fr*scale_fr/2),
+                            arrowprops=dict(arrowstyle='-'),
+                            annotation_clip=False)
 
-    axs0.text(start - x_text_uv,
-              (signal_fr[0] * scale_fr),
-              r'%i $\mu$V' % reference_line_microvolts_fr, verticalalignment='center',
-              rotation=0,
-              fontsize=10)
+    bandwidth_axes.text(start - x_text_uv,
+                        (signal_fr[0] * scale_fr),
+                        r'%i $\mu$V' % reference_line_microvolts_fr, verticalalignment='center',
+                        rotation=0,
+                        fontsize=10)
 
     fr_label_position = 10 * (np.mean(np.abs(signal_fr[0:5])) * scale_fr)
 
-    axs0.text(start + x_label,
-              fr_label_position,
-              'Fast Ripple Band', verticalalignment='center',
-              fontsize=12)
+    bandwidth_axes.text(start + x_label,
+                        fr_label_position,
+                        'Fast Ripple Band', verticalalignment='center',
+                        fontsize=12)
 
     # ========================================================================================
     # Plot spikes
@@ -162,20 +163,20 @@ def _plot_hfo_sample(hfo_run: HfoDetectionRun, start, stop, axs0, axs1, axs2):
                                     if start < spike < stop]
 
     #-------------------%Specify spikes%--------------------------------------#
-        axs1.eventplot(spikes_in_current_window, color='#000000', linelengths=0.15,
-                       lineoffsets=lineoffsets, linewidth=1.5)
+        spike_train_axes.eventplot(spikes_in_current_window, color='#000000', linelengths=0.15,
+                                   lineoffsets=lineoffsets, linewidth=1.5)
         lineoffsets += 0.2
 
     # Managing y labels for spike plots
-    axs1.set_yticks(np.arange(0, 1, 0.2))
+    spike_train_axes.set_yticks(np.arange(0, 1, 0.2))
 
-    labels = [item.get_text() for item in axs1.get_yticklabels()]
+    labels = [item.get_text() for item in spike_train_axes.get_yticklabels()]
     labels[4] = 'R UP'
     labels[3] = 'R DN'
     labels[2] = 'FR UP'
     labels[1] = 'FR DN'
-    axs1.set_yticklabels(labels, rotation=0, fontsize=10,
-                         verticalalignment='center')
+    spike_train_axes.set_yticklabels(labels, rotation=0, fontsize=10,
+                                     verticalalignment='center')
 
     # =========================================================================
     # Raster plot
@@ -187,54 +188,54 @@ def _plot_hfo_sample(hfo_run: HfoDetectionRun, start, stop, axs0, axs1, axs2):
     spike_times = [spike_time for _spike_index, spike_time in spikes_in_window]
     neuron_ids = [analytics.neuron_ids[spike_index]
                   for spike_index, _spike_time in spikes_in_window]
-    axs2.plot(spike_times, neuron_ids,
-              '.', markersize=1.5,  color='#002699')
-    axs2.yaxis.set_label_coords(-0.1, 0.5)
-    axs2.set_xlabel('Time (ms)', fontsize=12)
+    raster_axes.plot(spike_times, neuron_ids,
+                     '.', markersize=1.5,  color='#002699')
+    raster_axes.yaxis.set_label_coords(-0.1, 0.5)
+    raster_axes.set_xlabel('Time (ms)', fontsize=12)
 
     neuron_count = hfo_run.configuration.hidden_neuron_count
     # Managing y labels for spike plots
-    axs2.set_yticks(
+    raster_axes.set_yticks(
         np.arange(0, neuron_count, int(neuron_count / 5.0)))
-    axs2.set_ylabel('Neuron ID', fontsize=12, x=- 0.01)
+    raster_axes.set_ylabel('Neuron ID', fontsize=12, x=- 0.01)
 
     # =========================================================================
     # Set limits
     # =========================================================================
-    axs0.set_xlim((start, stop))
-    axs1.set_xlim((start, stop))
-    axs2.set_xlim((start, stop))
+    bandwidth_axes.set_xlim((start, stop))
+    spike_train_axes.set_xlim((start, stop))
+    raster_axes.set_xlim((start, stop))
 
     # =========================================================================
     # Extra figure settings
     # =========================================================================
 
-    axs0.tick_params(which='both', bottom=False, top=False,
-                     left=False, labelbottom=False, labelleft=False)
-    axs1.tick_params(which='both', bottom=False, top=False,
-                     labelbottom=False, left=True)
-    axs2.tick_params(which='both', left=True, labelleft=False)
+    bandwidth_axes.tick_params(which='both', bottom=False, top=False,
+                               left=False, labelbottom=False, labelleft=False)
+    spike_train_axes.tick_params(which='both', bottom=False, top=False,
+                                 labelbottom=False, left=True)
+    raster_axes.tick_params(which='both', left=True, labelleft=False)
 
-    axs0.spines['top'].set_visible(False)
-    axs0.spines['right'].set_visible(False)
-    axs0.spines['left'].set_visible(False)
-    axs0.spines['bottom'].set_visible(False)
+    bandwidth_axes.spines['top'].set_visible(False)
+    bandwidth_axes.spines['right'].set_visible(False)
+    bandwidth_axes.spines['left'].set_visible(False)
+    bandwidth_axes.spines['bottom'].set_visible(False)
 
-    axs1.spines['top'].set_visible(False)
-    axs1.spines['right'].set_visible(False)
-    axs1.spines['bottom'].set_visible(False)
+    spike_train_axes.spines['top'].set_visible(False)
+    spike_train_axes.spines['right'].set_visible(False)
+    spike_train_axes.spines['bottom'].set_visible(False)
 
-    axs2.spines['top'].set_visible(False)
-    axs2.spines['right'].set_visible(False)
+    raster_axes.spines['top'].set_visible(False)
+    raster_axes.spines['right'].set_visible(False)
 
     # =========================================================================
     # Managing x labels of time
     # =========================================================================
-    axs1.tick_params(which='both', labelsize=10)
+    spike_train_axes.tick_params(which='both', labelsize=10)
 
-    axs2_labels = [np.round(tick, 2)
-                   for tick in np.arange(start, stop, (stop-start)/5)]
-    axs2.set_xticks(axs2_labels)
+    raster_axes_labels = [np.round(tick, 2)
+                          for tick in np.arange(start, stop, (stop-start)/5)]
+    raster_axes.set_xticks(raster_axes_labels)
 
 
 def plot_hfo_samples(hfo_detection_run: HfoDetectionRun):
@@ -251,13 +252,13 @@ def plot_hfo_samples(hfo_detection_run: HfoDetectionRun):
                              figure=fig,
                              hspace=0.7)
 
-    axs0 = fig.add_subplot(spec[0, 0])
-    axs1 = fig.add_subplot(spec[1, 0])
-    axs2 = fig.add_subplot(spec[2, 0])
-    slider_ax = fig.add_subplot(8, 1, 8)
+    bandwidth_axes = fig.add_subplot(spec[0, 0])
+    spike_train_axes = fig.add_subplot(spec[1, 0])
+    raster_axes = fig.add_subplot(spec[2, 0])
+    slider_axes = fig.add_subplot(8, 1, 8)
 
     period_windows = list(zip(periods.start, periods.stop))
-    slider = Slider(slider_ax,
+    slider = Slider(slider_axes,
                     'Period Index\n(Interactive)',
                     1,
                     len(period_windows) + 1,
@@ -267,13 +268,13 @@ def plot_hfo_samples(hfo_detection_run: HfoDetectionRun):
     initial_start, initial_stop = period_windows[0]
     _plot_hfo_sample(hfo_detection_run,
                      np.float64(initial_start), np.float64(initial_stop),
-                     axs0, axs1, axs2)
+                     bandwidth_axes, spike_train_axes, raster_axes)
 
     def plot_time(one_based_index):
         start, stop = period_windows[int(np.round(one_based_index - 1))]
         _plot_hfo_sample(hfo_detection_run,
                          np.float64(start), np.float64(stop),
-                         axs0, axs1, axs2)
+                         bandwidth_axes, spike_train_axes, raster_axes)
         fig.canvas.draw_idle()
     slider.on_changed(plot_time)
 
