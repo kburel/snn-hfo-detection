@@ -2,7 +2,7 @@ import matplotlib.pyplot as plt
 from matplotlib import gridspec
 import numpy as np
 from brian2.units import second, ms
-from snn_hfo_ieeg.user_facing_data import HfoDetectionRun
+from snn_hfo_ieeg.user_facing_data import HfoDetectionRun, PlotMode
 
 
 class ChannelDebugError(Exception):
@@ -27,7 +27,7 @@ def plot_raster(hfo_run: HfoDetectionRun):
     plt.ylabel('Neuron index')
 
 
-def _plot_hfo_sample(hfo_run: HfoDetectionRun, start, stop):
+def _plot_hfo_sample(hfo_run: HfoDetectionRun, start, stop, axs0, axs1, axs2):
     analytics = hfo_run.detector.last_run.analytics
     signal_time = hfo_run.input.signal_time  # time from the detect_with_analytics
     # pattern signal in the original data set, retirved from detect_with_analytics
@@ -50,27 +50,6 @@ def _plot_hfo_sample(hfo_run: HfoDetectionRun, start, stop):
     # ==========================================================================
     # GRID PLOT
     # ==========================================================================
-    rows = 7
-    columns = 6
-    fig_height = 10
-    length_x_axis = 5
-    length_y_axis = 5
-
-    height = length_y_axis * rows
-    width = length_x_axis * columns
-
-    plt.rc('font', family='sans-serif')
-
-    plot_aspect_ratio = float(width)/float(height)
-    fig = plt.figure(figsize=(fig_height * plot_aspect_ratio, fig_height))
-    gs = gridspec.GridSpec(rows, columns,
-                           width_ratios=[1]*6,
-                           height_ratios=[1]*7
-                           )
-
-    axs0 = fig.add_subplot(gs[1:2, 1:])
-    axs1 = fig.add_subplot(gs[2:3, 1:])
-    axs2 = fig.add_subplot(gs[3:4, 1:])
 
     # =========================================================================
     # Plot Wideband, Ripple band and fr band signal
@@ -254,9 +233,32 @@ def _plot_hfo_sample(hfo_run: HfoDetectionRun, start, stop):
     axs2.set_xticklabels(labels, rotation=0, fontsize=10,
                          verticalalignment='top')
 
+    plt.pause(0.001)
+
 
 def plot_hfo_samples(hfo_detection_run: HfoDetectionRun):
     periods = hfo_detection_run.detector.last_run.analytics.periods
+    fig_height = 10
+    length_x_axis = 5
+    length_y_axis = 5
+    rows = 7
+    columns = 6
+    height = length_y_axis * rows
+    width = length_x_axis * columns
+    plot_aspect_ratio = float(width)/float(height)
+    fig = plt.figure(figsize=(fig_height * plot_aspect_ratio, fig_height))
+
+    plt.rc('font', family='sans-serif')
+
+    gs = gridspec.GridSpec(rows, columns,
+                           width_ratios=[1]*6,
+                           height_ratios=[1]*7
+                           )
+
+    axs0 = fig.add_subplot(gs[1:2, 1:])
+    axs1 = fig.add_subplot(gs[2:3, 1:])
+    axs2 = fig.add_subplot(gs[3:4, 1:])
     for start, stop in zip(periods.start, periods.stop):
         _plot_hfo_sample(hfo_detection_run,
-                         np.float64(start), np.float64(stop))
+                         np.float64(start), np.float64(stop),
+                         axs0, axs1, axs2)
