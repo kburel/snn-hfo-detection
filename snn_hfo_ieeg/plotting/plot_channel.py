@@ -133,6 +133,8 @@ def _plot_bandwidth(bandwidth_axes, hfo_run, start, stop):
                         'Fast Ripple Band', verticalalignment='center',
                         fontsize=12)
 
+    bandwidth_axes.set_xlim((start, stop))
+
 
 def _plot_spike_trains(spike_train_axes, hfo_run, start, stop):
     analytics = hfo_run.detector.last_run.analytics
@@ -164,6 +166,7 @@ def _plot_spike_trains(spike_train_axes, hfo_run, start, stop):
     labels[1] = 'FR DN'
     spike_train_axes.set_yticklabels(labels, rotation=0, fontsize=10,
                                      verticalalignment='center')
+    spike_train_axes.set_xlim((start, stop))
 
 
 def _plot_raster(raster_axes, hfo_run, start, stop):
@@ -186,33 +189,13 @@ def _plot_raster(raster_axes, hfo_run, start, stop):
         np.arange(0, neuron_count, int(neuron_count / 5.0)))
     raster_axes.set_ylabel('Neuron ID', fontsize=12, x=- 0.01)
 
-
-def _plot_hfo_sample(hfo_run: HfoDetectionRun, start, stop, bandwidth_axes, spike_train_axes, raster_axes):
-    analytics = hfo_run.detector.last_run.analytics
-
-    _plot_bandwidth(bandwidth_axes=bandwidth_axes,
-                    hfo_run=hfo_run,
-                    start=start,
-                    stop=stop)
-    _plot_spike_trains(spike_train_axes=spike_train_axes,
-                       hfo_run=hfo_run,
-                       start=start,
-                       stop=stop)
-    _plot_raster(raster_axes=raster_axes,
-                 hfo_run=hfo_run,
-                 start=start,
-                 stop=stop)
-    # =========================================================================
-    # Set limits
-    # =========================================================================
-    bandwidth_axes.set_xlim((start, stop))
-    spike_train_axes.set_xlim((start, stop))
+    raster_axes_labels = [np.round(tick, 2)
+                          for tick in np.arange(start, stop, (stop-start)/5)]
+    raster_axes.set_xticks(raster_axes_labels)
     raster_axes.set_xlim((start, stop))
 
-    # =========================================================================
-    # Extra figure settings
-    # =========================================================================
 
+def _hide_ticks_and_spines(bandwidth_axes, spike_train_axes, raster_axes):
     bandwidth_axes.tick_params(which='both', bottom=False, top=False,
                                left=False, labelbottom=False, labelleft=False)
     spike_train_axes.tick_params(which='both', bottom=False, top=False,
@@ -231,14 +214,24 @@ def _plot_hfo_sample(hfo_run: HfoDetectionRun, start, stop, bandwidth_axes, spik
     raster_axes.spines['top'].set_visible(False)
     raster_axes.spines['right'].set_visible(False)
 
-    # =========================================================================
-    # Managing x labels of time
-    # =========================================================================
-    spike_train_axes.tick_params(which='both', labelsize=10)
 
-    raster_axes_labels = [np.round(tick, 2)
-                          for tick in np.arange(start, stop, (stop-start)/5)]
-    raster_axes.set_xticks(raster_axes_labels)
+def _plot_hfo_sample(hfo_run: HfoDetectionRun, start, stop, bandwidth_axes, spike_train_axes, raster_axes):
+    _plot_bandwidth(bandwidth_axes=bandwidth_axes,
+                    hfo_run=hfo_run,
+                    start=start,
+                    stop=stop)
+    _plot_spike_trains(spike_train_axes=spike_train_axes,
+                       hfo_run=hfo_run,
+                       start=start,
+                       stop=stop)
+    _plot_raster(raster_axes=raster_axes,
+                 hfo_run=hfo_run,
+                 start=start,
+                 stop=stop)
+
+    _hide_ticks_and_spines(bandwidth_axes=bandwidth_axes,
+                           spike_train_axes=spike_train_axes,
+                           raster_axes=raster_axes)
 
 
 def plot_hfo_samples(hfo_detection_run: HfoDetectionRun):
