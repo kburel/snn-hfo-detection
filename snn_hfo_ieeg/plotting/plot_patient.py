@@ -1,11 +1,5 @@
-from typing import List, TypedDict
-from snn_hfo_ieeg.user_facing_data import HfoDetectionRun
+from snn_hfo_ieeg.plotting.persistence import Intervals, save_or_show_patient_plot
 from snn_hfo_ieeg.plotting.plot_mean_hfo_rate import plot_mean_hfo_rate as inner_plot_mean_hfo_rate
-
-
-class Intervals(TypedDict):
-    index: int
-    channel_data: List[HfoDetectionRun]
 
 
 class PatientDebugError(Exception):
@@ -22,3 +16,4 @@ def plot_internal_patient_debug(intervals: Intervals):
 
 def plot_mean_hfo_rate(intervals: Intervals):
     inner_plot_mean_hfo_rate(intervals)
+    save_or_show_patient_plot("mean_hfo_rate", intervals)
