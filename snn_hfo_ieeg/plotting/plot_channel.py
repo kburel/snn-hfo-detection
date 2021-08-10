@@ -30,8 +30,6 @@ def plot_raster(hfo_run: HfoDetectionRun):
 def _plot_hfo_sample(hfo_run: HfoDetectionRun, start, stop):
     analytics = hfo_run.detector.last_run.analytics
     signal_time = hfo_run.input.signal_time  # time from the detect_with_analytics
-    # signal from the detect_with_analytics
-    signal_amplitude = hfo_run.input.wideband_signal
     # pattern signal in the original data set, retirved from detect_with_analytics
     signal_teacher = analytics.detections
 
@@ -42,14 +40,14 @@ def _plot_hfo_sample(hfo_run: HfoDetectionRun, start, stop):
 
     #-------------------%Specify signal snippet to be plotted%--------------------------------------#
 
-    indices_time = np.where(np.logical_and(
-        signal_time > start, signal_time < stop))
+    indices_time = np.where((signal_time > start) & (signal_time < stop))
 
     # This is how I assume we can access the data:
-    signal_r = signal_amplitude.ripple[indices_time]
-    signal_fr = signal_amplitude.fr[indices_time]
+    signal_r = np.array(analytics.filtered_spikes.ripple.signal)[indices_time]
+    signal_fr = np.array(analytics.filtered_spikes.fast_ripple.signal)[
+        indices_time]
     signal_time = signal_time[indices_time]
-    signal_teacher = signal_teacher[indices_time]
+    signal_teacher = np.array(signal_teacher)[indices_time]
 
     # ==========================================================================
     # GRID PLOT
@@ -174,10 +172,10 @@ def _plot_hfo_sample(hfo_run: HfoDetectionRun, start, stop):
     # Previosuly I have the spikes stored in the dictionary, so I could loop over the keys, I am not sure something similar can be done now
     # In any case the Spikes are the ones returned by detect_with_analytics
 
-    filtered_spikes = [analytics.filtered_spikes.fast_ripple.down,
-                       analytics.filtered_spikes.fast_ripple.up,
-                       analytics.filtered_spikes.ripple.down,
-                       analytics.filtered_spikes.ripple.up]
+    filtered_spikes = [analytics.filtered_spikes.fast_ripple.spike_trains.down,
+                       analytics.filtered_spikes.fast_ripple.spike_trains.up,
+                       analytics.filtered_spikes.ripple.spike_trains.down,
+                       analytics.filtered_spikes.ripple.spike_trains.up]
     lineoffsets = 0.2
     for spikes in filtered_spikes:
         times_to_plot = [time for time, spike
@@ -204,7 +202,7 @@ def _plot_hfo_sample(hfo_run: HfoDetectionRun, start, stop):
     # Raster plot
     # =========================================================================
     axs2.plot(neuron_spike_monitor, analytics.neuron_ids,
-              '.k', markersize=10, color='#002699')
+              '.k', markersize=10)
     axs2.yaxis.set_label_coords(-0.1, 0.5)
     axs2.set_xlabel('Time (ms)', fontsize=12)
 
@@ -263,4 +261,5 @@ def _plot_hfo_sample(hfo_run: HfoDetectionRun, start, stop):
 def plot_hfo_samples(hfo_detection_run: HfoDetectionRun):
     periods = hfo_detection_run.detector.last_run.analytics.periods
     for start, stop in zip(periods.start, periods.stop):
-        _plot_hfo_sample(hfo_detection_run, start, stop)
+        _plot_hfo_sample(hfo_detection_run,
+                         np.float64(start), np.float64(stop))
