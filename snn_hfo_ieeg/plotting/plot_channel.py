@@ -203,8 +203,10 @@ def _plot_hfo_sample(hfo_run: HfoDetectionRun, start, stop):
     axs2.yaxis.set_label_coords(-0.1, 0.5)
     axs2.set_xlabel('Time (ms)', fontsize=12)
 
+    neuron_count = hfo_run.configuration.hidden_neuron_count
     # Managing y labels for spike plots
-    axs2.set_yticks(np.arange(0, 256, 50))
+    axs2.set_yticks(
+        np.arange(0, neuron_count, int(neuron_count / 5.0)))
     axs2.set_ylabel('Neuron ID', fontsize=12, x=- 0.01)
 
     # =========================================================================
