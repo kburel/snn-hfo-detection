@@ -32,23 +32,16 @@ def plot_raster(hfo_run: HfoDetectionRun):
 
 def _plot_hfo_sample(hfo_run: HfoDetectionRun, start, stop, bandwidth_axes, spike_train_axes, raster_axes):
     analytics = hfo_run.detector.last_run.analytics
-    signal_time = hfo_run.input.signal_time  # time from the detect_with_analytics
-    # pattern signal in the original data set, retirved from detect_with_analytics
-    signal_teacher = analytics.detections
 
-    #-------------------%Set limits according to the mark%--------------------#
-
-    #-------------------%Specify signal snippet to be plotted%--------------------------------------#
-
-    indices_time = np.where((signal_time > start) & (signal_time < stop))
+    indices_time = np.where((hfo_run.input.signal_time > start) & (
+        hfo_run.input.signal_time < stop))
 
     # This is how I assume we can access the data:
     signal_r = np.array(analytics.filtered_spikes.ripple.signal)[
         indices_time] if analytics.filtered_spikes.ripple is not None else None
     signal_fr = np.array(analytics.filtered_spikes.fast_ripple.signal)[
         indices_time] if analytics.filtered_spikes.fast_ripple is not None else None
-    signal_time = signal_time[indices_time]
-    signal_teacher = np.array(signal_teacher)[indices_time]
+    signal_time = hfo_run.input.signal_time[indices_time]
 
     # ==========================================================================
     # GRID PLOT
@@ -76,6 +69,7 @@ def _plot_hfo_sample(hfo_run: HfoDetectionRun, start, stop, bandwidth_axes, spik
         np.abs(np.min(signal_r*scale_ripple)) + ylim_up_fr
 
     #-------------------%Infdicate HFO marking with a line%------------------#
+    signal_teacher = np.array(analytics.detections)[indices_time]
     bandwidth_axes.fill_between(signal_time, 2 * np.min(signal_fr) * scale_fr,
                                 2.2 * np.min(signal_fr) * scale_fr, where=signal_teacher == 1,
                                 facecolor='#595959', alpha=0.7, label='teacher')
