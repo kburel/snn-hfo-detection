@@ -24,7 +24,7 @@ def plot_raster(hfo_run: HfoDetectionRun):
         return
     plt.plot(hfo_detection.analytics.spike_times*second/ms,
              hfo_run.analytics.neuron_ids, '.k')
-    plt.xlabel('Time (ms)')
+    plt.xlabel('Time (s)')
     plt.ylabel('Neuron index')
 
 
@@ -178,7 +178,14 @@ def _plot_hfo_sample(hfo_run: HfoDetectionRun, start, stop, axs0, axs1, axs2):
     # =========================================================================
     # Raster plot
     # =========================================================================
-    axs2.plot(analytics.spike_times, analytics.neuron_ids,
+    spikes_in_window = [(spike_index, spike_time) for spike_index, spike_time
+                        in enumerate(analytics.spike_times)
+                        if start < spike_time < stop]
+
+    spike_times = [spike_time for _spike_index, spike_time in spikes_in_window]
+    neuron_ids = [analytics.neuron_ids[spike_index]
+                  for spike_index, _spike_time in spikes_in_window]
+    axs2.plot(spike_times, neuron_ids,
               '.', markersize=1.5,  color='#002699')
     axs2.yaxis.set_label_coords(-0.1, 0.5)
     axs2.set_xlabel('Time (ms)', fontsize=12)
@@ -223,16 +230,9 @@ def _plot_hfo_sample(hfo_run: HfoDetectionRun, start, stop, axs0, axs1, axs2):
     # =========================================================================
     axs1.tick_params(which='both', labelsize=10)
 
-    divider = 30
-    axs2.set_xticks(np.arange(start, stop, divider*1e-3))
-    axs0.set_xticks(np.arange(start, stop, divider*1e-3))
-
-    labels = [item.get_text() for item in axs2.get_xticklabels()]
-    for i in range(1, axs2.get_xticks().size, 1):
-        labels[i] = '%0.2d' % ((start*1e3 + i*(divider)) - start*1e3)
-
-    axs2.set_xticklabels(labels, rotation=0, fontsize=10,
-                         verticalalignment='top')
+    axs2_labels = [np.round(tick, 2)
+                   for tick in np.arange(start, stop, (stop-start)/5)]
+    axs2.set_xticks(axs2_labels)
 
 
 def plot_hfo_samples(hfo_detection_run: HfoDetectionRun):
