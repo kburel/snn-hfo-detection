@@ -7,16 +7,22 @@ from snn_hfo_ieeg.user_facing_data import HfoDetectionRun
 from snn_hfo_ieeg.plotting.persistence import save_or_show_channel_plot, should_save_plot, should_show_plot
 
 
+def _get_start_to_stop_indices(times: np.array, start, stop):
+    start_index = np.searchsorted(times, start)
+    end_index = np.searchsorted(times, stop)
+    return start_index, end_index
+
+
 def _plot_bandwidth(bandwidth_axes, hfo_run, start, stop):
     analytics = hfo_run.detector.last_run.analytics
-    indices_time = np.where((hfo_run.input.signal_time > start) & (
-        hfo_run.input.signal_time < stop))
+    start_index, stop_index = _get_start_to_stop_indices(
+        hfo_run.input.signal_time, start, stop)
 
     signal_r = np.array(analytics.filtered_spikes.ripple.signal)[
-        indices_time] if analytics.filtered_spikes.ripple is not None else None
+        start_index: stop_index] if analytics.filtered_spikes.ripple is not None else None
     signal_fr = np.array(analytics.filtered_spikes.fast_ripple.signal)[
-        indices_time] if analytics.filtered_spikes.fast_ripple is not None else None
-    signal_time = hfo_run.input.signal_time[indices_time]
+        start_index: stop_index] if analytics.filtered_spikes.fast_ripple is not None else None
+    signal_time = hfo_run.input.signal_time[start_index: stop_index]
     # =========================================================================
     # Plot Wideband, Ripple band and fr band signal
     # =========================================================================
@@ -39,7 +45,7 @@ def _plot_bandwidth(bandwidth_axes, hfo_run, start, stop):
         np.abs(np.min(signal_r*scale_ripple)) + ylim_up_fr
 
     #-------------------%Infdicate HFO marking with a line%------------------#
-    signal_teacher = np.array(analytics.detections)[indices_time]
+    signal_teacher = np.array(analytics.detections)[start_index: stop_index]
     bandwidth_axes.fill_between(signal_time, 2 * np.min(signal_fr) * scale_fr,
                                 2.2 * np.min(signal_fr) * scale_fr, where=signal_teacher == 1,
                                 facecolor='#595959', alpha=0.7, label='teacher')
@@ -116,17 +122,15 @@ def _plot_bandwidth(bandwidth_axes, hfo_run, start, stop):
 def _plot_spike_trains(spike_train_axes, hfo_run, start, stop):
     analytics = hfo_run.detector.last_run.analytics
 
-    # Previosuly I have the spikes stored in the dictionary, so I could loop over the keys, I am not sure something similar can be done now
-    # In any case the Spikes are the ones returned by detect_with_analytics
-
     filtered_spikes = [analytics.filtered_spikes.fast_ripple.spike_trains.down,
                        analytics.filtered_spikes.fast_ripple.spike_trains.up,
                        analytics.filtered_spikes.ripple.spike_trains.down,
                        analytics.filtered_spikes.ripple.spike_trains.up]
     lineoffsets = 0.2
     for spikes in filtered_spikes:
-        spikes_in_current_window = [spike for spike in spikes
-                                    if start < spike < stop]
+        start_index, stop_index = _get_start_to_stop_indices(
+            spikes, start, stop)
+        spikes_in_current_window = spikes[start_index: stop_index]
 
     #-------------------%Specify spikes%--------------------------------------#
         spike_train_axes.eventplot(spikes_in_current_window, color='#000000', linelengths=0.15,
@@ -148,9 +152,10 @@ def _plot_spike_trains(spike_train_axes, hfo_run, start, stop):
 
 def _plot_raster(raster_axes, hfo_run, start, stop):
     analytics = hfo_run.detector.last_run.analytics
+    start_index, stop_index = _get_start_to_stop_indices(
+        analytics.spike_times, start, stop)
     spikes_in_window = [(spike_index, spike_time) for spike_index, spike_time
-                        in enumerate(analytics.spike_times)
-                        if start < spike_time < stop]
+                        in enumerate(analytics.spike_times[start_index: stop_index])]
 
     spike_times = [spike_time for _spike_index, spike_time in spikes_in_window]
     neuron_ids = [analytics.neuron_ids[spike_index]
