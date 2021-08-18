@@ -1,33 +1,12 @@
-from typing import NamedTuple, Optional
+from typing import NamedTuple
 import numpy as np
 from snn_hfo_ieeg.stages.loading.patient_data import ChannelData
 from snn_hfo_ieeg.functions.filter import butter_bandpass_filter
-from snn_hfo_ieeg.functions.signal_to_spike import SpikeTrains, find_thresholds, signal_to_spike_refractory
-from snn_hfo_ieeg.user_facing_data import MeasurementMode
+from snn_hfo_ieeg.functions.signal_to_spike import find_thresholds, signal_to_spike_refractory
+from snn_hfo_ieeg.user_facing_data import MeasurementMode, Bandwidth, FilteredSpikes
 
 
 SAMPLING_FREQUENCY = 2000
-
-
-class Bandwidth(NamedTuple):
-    signal: np.array
-    spike_trains: SpikeTrains
-
-
-class FilteredSpikes(NamedTuple):
-    '''
-    Spikes in the filtered bandwidths. If some of these are None, it means
-    that they are not suited for analysis in the specified MeasurementMode
-
-    Parameters
-    -------
-    ripple : Optional[Bandwidth]
-        Spikes in the ripple bandwidth (80-250 Hz).
-    fast_ripple: Optional[Bandwidth]
-        Spikes in the fast ripple bandwidth (250-500 Hz).
-    '''
-    ripple: Optional[Bandwidth]
-    fast_ripple: Optional[Bandwidth]
 
 
 class _FilterParameters(NamedTuple):
