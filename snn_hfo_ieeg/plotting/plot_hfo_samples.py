@@ -18,9 +18,9 @@ def _plot_bandwidth(bandwidth_axes, hfo_run, start, stop):
         hfo_run.input.signal_time, start, stop)
 
     signal_r = np.array(analytics.filtered_spikes.ripple.signal[
-        start_index: stop_index]) if analytics.filtered_spikes.ripple is not None else None
+        start_index: stop_index]) if analytics.filtered_spikes.ripple is not None else np.zeros_like(hfo_run.input.signal_time)
     signal_fr = np.array(analytics.filtered_spikes.fast_ripple.signal[
-        start_index: stop_index]) if analytics.filtered_spikes.fast_ripple is not None else None
+        start_index: stop_index]) if analytics.filtered_spikes.fast_ripple is not None else np.zeros_like(hfo_run.input.signal_time)
     signal_time = hfo_run.input.signal_time[start_index: stop_index]
     # =========================================================================
     # Plot Wideband, Ripple band and fr band signal
@@ -234,6 +234,9 @@ def plot_hfo_samples(hfo_detection_run: HfoDetectionRun):
     slider_axes = fig.add_subplot(8, 1, 8)
 
     period_windows = list(zip(periods.start, periods.stop))
+    if len(period_windows) == 0:
+        return
+
     slider = Slider(slider_axes,
                     'Period Index\n(Interactive)',
                     1,
