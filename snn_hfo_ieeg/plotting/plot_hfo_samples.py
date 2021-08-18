@@ -35,9 +35,7 @@ def _plot_bandwidth(bandwidth_axes, hfo_run, start, stop):
     signal_fr = np.array(analytics.filtered_spikes.fast_ripple.signal[
         start_index: stop_index]) if should_draw_fast_ripple else np.zeros(stop_index - start_index)
     signal_time = hfo_run.input.signal_time[start_index: stop_index]
-    # =========================================================================
-    # Plot Wideband, Ripple band and fr band signal
-    # =========================================================================
+
     scale_fr = 6
     scale_ripple = 3
     shift_ripple = 1
@@ -55,14 +53,12 @@ def _plot_bandwidth(bandwidth_axes, hfo_run, start, stop):
     ylim_up_r = np.max(signal_r) * scale_ripple + shift_ripple * \
         np.abs(np.min(signal_r*scale_ripple)) + ylim_up_fr
 
-    #-------------------%Infdicate HFO marking with a line%------------------#
     signal_teacher = np.array(
         analytics.detections[start_index: stop_index])
     bandwidth_axes.fill_between(signal_time, 2 * np.min(signal_fr) * scale_fr,
                                 2.2 * np.min(signal_fr) * scale_fr, where=signal_teacher == 1,
                                 facecolor='#595959', alpha=0.7, label='teacher')
 
-    #-------------------%Set y limits of plot with signals%------------------#
     shift_y_lim_max = 1
     y_lim_max_signal = shift_y_lim_max * ylim_up_r
     y_lim_min_signal = 2.4 * np.min(signal_fr) * scale_fr
@@ -73,13 +69,9 @@ def _plot_bandwidth(bandwidth_axes, hfo_run, start, stop):
 
 
 def _add_labels(bandwidth_axes, start, stop, hfo_run):
-    # =========================================================================
-    # Add amplitude scales and labels
-    # =========================================================================
     x_line = 0.003
     x_text_uv = 0.01
     x_label = 0.005
-    #----------------------------%ripple band signal%------------------------#
     reference_line_microvolts_ripple = 20
     r_base_y = 100
     y_offset = 30
@@ -110,7 +102,6 @@ def _add_labels(bandwidth_axes, start, stop, hfo_run):
                             fontsize=12)
 
     if should_draw_fast_ripple:
-        #-------------------%Fast ripple band signal%----------------------------#
         reference_line_microvolts_fr = 10
         fr_base_y = 0
         bandwidth_axes.annotate("",
@@ -160,12 +151,10 @@ def _plot_spike_trains(spike_train_axes, hfo_run, start, stop):
             spikes, start, stop)
         spikes_in_current_window = spikes[start_index: stop_index]
 
-    #-------------------%Specify spikes%--------------------------------------#
         spike_train_axes.eventplot(spikes_in_current_window, color='#000000', linelengths=0.15,
                                    lineoffsets=lineoffsets, linewidth=1.5)
         lineoffsets += 0.2
 
-    # Managing y labels for spike plots
     spike_train_axes.set_yticks(np.arange(0, 1, 0.2))
 
     labels = [item.get_text() for item in spike_train_axes.get_yticklabels()]
@@ -194,7 +183,7 @@ def _plot_raster(raster_axes, hfo_run, start, stop):
     raster_axes.set_xlabel('Time (s)', fontsize=12)
 
     neuron_count = hfo_run.configuration.hidden_neuron_count
-    # Managing y labels for spike plots
+
     raster_axes.set_yticks(
         np.arange(0, neuron_count, int(neuron_count / 5.0)))
     raster_axes.set_ylabel('Neuron ID', fontsize=12, x=- 0.01)
