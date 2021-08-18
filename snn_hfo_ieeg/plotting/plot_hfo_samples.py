@@ -64,28 +64,23 @@ def _plot_bandwidth(bandwidth_axes, hfo_run, start, stop):
     x_label = 0.005
     #----------------------------%ripple band signal%------------------------#
     reference_line_microvolts_ripple = 20
+    r_base_y = 100
+    y_offset = 30
     bandwidth_axes.annotate("",
                             xy=(start - x_line,
-                                signal_r[0] * scale_ripple +
-                                shift_ripple * np.abs(np.min(signal_r*scale_ripple)) + ylim_up_fr -
-                                reference_line_microvolts_ripple*scale_ripple/2),
+                                r_base_y - y_offset),
                             xytext=(start - x_line,
-                                    signal_r[0] * scale_ripple +
-                                    shift_ripple * np.abs(np.min(signal_r*scale_ripple)) + ylim_up_fr +
-                                    reference_line_microvolts_ripple*scale_ripple/2),
+                                    r_base_y + y_offset),
                             arrowprops=dict(arrowstyle='-'),
                             annotation_clip=False)
 
     bandwidth_axes.text(start - x_text_uv,
-                        (signal_r[0] * scale_ripple +
-                            shift_ripple * np.abs(np.min(signal_r*scale_ripple)) + ylim_up_fr),
+                        (r_base_y),
                         rf'{reference_line_microvolts_ripple} $\mu$V', verticalalignment='center',
                         rotation=0,
                         fontsize=10)
 
-    ripple_label_position = 1.2 * \
-        (np.mean(np.abs(signal_r[0:10])) * scale_ripple + shift_ripple *
-            np.abs(np.min(signal_r*scale_ripple)) + ylim_up_fr)
+    ripple_label_position = 100
 
     bandwidth_axes.text(start + x_label,
                         ripple_label_position,
@@ -94,22 +89,22 @@ def _plot_bandwidth(bandwidth_axes, hfo_run, start, stop):
 
     #-------------------%Fast ripple band signal%----------------------------#
     reference_line_microvolts_fr = 10
+    fr_base_y = 0
     bandwidth_axes.annotate("",
                             xy=(start - x_line,
-                                signal_fr[0] * scale_fr - reference_line_microvolts_fr*scale_fr/2),
+                                fr_base_y - y_offset),
                             xytext=(start - x_line,
-                                    signal_fr[0] * scale_fr + reference_line_microvolts_fr*scale_fr/2),
+                                    fr_base_y + y_offset),
                             arrowprops=dict(arrowstyle='-'),
                             annotation_clip=False)
 
     bandwidth_axes.text(start - x_text_uv,
-                        (signal_fr[0] * scale_fr),
+                        (fr_base_y),
                         fr'{reference_line_microvolts_fr} $\mu$V', verticalalignment='center',
                         rotation=0,
                         fontsize=10)
 
-    fr_label_position = 10 * (np.mean(np.abs(signal_fr[0:5])) * scale_fr)
-
+    fr_label_position = 30
     bandwidth_axes.text(start + x_label,
                         fr_label_position,
                         'Fast Ripple Band', verticalalignment='center',
