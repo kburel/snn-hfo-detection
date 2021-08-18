@@ -56,6 +56,10 @@ def _plot_bandwidth(bandwidth_axes, hfo_run, start, stop):
     bandwidth_axes.set_ylim((y_lim_min_signal,
                             y_lim_max_signal))
 
+    _add_labels(bandwidth_axes, start, stop)
+
+
+def _add_labels(bandwidth_axes, start, stop):
     # =========================================================================
     # Add amplitude scales and labels
     # =========================================================================
