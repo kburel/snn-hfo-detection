@@ -171,12 +171,8 @@ def _plot_raster(raster_axes, hfo_run, start, stop):
     analytics = hfo_run.detector.last_run.analytics
     start_index, stop_index = _get_start_to_stop_indices(
         analytics.spike_times, start, stop)
-    spikes_in_window = [(spike_index, spike_time) for spike_index, spike_time
-                        in enumerate(analytics.spike_times[start_index: stop_index])]
-
-    spike_times = [spike_time for _spike_index, spike_time in spikes_in_window]
-    neuron_ids = [analytics.neuron_ids[spike_index]
-                  for spike_index, _spike_time in spikes_in_window]
+    spike_times = analytics.spike_times[start_index:stop_index]
+    neuron_ids = analytics.neuron_ids[start_index:stop_index]
     raster_axes.plot(spike_times, neuron_ids,
                      '.', markersize=1.5,  color='#002699')
     raster_axes.yaxis.set_label_coords(-0.1, 0.5)
