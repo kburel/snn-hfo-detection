@@ -1,4 +1,3 @@
-
 import matplotlib.pyplot as plt
 from matplotlib import gridspec
 from matplotlib.widgets import Slider
@@ -18,16 +17,15 @@ def _plot_bandwidth(bandwidth_axes, hfo_run, start, stop):
     start_index, stop_index = _get_start_to_stop_indices(
         hfo_run.input.signal_time, start, stop)
 
-    signal_r = np.array(analytics.filtered_spikes.ripple.signal)[
-        start_index: stop_index] if analytics.filtered_spikes.ripple is not None else None
-    signal_fr = np.array(analytics.filtered_spikes.fast_ripple.signal)[
-        start_index: stop_index] if analytics.filtered_spikes.fast_ripple is not None else None
+    signal_r = np.array(analytics.filtered_spikes.ripple.signal[
+        start_index: stop_index]) if analytics.filtered_spikes.ripple is not None else None
+    signal_fr = np.array(analytics.filtered_spikes.fast_ripple.signal[
+        start_index: stop_index]) if analytics.filtered_spikes.fast_ripple is not None else None
     signal_time = hfo_run.input.signal_time[start_index: stop_index]
     # =========================================================================
     # Plot Wideband, Ripple band and fr band signal
     # =========================================================================
     scale_fr = 6
-
     scale_ripple = 3
     shift_ripple = 1
 
@@ -45,7 +43,8 @@ def _plot_bandwidth(bandwidth_axes, hfo_run, start, stop):
         np.abs(np.min(signal_r*scale_ripple)) + ylim_up_fr
 
     #-------------------%Infdicate HFO marking with a line%------------------#
-    signal_teacher = np.array(analytics.detections)[start_index: stop_index]
+    signal_teacher = np.array(
+        analytics.detections[start_index: stop_index])
     bandwidth_axes.fill_between(signal_time, 2 * np.min(signal_fr) * scale_fr,
                                 2.2 * np.min(signal_fr) * scale_fr, where=signal_teacher == 1,
                                 facecolor='#595959', alpha=0.7, label='teacher')
@@ -55,7 +54,7 @@ def _plot_bandwidth(bandwidth_axes, hfo_run, start, stop):
     y_lim_max_signal = shift_y_lim_max * ylim_up_r
     y_lim_min_signal = 2.4 * np.min(signal_fr) * scale_fr
     bandwidth_axes.set_ylim((y_lim_min_signal,
-                             y_lim_max_signal))
+                            y_lim_max_signal))
 
     # =========================================================================
     # Add amplitude scales and labels
@@ -79,14 +78,14 @@ def _plot_bandwidth(bandwidth_axes, hfo_run, start, stop):
 
     bandwidth_axes.text(start - x_text_uv,
                         (signal_r[0] * scale_ripple +
-                         shift_ripple * np.abs(np.min(signal_r*scale_ripple)) + ylim_up_fr),
+                            shift_ripple * np.abs(np.min(signal_r*scale_ripple)) + ylim_up_fr),
                         rf'{reference_line_microvolts_ripple} $\mu$V', verticalalignment='center',
                         rotation=0,
                         fontsize=10)
 
     ripple_label_position = 1.2 * \
         (np.mean(np.abs(signal_r[0:10])) * scale_ripple + shift_ripple *
-         np.abs(np.min(signal_r*scale_ripple)) + ylim_up_fr)
+            np.abs(np.min(signal_r*scale_ripple)) + ylim_up_fr)
 
     bandwidth_axes.text(start + x_label,
                         ripple_label_position,
