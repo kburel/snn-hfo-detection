@@ -12,13 +12,23 @@ def _get_start_to_stop_indices(times: np.array, start, stop):
     return start_index, end_index
 
 
+def _should_draw_ripple(hfo_run):
+    analytics = hfo_run.detector.last_run.analytics
+    return analytics.filtered_spikes.ripple is not None and analytics.filtered_spikes.ripple != 'None'
+
+
+def _should_draw_fast_ripple(hfo_run):
+    analytics = hfo_run.detector.last_run.analytics
+    return analytics.filtered_spikes.fast_ripple is not None and analytics.filtered_spikes.fast_ripple != 'None'
+
+
 def _plot_bandwidth(bandwidth_axes, hfo_run, start, stop):
     analytics = hfo_run.detector.last_run.analytics
     start_index, stop_index = _get_start_to_stop_indices(
         hfo_run.input.signal_time, start, stop)
 
-    should_draw_ripple = analytics.filtered_spikes.ripple.signal is not None
-    should_draw_fast_ripple = analytics.filtered_spikes.fast_ripple.signal is not None
+    should_draw_ripple = _should_draw_ripple(hfo_run)
+    should_draw_fast_ripple = _should_draw_fast_ripple(hfo_run)
 
     signal_r = np.array(analytics.filtered_spikes.ripple.signal[
         start_index: stop_index]) if should_draw_ripple else np.zeros(stop_index - start_index)
@@ -36,7 +46,7 @@ def _plot_bandwidth(bandwidth_axes, hfo_run, start, stop):
         bandwidth_axes.plot(signal_time, signal_fr * scale_fr,
                             color='#8e5766', linewidth=1)
 
-    ylim_up_fr = max(np.max(signal_r) * scale_fr, 30)
+    ylim_up_fr = max(np.max(signal_r), np.max(signal_fr)) * scale_fr
 
     if should_draw_ripple:
         bandwidth_axes.plot(signal_time, signal_r * scale_ripple +
@@ -59,11 +69,10 @@ def _plot_bandwidth(bandwidth_axes, hfo_run, start, stop):
     bandwidth_axes.set_ylim((y_lim_min_signal,
                             y_lim_max_signal))
 
-    _add_labels(bandwidth_axes, start, stop,
-                should_draw_ripple, should_draw_fast_ripple)
+    _add_labels(bandwidth_axes, start, stop, hfo_run)
 
 
-def _add_labels(bandwidth_axes, start, stop, should_draw_ripple, should_draw_fast_ripple):
+def _add_labels(bandwidth_axes, start, stop, hfo_run):
     # =========================================================================
     # Add amplitude scales and labels
     # =========================================================================
@@ -74,6 +83,10 @@ def _add_labels(bandwidth_axes, start, stop, should_draw_ripple, should_draw_fas
     reference_line_microvolts_ripple = 20
     r_base_y = 100
     y_offset = 30
+
+    should_draw_ripple = _should_draw_ripple(hfo_run)
+    should_draw_fast_ripple = _should_draw_fast_ripple(hfo_run)
+
     if should_draw_ripple:
         bandwidth_axes.annotate("",
                                 xy=(start - x_line,
@@ -125,11 +138,22 @@ def _add_labels(bandwidth_axes, start, stop, should_draw_ripple, should_draw_fas
 
 def _plot_spike_trains(spike_train_axes, hfo_run, start, stop):
     analytics = hfo_run.detector.last_run.analytics
+    should_draw_ripple = _should_draw_ripple(hfo_run)
+    should_draw_fast_ripple = _should_draw_fast_ripple(hfo_run)
 
-    filtered_spikes = [analytics.filtered_spikes.fast_ripple.spike_trains.down,
-                       analytics.filtered_spikes.fast_ripple.spike_trains.up,
-                       analytics.filtered_spikes.ripple.spike_trains.down,
-                       analytics.filtered_spikes.ripple.spike_trains.up]
+    filtered_spikes = []
+    if should_draw_ripple:
+        filtered_spikes.append(
+            analytics.filtered_spikes.ripple.spike_trains.up)
+        filtered_spikes.append(
+            analytics.filtered_spikes.ripple.spike_trains.down)
+
+    if should_draw_fast_ripple:
+        filtered_spikes.append(
+            analytics.filtered_spikes.fast_ripple.spike_trains.up)
+        filtered_spikes.append(
+            analytics.filtered_spikes.fast_ripple.spike_trains.down)
+
     lineoffsets = 0.2
     for spikes in filtered_spikes:
         start_index, stop_index = _get_start_to_stop_indices(
