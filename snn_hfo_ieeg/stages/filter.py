@@ -1,28 +1,12 @@
-from typing import NamedTuple, Optional
+from typing import NamedTuple
 import numpy as np
 from snn_hfo_ieeg.stages.loading.patient_data import ChannelData
 from snn_hfo_ieeg.functions.filter import butter_bandpass_filter
-from snn_hfo_ieeg.functions.signal_to_spike import SpikeTrains, find_thresholds, signal_to_spike_refractory
-from snn_hfo_ieeg.stages.shared_config import MeasurementMode
+from snn_hfo_ieeg.functions.signal_to_spike import find_thresholds, signal_to_spike_refractory
+from snn_hfo_ieeg.user_facing_data import MeasurementMode, Bandwidth, FilteredSpikes
 
 
 SAMPLING_FREQUENCY = 2000
-
-
-class FilteredSpikes(NamedTuple):
-    '''
-    Spikes in the filtered bandwidths. If some of these are None, it means
-    that they are not suited for analysis in the specified MeasurementMode
-
-    Parameters
-    -------
-    ripple : Optional[SpikeTrains]
-        Spikes in the ripple bandwidth (80-250 Hz).
-    fast_ripple: Optional[SpikeTrains]
-        Spikes in the fast ripple bandwidth (250-500 Hz).
-    '''
-    ripple: Optional[SpikeTrains]
-    fast_ripple: Optional[SpikeTrains]
 
 
 class _FilterParameters(NamedTuple):
@@ -57,7 +41,7 @@ def _get_signal_times_in_calibration_time(signal, filter_parameters):
     return signals, times
 
 
-def _filter_signal_to_spike(filter_parameters):
+def _filter_signal_to_spike(filter_parameters) -> Bandwidth:
     signal = butter_bandpass_filter(data=filter_parameters.channel_data.wideband_signal,
                                     lowcut=filter_parameters.lowcut,
                                     highcut=filter_parameters.highcut,
@@ -71,14 +55,18 @@ def _filter_signal_to_spike(filter_parameters):
                                          window_size=0.5,
                                          sample_ratio=1/6,
                                          scaling_factor=filter_parameters.scaling_factor))
-    return signal_to_spike_refractory(interpolation_factor=35000,
-                                      times=filter_parameters.channel_data.signal_time,
-                                      amplitude=signal,
-                                      thr_up=thresholds, thr_dn=thresholds,
-                                      refractory_period=3e-4)
+    spike_trains = signal_to_spike_refractory(interpolation_factor=35000,
+                                              times=filter_parameters.channel_data.signal_time,
+                                              amplitude=signal,
+                                              thr_up=thresholds, thr_dn=thresholds,
+                                              refractory_period=3e-4)
+    return Bandwidth(
+        signal=signal,
+        spike_trains=spike_trains
+    )
 
 
-def _filter_spikes_according_to_measurement_mode(measurement_mode, ripple, fast_ripple):
+def _filter_spikes_according_to_measurement_mode(measurement_mode, ripple, fast_ripple) -> FilteredSpikes:
     if measurement_mode is MeasurementMode.IEEG:
         return FilteredSpikes(ripple=ripple, fast_ripple=fast_ripple)
     if measurement_mode is MeasurementMode.ECOG:

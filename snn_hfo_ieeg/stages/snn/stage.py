@@ -12,7 +12,7 @@ from snn_hfo_ieeg.stages.snn.tau_generation import generate_concatenated_taus
 from snn_hfo_ieeg.stages.snn.weight_generation import generate_weights
 from snn_hfo_ieeg.stages.snn.model_paths import ModelPaths, load_model_paths
 from snn_hfo_ieeg.stages.snn.concatenation import NeuronCount
-from snn_hfo_ieeg.stages.shared_config import MeasurementMode
+from snn_hfo_ieeg.user_facing_data import MeasurementMode
 
 
 def _append_spikes(spikes, spike_train):
@@ -23,7 +23,7 @@ def _append_spikes(spikes, spike_train):
 
 def _concatenate_filtered_spikes(filtered_spikes):
     spike_trains = [
-        spike_trains for spike_trains in filtered_spikes if spike_trains is not None]
+        bandwidth.spike_trains for bandwidth in filtered_spikes if bandwidth is not None]
     spikes = reduce(_append_spikes, spike_trains, [])
     return concatenate_spikes(spikes)
 

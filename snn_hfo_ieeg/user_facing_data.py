@@ -1,4 +1,5 @@
-from typing import NamedTuple, Optional
+from typing import NamedTuple, Optional, Callable, List
+from enum import Enum, auto
 import numpy as np
 
 
@@ -8,6 +9,11 @@ class SpikeTrains(NamedTuple):
     '''
     up: np.array
     down: np.array
+
+
+class Bandwidth(NamedTuple):
+    signal: np.array
+    spike_trains: SpikeTrains
 
 
 class FilteredSpikes(NamedTuple):
@@ -22,8 +28,8 @@ class FilteredSpikes(NamedTuple):
     fast_ripple: Optional[SpikeTrains]
         Spikes in the fast ripple bandwidth (250-500 Hz).
     '''
-    ripple: Optional[SpikeTrains]
-    fast_ripple: Optional[SpikeTrains]
+    ripple: Optional[Bandwidth]
+    fast_ripple: Optional[Bandwidth]
 
 
 class HfoDetection(NamedTuple):
@@ -122,6 +128,8 @@ class Metadata(NamedTuple):
 
 
 class HfoDetector():
+    last_run: Optional[HfoDetectionWithAnalytics]
+
     def __init__(self, hfo_detection_with_analytics_cb):
         self._hfo_detection_with_analytics_cb = hfo_detection_with_analytics_cb
         self.last_run = None
@@ -136,7 +144,41 @@ class HfoDetector():
         return self.last_run
 
 
+class MeasurementMode(Enum):
+    IEEG = auto()
+    ECOG = auto()
+    SCALP = auto()
+
+
+class PlottingFunction(NamedTuple):
+    name: str
+    function: Callable
+
+
+class PlottingFunctions(NamedTuple):
+    channel: List[PlottingFunction]
+    patient: List[PlottingFunction]
+
+class PlotMode(Enum):
+    SAVE = auto()
+    SHOW = auto()
+    BOTH = auto()
+
+class Configuration(NamedTuple):
+    data_path: str
+    measurement_mode: MeasurementMode
+    hidden_neuron_count: int
+    calibration_time: float
+    plots: PlottingFunctions
+    saving_path: Optional[str]
+    disable_saving: bool
+    loading_path: Optional[str]
+    plot_path: str
+    plot_mode: PlotMode
+
+
 class HfoDetectionRun(NamedTuple):
     metadata: Metadata
     detector: HfoDetector
     input: ChannelData
+    configuration: Configuration
