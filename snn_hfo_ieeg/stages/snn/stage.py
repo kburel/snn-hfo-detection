@@ -91,14 +91,14 @@ def _create_input_to_hidden_synapses(input_layer, hidden_layer, model_paths, neu
     return synapses
 
 
-def _create_hidden_to_output_synapses(hidden_layer, output_layer, model_paths):
+def _create_hidden_to_output_synapses(hidden_layer, output_layer, model_paths, hidden_neuron_count):
     equation_builder = SynapseEquationBuilder.import_eq(model_paths.synapse)
     synapses = Connections(
         hidden_layer, output_layer, equation_builder=equation_builder, name='hidden_to_output_synapses', verbose=False, dt=100*us)
     synapses.connect()
 
-    synapses.weight = np.array([1])
-    taus = np.array([1])
+    synapses.weight = np.repeat(1.0, hidden_neuron_count.hidden)
+    taus = np.repeat(1.0, hidden_neuron_count.hidden)
     synapses.I_tau = get_current(taus*1e-3) * amp
     return synapses
 
@@ -118,7 +118,7 @@ def _create_cache(configuration):
         model_paths, neuron_counts.hidden)
     output_layer = _create_output_layer(model_paths)
     hidden_to_output_synapses = _create_hidden_to_output_synapses(
-        hidden_layer, output_layer, model_paths)
+        hidden_layer, output_layer, model_paths, neuron_counts)
     spike_monitors = SpikeMonitors(
         hidden=SpikeMonitor(hidden_layer),
         output=SpikeMonitor(output_layer))
