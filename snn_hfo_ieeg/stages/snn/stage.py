@@ -62,18 +62,18 @@ def _create_input_layer(filtered_spikes, input_count):
 
 def _create_hidden_layer(model_paths, hidden_neuron_count):
     equation_builder = NeuronEquationBuilder.import_eq(
-        model_paths.neuron, num_inputs=1)
+        model_paths.neuron)
     hidden_layer = Neurons(
         hidden_neuron_count, equation_builder=equation_builder, name='hidden_layer', dt=100*us)
     return hidden_layer
 
 
-def _create_output_layer(model_paths, hidden_neuron_count):
-    OUTPUT_NEURON_COUNT = 1
+def _create_output_layer(model_paths):
+    output_neuron_count = 1
     equation_builder = NeuronEquationBuilder.import_eq(
-        model_paths.neuron, num_inputs=hidden_neuron_count)
+        model_paths.neuron)
     output_layer = Neurons(
-        OUTPUT_NEURON_COUNT, equation_builder=equation_builder, name='output_layer', dt=100*us)
+        output_neuron_count, equation_builder=equation_builder, name='output_layer', dt=100*us)
     return output_layer
 
 
@@ -116,8 +116,7 @@ def _create_cache(configuration):
     neuron_counts = _read_neuron_counts(configuration)
     hidden_layer = _create_hidden_layer(
         model_paths, neuron_counts.hidden)
-    output_layer = _create_output_layer(
-        model_paths, neuron_counts.hidden)
+    output_layer = _create_output_layer(model_paths)
     hidden_to_output_synapses = _create_hidden_to_output_synapses(
         hidden_layer, output_layer, model_paths)
     spike_monitors = SpikeMonitors(
