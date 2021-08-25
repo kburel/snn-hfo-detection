@@ -102,7 +102,7 @@ class Cache(NamedTuple):
     model_paths: ModelPaths
     neuron_counts: NeuronCount
     hidden_layer: Neurons
-    spike_monitor_hidden: SpikeMonitor
+    spike_monitor_output: SpikeMonitor
     network: Network
 
 
@@ -115,9 +115,9 @@ def _create_cache(configuration):
         model_paths, neuron_counts.hidden)
     hidden_to_output_synapses = _create_hidden_to_output_synapses(
         hidden_layer, output_layer, model_paths)
-    spike_monitor_hidden = SpikeMonitor(hidden_layer)
+    spike_monitor_output = SpikeMonitor(output_layer)
     network = Network(
-        hidden_layer, spike_monitor_hidden, output_layer, hidden_to_output_synapses)
+        hidden_layer, spike_monitor_output, output_layer, hidden_to_output_synapses)
 
     network.store()
 
@@ -125,7 +125,7 @@ def _create_cache(configuration):
         model_paths=model_paths,
         neuron_counts=neuron_counts,
         hidden_layer=hidden_layer,
-        spike_monitor_hidden=spike_monitor_hidden,
+        spike_monitor_output=spike_monitor_output,
         network=network
     )
 
@@ -153,4 +153,4 @@ def snn_stage(filtered_spikes, duration, configuration, cache: Cache):
     cache.network.remove(input_layer)
     cache.network.remove(input_to_hidden_synapses)
 
-    return cache.spike_monitor_hidden
+    return cache.spike_monitor_output
