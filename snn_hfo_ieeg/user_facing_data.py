@@ -159,10 +159,12 @@ class PlottingFunctions(NamedTuple):
     channel: List[PlottingFunction]
     patient: List[PlottingFunction]
 
+
 class PlotMode(Enum):
     SAVE = auto()
     SHOW = auto()
     BOTH = auto()
+
 
 class Configuration(NamedTuple):
     data_path: str

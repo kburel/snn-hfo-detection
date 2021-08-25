@@ -3,8 +3,8 @@ from typing import NamedTuple
 import warnings
 from brian2 import Network, SpikeGeneratorGroup, SpikeMonitor
 from brian2.units import us, amp, second
-from teili.core.groups import Neurons, Connections
 import numpy as np
+from teili.core.groups import Neurons, Connections
 from teili.models.builder.neuron_equation_builder import NeuronEquationBuilder
 from teili.models.builder.synapse_equation_builder import SynapseEquationBuilder
 from snn_hfo_ieeg.functions.signal_to_spike import concatenate_spikes
@@ -14,6 +14,11 @@ from snn_hfo_ieeg.stages.snn.weight_generation import generate_weights
 from snn_hfo_ieeg.stages.snn.model_paths import ModelPaths, load_model_paths
 from snn_hfo_ieeg.stages.snn.concatenation import NeuronCount
 from snn_hfo_ieeg.user_facing_data import MeasurementMode
+
+
+class SpikeMonitors(NamedTuple):
+    hidden: SpikeMonitor
+    output: SpikeMonitor
 
 
 def _append_spikes(spikes, spike_train):
@@ -102,7 +107,7 @@ class Cache(NamedTuple):
     model_paths: ModelPaths
     neuron_counts: NeuronCount
     hidden_layer: Neurons
-    spike_monitor_output: SpikeMonitor
+    spike_monitors: SpikeMonitors
     network: Network
 
 
@@ -115,9 +120,11 @@ def _create_cache(configuration):
         model_paths, neuron_counts.hidden)
     hidden_to_output_synapses = _create_hidden_to_output_synapses(
         hidden_layer, output_layer, model_paths)
-    spike_monitor_output = SpikeMonitor(output_layer)
+    spike_monitors = SpikeMonitors(
+        hidden=SpikeMonitor(hidden_layer),
+        output=SpikeMonitor(output_layer))
     network = Network(
-        hidden_layer, spike_monitor_output, output_layer, hidden_to_output_synapses)
+        hidden_layer, spike_monitors.hidden, spike_monitors.output, output_layer, hidden_to_output_synapses)
 
     network.store()
 
@@ -125,12 +132,12 @@ def _create_cache(configuration):
         model_paths=model_paths,
         neuron_counts=neuron_counts,
         hidden_layer=hidden_layer,
-        spike_monitor_output=spike_monitor_output,
+        spike_monitors=spike_monitors,
         network=network
     )
 
 
-def snn_stage(filtered_spikes, duration, configuration, cache: Cache):
+def snn_stage(filtered_spikes, duration, configuration, cache: Cache) -> SpikeMonitors:
     warnings.simplefilter("ignore", DeprecationWarning)
     if cache is None:
         cache = _create_cache(configuration)
@@ -153,4 +160,4 @@ def snn_stage(filtered_spikes, duration, configuration, cache: Cache):
     cache.network.remove(input_layer)
     cache.network.remove(input_to_hidden_synapses)
 
-    return cache.spike_monitor_output
+    return cache.spike_monitors
