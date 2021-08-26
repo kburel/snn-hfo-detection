@@ -28,7 +28,7 @@ def _convert_inner_hfo_detection_to_user_facing_one(hfo_detection, filtered_spik
 
 def run_all_hfo_detection_stages(metadata, channel_data, duration, configuration, snn_cache):
     filtered_spikes = filter_stage(channel_data, configuration)
-    spike_monitor_hidden = snn_stage(
+    spike_monitors = snn_stage(
         filtered_spikes=filtered_spikes,
         duration=duration,
         configuration=configuration,
@@ -36,12 +36,12 @@ def run_all_hfo_detection_stages(metadata, channel_data, duration, configuration
 
     hfo_detection = detect_hfo(duration=duration,
                                spike_times=(
-                                   spike_monitor_hidden.t/second),
+                                   spike_monitors.output.t/second),
                                signal_times=channel_data.signal_time,
                                step_size=HFO_DETECTION_STEP_SIZE,
                                window_size=HFO_DETECTION_WINDOW_SIZE)
     user_facing_hfo_detection = _convert_inner_hfo_detection_to_user_facing_one(
-        hfo_detection, filtered_spikes, spike_monitor_hidden)
+        hfo_detection, filtered_spikes, spike_monitors.hidden)
 
     if not configuration.disable_saving:
         save_hfo_detection(user_facing_hfo_detection=user_facing_hfo_detection,
