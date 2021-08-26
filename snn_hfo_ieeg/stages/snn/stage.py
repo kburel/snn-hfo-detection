@@ -163,31 +163,33 @@ def _create_cache(configuration):
     hidden_to_output_synapses = _create_hidden_to_output_synapses(
         hidden_layer, output_layer, model_paths, neuron_counts)
 
-    interneuron = _create_non_input_layer(model_paths, 1, 'interneuron')
-    inhibitor_generator = _create_inhibitor_generator()
-    inhibitor_layer = _create_non_input_layer(model_paths, 1, 'inhibitor')
-    interneuron_to_inhibitor_synapses = _create_interneuron_to_inhibitor_synapses(
-        interneuron, inhibitor_layer, model_paths)
-    inhibitor_generator_to_inhibitor_synapses = _create_inhibitor_generator_to_inhibitor_synapses(
-        inhibitor_generator, inhibitor_layer, model_paths)
-    inhibitor_layer_to_output_synapses = _create_inhibitor_layer_to_output_synapses(
-        inhibitor_layer, output_layer, model_paths)
-
     spike_monitors = SpikeMonitors(
         hidden=SpikeMonitor(hidden_layer),
         output=SpikeMonitor(output_layer))
     network = Network(
         hidden_layer,
-        interneuron,
-        inhibitor_generator,
-        inhibitor_layer,
-        interneuron_to_inhibitor_synapses,
-        inhibitor_layer_to_output_synapses,
-        inhibitor_generator_to_inhibitor_synapses,
         spike_monitors.hidden,
         spike_monitors.output,
         output_layer,
         hidden_to_output_synapses)
+
+    if configuration.measurement_mode is MeasurementMode.ECOG:
+        interneuron = _create_non_input_layer(model_paths, 1, 'interneuron')
+        inhibitor_generator = _create_inhibitor_generator()
+        inhibitor_layer = _create_non_input_layer(model_paths, 1, 'inhibitor')
+        interneuron_to_inhibitor_synapses = _create_interneuron_to_inhibitor_synapses(
+            interneuron, inhibitor_layer, model_paths)
+        inhibitor_generator_to_inhibitor_synapses = _create_inhibitor_generator_to_inhibitor_synapses(
+            inhibitor_generator, inhibitor_layer, model_paths)
+        inhibitor_layer_to_output_synapses = _create_inhibitor_layer_to_output_synapses(
+            inhibitor_layer, output_layer, model_paths)
+        network.add(
+            interneuron,
+            inhibitor_generator,
+            inhibitor_layer,
+            interneuron_to_inhibitor_synapses,
+            inhibitor_layer_to_output_synapses,
+            inhibitor_generator_to_inhibitor_synapses)
 
     network.store()
 
