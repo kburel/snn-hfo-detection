@@ -62,7 +62,8 @@ def _create_input_layer(filtered_spikes, input_count):
 
 
 def _create_non_input_layer(model_paths, neuron_count, name, num_inputs=1):
-    equation_builder = NeuronEquationBuilder.import_eq(model_paths.neuron)
+    equation_builder = NeuronEquationBuilder.import_eq(
+        model_paths.neuron, num_inputs)
     return Neurons(
         N=neuron_count,
         equation_builder=equation_builder,
@@ -160,7 +161,7 @@ def _create_cache(configuration):
         model_paths, neuron_counts.hidden, 'hidden')
     number_of_output_neurons = 1
     output_layer = _create_non_input_layer(
-        model_paths, number_of_output_neurons, 'output')
+        model_paths, number_of_output_neurons, 'output', num_inputs=2)
     hidden_to_output_synapses = _create_hidden_to_output_synapses(
         hidden_layer, output_layer, model_paths, neuron_counts)
 
@@ -178,7 +179,8 @@ def _create_cache(configuration):
     if configuration.measurement_mode is MeasurementMode.ECOG:
         interneuron = _create_non_input_layer(model_paths, 1, 'interneuron')
         inhibitor_generator = _create_inhibitor_generator()
-        inhibitor_layer = _create_non_input_layer(model_paths, 1, 'inhibitor')
+        inhibitor_layer = _create_non_input_layer(
+            model_paths, 1, 'inhibitor', num_inputs=2)
         interneuron_to_inhibitor_synapses = _create_interneuron_to_inhibitor_synapses(
             interneuron, inhibitor_layer, model_paths)
         inhibitor_generator_to_inhibitor_synapses = _create_inhibitor_generator_to_inhibitor_synapses(
