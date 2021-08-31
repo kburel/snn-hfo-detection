@@ -139,8 +139,8 @@ def _create_inhibitor_layer_to_output_synapses(inhibitor_layer, output_layer, mo
     synapses = Connections(
         inhibitor_layer, output_layer, equation_builder=equation_builder, name='inhibitor_layer_to_output_synapses', verbose=False, dt=100*us)
     synapses.connect()
-    synapses.weight = -1000
-    taus = 4
+    synapses.weight = -800
+    taus = 3
     synapses.I_tau = get_current(taus*1e-3) * amp
     return synapses
 
