@@ -67,61 +67,19 @@ def _generate_add_detected_hfo_to_list_cb(detected_hfos):
     return add_detected_hfo_to_list
 
 
-def _assert_contains_at_least(expected, actual, accuracy):
-    approx_actual = [pytest.approx(element, abs=accuracy)
-                     for element in actual]
-    for element in expected:
-        assert element in approx_actual
-
-
-def test_ieeg_hfo_detection():
+@pytest.mark.parametrize(
+    'dataset, measurement_mode, frequency',
+    [('ieeg', MeasurementMode.IEEG, 0.14),
+     ('ecog', MeasurementMode.ECOG, 0.07),
+     ('scalp', MeasurementMode.SCALP, 0.04)]
+)
+def test_hfo_detection_frequency(dataset, measurement_mode, frequency):
     detected_hfos = []
     run_hfo_detection_with_configuration(
-        configuration=_generate_test_configuration('ieeg'),
+        configuration=_generate_test_configuration(dataset, measurement_mode),
         custom_overrides=EMPTY_CUSTOM_OVERRIDES,
         hfo_cb=_generate_add_detected_hfo_to_list_cb(detected_hfos))
     assert len(detected_hfos) == 1
     hfo = detected_hfos[0]
-    assert hfo.result.frequency == pytest.approx(0.14, abs=FREQUENCY_ACCURACY)
-
-    _assert_contains_at_least([0.0, 6.43, 10.59, 14.29, 17.42],
-                              hfo.analytics.periods.start, accuracy=PERIOD_ACCURACY)
-
-    _assert_contains_at_least([0.06, 6.54, 10.72, 14.39, 17.53],
-                              hfo.analytics.periods.stop, accuracy=PERIOD_ACCURACY)
-
-
-def test_ecog_hfo_detection():
-    detected_hfos = []
-    run_hfo_detection_with_configuration(
-        configuration=_generate_test_configuration(
-            'ecog', MeasurementMode.ECOG),
-        custom_overrides=EMPTY_CUSTOM_OVERRIDES,
-        hfo_cb=_generate_add_detected_hfo_to_list_cb(detected_hfos))
-    assert len(detected_hfos) == 1
-    hfo = detected_hfos[0]
-    assert hfo.result.frequency == pytest.approx(0.07, abs=FREQUENCY_ACCURACY)
-
-    _assert_contains_at_least([4.36, 9.85, 35.5, 43.52, 53.64],
-                              hfo.analytics.periods.start, accuracy=PERIOD_ACCURACY)
-
-    _assert_contains_at_least([4.46, 9.94, 36, 43.62, 53.73],
-                              hfo.analytics.periods.stop, accuracy=PERIOD_ACCURACY)
-
-
-def test_scalp_hfo_detection():
-    detected_hfos = []
-    run_hfo_detection_with_configuration(
-        configuration=_generate_test_configuration(
-            'scalp', MeasurementMode.SCALP),
-        custom_overrides=EMPTY_CUSTOM_OVERRIDES,
-        hfo_cb=_generate_add_detected_hfo_to_list_cb(detected_hfos))
-    assert len(detected_hfos) == 1
-    hfo = detected_hfos[0]
-    assert hfo.result.frequency == pytest.approx(0.04, abs=FREQUENCY_ACCURACY)
-
-    _assert_contains_at_least([0.0, 17.38],
-                              hfo.analytics.periods.start, accuracy=PERIOD_ACCURACY)
-
-    _assert_contains_at_least([0.0605, 17.4705],
-                              hfo.analytics.periods.stop, accuracy=PERIOD_ACCURACY)
+    assert hfo.result.frequency == pytest.approx(
+        frequency, abs=FREQUENCY_ACCURACY)
