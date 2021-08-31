@@ -106,7 +106,7 @@ def _create_input_to_interneuron_synapses(input_layer, interneuron_layer, model_
     synapses = Connections(
         input_layer, interneuron_layer, equation_builder=equation_builder, name='input_to_interneuron_synapses', verbose=False, dt=100*us)
     synapses.connect()
-    synapses.weight = 3000
+    synapses.weight = 3_000
     taus = 5
     synapses.I_tau = get_current(taus*1e-3) * amp
     return synapses
@@ -117,7 +117,7 @@ def _create_interneuron_to_inhibitor_synapses(interneuron_layer, inhibitor_layer
     synapses = Connections(
         interneuron_layer, inhibitor_layer, equation_builder=equation_builder, name='interneuron_to_inhibitor_synapses', verbose=False, dt=100*us)
     synapses.connect()
-    synapses.weight = -2500
+    synapses.weight = -2_500
     taus = 20
     synapses.I_tau = get_current(taus*1e-3) * amp
     return synapses
@@ -139,7 +139,7 @@ def _create_inhibitor_layer_to_output_synapses(inhibitor_layer, output_layer, mo
     synapses = Connections(
         inhibitor_layer, output_layer, equation_builder=equation_builder, name='inhibitor_layer_to_output_synapses', verbose=False, dt=100*us)
     synapses.connect()
-    synapses.weight = -1500
+    synapses.weight = -1_500
     taus = 5
     synapses.I_tau = get_current(taus*1e-3) * amp
     return synapses
