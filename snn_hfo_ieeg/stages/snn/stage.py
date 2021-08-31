@@ -85,14 +85,14 @@ def _create_input_to_hidden_synapses(input_layer, hidden_layer, model_paths, neu
     return synapses
 
 
-def _create_hidden_to_output_synapses(hidden_layer, output_layer, model_paths, neuron_counts):
+def _create_hidden_to_output_synapses(hidden_layer, output_layer, model_paths, hidden_neuron_count):
     equation_builder = SynapseEquationBuilder.import_eq(model_paths.synapse)
     synapses = Connections(
         hidden_layer, output_layer, equation_builder=equation_builder, name='hidden_to_output_synapses', verbose=False, dt=100*us)
     synapses.connect()
 
-    synapses.weight = np.repeat(1_500.0, neuron_counts.hidden)
-    taus = np.repeat(4.5, neuron_counts.hidden)
+    synapses.weight = np.repeat(1_000_000.0, hidden_neuron_count.hidden)
+    taus = np.repeat(0.01, hidden_neuron_count.hidden)
     synapses.I_tau = get_current(taus*1e-3) * amp
     return synapses
 
