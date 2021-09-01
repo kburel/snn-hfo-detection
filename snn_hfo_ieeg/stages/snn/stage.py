@@ -13,7 +13,7 @@ from snn_hfo_ieeg.stages.snn.concatenation import NeuronCount
 from snn_hfo_ieeg.user_facing_data import Bandwidth, FilteredSpikes, MeasurementMode
 from snn_hfo_ieeg.stages.snn.artifact_filter import add_artifact_filter_to_network_and_get_interneuron, add_input_to_artifact_filter_to_network, should_add_artifact_filter
 from snn_hfo_ieeg.stages.snn.creation import create_non_input_layer, create_synapses
-from snn_hfo_ieeg.stages.snn.signal_enhancer import create_signal_enhancer_to_output_synapses, should_add_signal_enhancer, get_signal_enhancer_input_bandwidth
+from snn_hfo_ieeg.stages.snn.signal_enhancer import create_signal_enhancer_to_output_synapses, get_signal_enhancer_input_bandwidth, should_add_signal_enhancer
 
 
 class SpikeMonitors(NamedTuple):
@@ -38,9 +38,9 @@ def _get_relevant_input_bandwidth(measurement_mode, filtered_spikes: FilteredSpi
         f'configuration.measurement_mode has an invalid value. Allowed values: {MeasurementMode}, instead got: {measurement_mode}')
 
 
-def _concatenate_filtered_spikes(filtered_spikes):
+def _concatenate_filtered_spikes(bandwidths):
     spike_trains = [
-        bandwidth.spike_trains for bandwidth in filtered_spikes if bandwidth is not None]
+        bandwidth.spike_trains for bandwidth in bandwidths if bandwidth is not None]
     spikes = reduce(_append_spikes, spike_trains, [])
     return concatenate_spikes(spikes)
 
@@ -62,9 +62,9 @@ def _read_neuron_counts(configuration):
     return NeuronCount(input_count, configuration.hidden_neuron_count)
 
 
-def _create_input_layer(filtered_spikes, input_count):
+def _create_input_layer(bandwidths, input_count):
     input_spiketimes, input_neurons_id = _concatenate_filtered_spikes(
-        filtered_spikes)
+        bandwidths)
     return SpikeGeneratorGroup(input_count,
                                input_neurons_id,
                                input_spiketimes*second,
@@ -157,10 +157,10 @@ def snn_stage(filtered_spikes, duration, configuration, cache: Cache) -> SpikeMo
 
     cache.network.restore()
 
-    input_filtered_spikes = _get_relevant_input_bandwidth(
+    input_filtered_bandwidths = _get_relevant_input_bandwidth(
         configuration.measurement_mode, filtered_spikes)
     input_layer = _create_input_layer(
-        input_filtered_spikes, cache.neuron_counts.input)
+        input_filtered_bandwidths, cache.neuron_counts.input)
 
     input_to_hidden_synapses = _create_input_to_hidden_synapses(
         input_layer,
@@ -172,14 +172,14 @@ def snn_stage(filtered_spikes, duration, configuration, cache: Cache) -> SpikeMo
     cache.network.add(input_to_hidden_synapses)
 
     if cache.interneuron is not None:
-        signal_enhancer_input_bandwidth = get_signal_enhancer_input_bandwidth(
-            filtered_spikes)
         input_to_interneuron_synapses = add_input_to_artifact_filter_to_network(
-            signal_enhancer_input_bandwidth, cache)
+            input_layer, cache)
 
     if cache.signal_enhancer_hidden_layer is not None:
+        signal_enhancer_filtered_bandwidths = get_signal_enhancer_input_bandwidth(
+            filtered_spikes)
         signal_enhancer_input_layer = _create_input_layer(
-            filtered_spikes, cache.neuron_counts.input)
+            signal_enhancer_filtered_bandwidths, cache.neuron_counts.input)
 
         signal_enhancer_input_to_hidden_synapses = _create_input_to_hidden_synapses(
             signal_enhancer_input_layer,
