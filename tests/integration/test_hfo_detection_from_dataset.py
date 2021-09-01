@@ -70,7 +70,7 @@ def _generate_add_detected_hfo_to_list_cb(detected_hfos):
 @pytest.mark.parametrize(
     'dataset, measurement_mode, frequency',
     [('ieeg', MeasurementMode.IEEG, 0.14),
-     ('ecog', MeasurementMode.ECOG, 0.07),
+     ('ecog', MeasurementMode.ECOG, 0.0266),
      ('scalp', MeasurementMode.SCALP, 0.04)]
 )
 def test_hfo_detection_frequency(dataset, measurement_mode, frequency):
