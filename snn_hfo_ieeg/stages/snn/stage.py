@@ -91,8 +91,8 @@ def _create_hidden_to_output_synapses(hidden_layer, output_layer, model_paths, h
         hidden_layer, output_layer, equation_builder=equation_builder, name='hidden_to_output_synapses', verbose=False, dt=100*us)
     synapses.connect()
 
-    synapses.weight = np.repeat(300_000.0, hidden_neuron_count.hidden)
-    taus = np.repeat(2, hidden_neuron_count.hidden)
+    synapses.weight = np.repeat(3_000.0, hidden_neuron_count.hidden)
+    taus = np.repeat(10, hidden_neuron_count.hidden)
     synapses.I_tau = get_current(taus*1e-3) * amp
     return synapses
 
@@ -106,7 +106,7 @@ def _create_input_to_interneuron_synapses(input_layer, interneuron_layer, model_
     synapses = Connections(
         input_layer, interneuron_layer, equation_builder=equation_builder, name='input_to_interneuron_synapses', verbose=False, dt=100*us)
     synapses.connect()
-    synapses.weight = 3_000
+    synapses.weight = 2_000
     taus = 5
     synapses.I_tau = get_current(taus*1e-3) * amp
     return synapses
@@ -139,8 +139,8 @@ def _create_inhibitor_layer_to_output_synapses(inhibitor_layer, output_layer, mo
     synapses = Connections(
         inhibitor_layer, output_layer, equation_builder=equation_builder, name='inhibitor_layer_to_output_synapses', verbose=False, dt=100*us)
     synapses.connect()
-    synapses.weight = -800
-    taus = 3
+    synapses.weight = -10_000
+    taus = 10
     synapses.I_tau = get_current(taus*1e-3) * amp
     return synapses
 
