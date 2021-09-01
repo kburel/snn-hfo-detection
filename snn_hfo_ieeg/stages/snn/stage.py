@@ -11,7 +11,7 @@ from snn_hfo_ieeg.stages.snn.weight_generation import generate_weights
 from snn_hfo_ieeg.stages.snn.model_paths import ModelPaths, load_model_paths
 from snn_hfo_ieeg.stages.snn.concatenation import NeuronCount
 from snn_hfo_ieeg.user_facing_data import MeasurementMode
-from snn_hfo_ieeg.stages.snn.artifact_filter import add_artifact_filter_to_network_and_get_interneuron
+from snn_hfo_ieeg.stages.snn.artifact_filter import add_artifact_filter_to_network_and_get_interneuron, add_input_to_artifact_filter_to_network
 from snn_hfo_ieeg.stages.snn.creation import create_non_input_layer, create_synapses
 
 
@@ -71,13 +71,6 @@ def _create_hidden_to_output_synapses(hidden_layer, output_layer, model_paths, h
     taus = np.repeat(10, hidden_neuron_count.hidden)
     return create_synapses(
         'hidden_to_output', model_paths, hidden_layer, output_layer, weights, taus)
-
-
-def _create_input_to_interneuron_synapses(input_layer, interneuron_layer, model_paths):
-    weights = np.array([2_000])
-    taus = np.array([5])
-    return create_synapses(
-        'input_to_interneuron', model_paths, input_layer, interneuron_layer, weights, taus)
 
 
 class Cache(NamedTuple):
@@ -144,11 +137,8 @@ def snn_stage(filtered_spikes, duration, configuration, cache: Cache) -> SpikeMo
     cache.network.add(input_to_hidden_synapses)
 
     if cache.interneuron is not None:
-        input_to_interneuron_synapses = _create_input_to_interneuron_synapses(
-            input_layer,
-            cache.interneuron,
-            cache.model_paths)
-        cache.network.add(input_to_interneuron_synapses)
+        input_to_interneuron_synapses = add_input_to_artifact_filter_to_network(
+            input_layer, cache)
 
     cache.network.run(duration * second)
 

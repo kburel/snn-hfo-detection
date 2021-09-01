@@ -47,3 +47,19 @@ def add_artifact_filter_to_network_and_get_interneuron(model_paths, output_layer
         interneuron_to_inhibitor_synapses,
         inhibitor_layer_to_output_synapses,
         inhibitor_generator_to_inhibitor_synapses)
+
+
+def _create_input_to_interneuron_synapses(input_layer, interneuron_layer, model_paths):
+    weights = np.array([2_000])
+    taus = np.array([5])
+    return create_synapses(
+        'input_to_interneuron', model_paths, input_layer, interneuron_layer, weights, taus)
+
+
+def add_input_to_artifact_filter_to_network(input_layer, cache):
+    input_to_interneuron_synapses = _create_input_to_interneuron_synapses(
+        input_layer,
+        cache.interneuron,
+        cache.model_paths)
+    cache.network.add(input_to_interneuron_synapses)
+    return input_to_interneuron_synapses
