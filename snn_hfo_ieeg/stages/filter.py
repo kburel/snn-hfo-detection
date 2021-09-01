@@ -66,18 +66,7 @@ def _filter_signal_to_spike(filter_parameters) -> Bandwidth:
     )
 
 
-def _filter_spikes_according_to_measurement_mode(measurement_mode, ripple, fast_ripple) -> FilteredSpikes:
-    if measurement_mode is MeasurementMode.IEEG:
-        return FilteredSpikes(ripple=ripple, fast_ripple=fast_ripple)
-    if measurement_mode is MeasurementMode.ECOG:
-        return FilteredSpikes(ripple=None, fast_ripple=fast_ripple)
-    if measurement_mode is MeasurementMode.SCALP:
-        return FilteredSpikes(ripple=ripple, fast_ripple=None)
-    raise ValueError(
-        f'configuration.measurement_mode has an invalid value. Allowed values: {MeasurementMode}, instead got: {measurement_mode}')
-
-
-def filter_stage(channel_data, configuration):
+def filter_stage(channel_data, configuration) -> FilteredSpikes:
     ripple = _filter_signal_to_spike(_FilterParameters(
         channel_data=channel_data,
         lowcut=80,
@@ -92,8 +81,15 @@ def filter_stage(channel_data, configuration):
         scaling_factor=0.3,
         calibration_time=configuration.calibration_time
     ))
+    very_fast_ripple = _filter_signal_to_spike(_FilterParameters(
+        channel_data=channel_data,
+        lowcut=500,
+        highcut=900,
+        scaling_factor=0.3,
+        calibration_time=configuration.calibration_time
+    ))
 
-    return _filter_spikes_according_to_measurement_mode(
-        measurement_mode=configuration.measurement_mode,
+    return FilteredSpikes(
         ripple=ripple,
-        fast_ripple=fast_ripple)
+        fast_ripple=fast_ripple,
+        very_fast_ripple=very_fast_ripple)

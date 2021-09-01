@@ -27,9 +27,12 @@ class FilteredSpikes(NamedTuple):
         Spikes in the ripple bandwidth (80-250 Hz).
     fast_ripple: Optional[SpikeTrains]
         Spikes in the fast ripple bandwidth (250-500 Hz).
+    very_fast_ripple: Optional[SpikeTrains]
+        Spikes in the very fast ripple bandwidth (500-900 Hz).
     '''
     ripple: Optional[Bandwidth]
     fast_ripple: Optional[Bandwidth]
+    very_fast_ripple: Optional[Bandwidth]
 
 
 class HfoDetection(NamedTuple):
