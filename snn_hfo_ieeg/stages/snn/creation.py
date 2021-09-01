@@ -19,7 +19,7 @@ def create_non_input_layer(model_paths, neuron_count, name, num_inputs=1):
 def create_synapses(name, model_paths, from_layer, to_layer, weights, taus):
     equation_builder = SynapseEquationBuilder.import_eq(model_paths.synapse)
     synapses = Connections(
-        from_layer, to_layer, equation_builder=equation_builder, name=f'{name}synapses', verbose=False, dt=100*us)
+        from_layer, to_layer, equation_builder=equation_builder, name=f'{name}_synapses', verbose=False, dt=100*us)
     synapses.connect()
     synapses.weight = weights
     synapses.I_tau = get_current(taus*1e-3) * amp
