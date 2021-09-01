@@ -1,8 +1,9 @@
 from functools import reduce
-from typing import NamedTuple
+from typing import NamedTuple, Optional
 import warnings
 from brian2 import Network, SpikeGeneratorGroup, SpikeMonitor
-from brian2.units import us, amp, second
+from brian2.input.poissongroup import PoissonGroup
+from brian2.units import us, amp, second, Hz
 import numpy as np
 from teili.core.groups import Neurons, Connections
 from teili.models.builder.neuron_equation_builder import NeuronEquationBuilder
@@ -60,8 +61,9 @@ def _create_input_layer(filtered_spikes, input_count):
                                dt=100*us, name='input')
 
 
-def _create_non_input_layer(model_paths, neuron_count, name):
-    equation_builder = NeuronEquationBuilder.import_eq(model_paths.neuron)
+def _create_non_input_layer(model_paths, neuron_count, name, num_inputs=1):
+    equation_builder = NeuronEquationBuilder.import_eq(
+        model_paths.neuron, num_inputs)
     return Neurons(
         N=neuron_count,
         equation_builder=equation_builder,
@@ -95,11 +97,60 @@ def _create_hidden_to_output_synapses(hidden_layer, output_layer, model_paths, h
     return synapses
 
 
+def _create_inhibitor_generator():
+    return PoissonGroup(1, 135*Hz, name='inhibitor_generator', dt=100*us)
+
+
+def _create_input_to_interneuron_synapses(input_layer, interneuron_layer, model_paths):
+    equation_builder = SynapseEquationBuilder.import_eq(model_paths.synapse)
+    synapses = Connections(
+        input_layer, interneuron_layer, equation_builder=equation_builder, name='input_to_interneuron_synapses', verbose=False, dt=100*us)
+    synapses.connect()
+    synapses.weight = 3_000
+    taus = 5
+    synapses.I_tau = get_current(taus*1e-3) * amp
+    return synapses
+
+
+def _create_interneuron_to_inhibitor_synapses(interneuron_layer, inhibitor_layer, model_paths):
+    equation_builder = SynapseEquationBuilder.import_eq(model_paths.synapse)
+    synapses = Connections(
+        interneuron_layer, inhibitor_layer, equation_builder=equation_builder, name='interneuron_to_inhibitor_synapses', verbose=False, dt=100*us)
+    synapses.connect()
+    synapses.weight = -10_000
+    taus = 20
+    synapses.I_tau = get_current(taus*1e-3) * amp
+    return synapses
+
+
+def _create_inhibitor_generator_to_inhibitor_synapses(inhibitor_generator, inhibitor_layer, model_paths):
+    equation_builder = SynapseEquationBuilder.import_eq(model_paths.synapse)
+    synapses = Connections(
+        inhibitor_generator, inhibitor_layer, equation_builder=equation_builder, name='inhibitor_generator_to_inhibitor_synapses', verbose=False, dt=100*us)
+    synapses.connect()
+    synapses.weight = 50_000
+    taus = 5
+    synapses.I_tau = get_current(taus*1e-3) * amp
+    return synapses
+
+
+def _create_inhibitor_layer_to_output_synapses(inhibitor_layer, output_layer, model_paths):
+    equation_builder = SynapseEquationBuilder.import_eq(model_paths.synapse)
+    synapses = Connections(
+        inhibitor_layer, output_layer, equation_builder=equation_builder, name='inhibitor_layer_to_output_synapses', verbose=False, dt=100*us)
+    synapses.connect()
+    synapses.weight = -800
+    taus = 3
+    synapses.I_tau = get_current(taus*1e-3) * amp
+    return synapses
+
+
 class Cache(NamedTuple):
     model_paths: ModelPaths
     neuron_counts: NeuronCount
     hidden_layer: Neurons
     spike_monitors: SpikeMonitors
+    interneuron: Optional[Neurons]
     network: Network
 
 
@@ -110,14 +161,39 @@ def _create_cache(configuration):
         model_paths, neuron_counts.hidden, 'hidden')
     number_of_output_neurons = 1
     output_layer = _create_non_input_layer(
-        model_paths, number_of_output_neurons, 'output')
+        model_paths, number_of_output_neurons, 'output', num_inputs=2)
     hidden_to_output_synapses = _create_hidden_to_output_synapses(
         hidden_layer, output_layer, model_paths, neuron_counts)
+
     spike_monitors = SpikeMonitors(
         hidden=SpikeMonitor(hidden_layer),
         output=SpikeMonitor(output_layer))
     network = Network(
-        hidden_layer, spike_monitors.hidden, spike_monitors.output, output_layer, hidden_to_output_synapses)
+        hidden_layer,
+        spike_monitors.hidden,
+        spike_monitors.output,
+        output_layer,
+        hidden_to_output_synapses)
+
+    interneuron = None
+    if configuration.measurement_mode is MeasurementMode.ECOG:
+        interneuron = _create_non_input_layer(model_paths, 1, 'interneuron')
+        inhibitor_generator = _create_inhibitor_generator()
+        inhibitor_layer = _create_non_input_layer(
+            model_paths, 1, 'inhibitor', num_inputs=2)
+        interneuron_to_inhibitor_synapses = _create_interneuron_to_inhibitor_synapses(
+            interneuron, inhibitor_layer, model_paths)
+        inhibitor_generator_to_inhibitor_synapses = _create_inhibitor_generator_to_inhibitor_synapses(
+            inhibitor_generator, inhibitor_layer, model_paths)
+        inhibitor_layer_to_output_synapses = _create_inhibitor_layer_to_output_synapses(
+            inhibitor_layer, output_layer, model_paths)
+        network.add(
+            interneuron,
+            inhibitor_generator,
+            inhibitor_layer,
+            interneuron_to_inhibitor_synapses,
+            inhibitor_layer_to_output_synapses,
+            inhibitor_generator_to_inhibitor_synapses)
 
     network.store()
 
@@ -126,6 +202,7 @@ def _create_cache(configuration):
         neuron_counts=neuron_counts,
         hidden_layer=hidden_layer,
         spike_monitors=spike_monitors,
+        interneuron=interneuron,
         network=network
     )
 
@@ -148,9 +225,19 @@ def snn_stage(filtered_spikes, duration, configuration, cache: Cache) -> SpikeMo
     cache.network.add(input_layer)
     cache.network.add(input_to_hidden_synapses)
 
+    if cache.interneuron is not None:
+        input_to_interneuron_synapses = _create_input_to_interneuron_synapses(
+            input_layer,
+            cache.interneuron,
+            cache.model_paths)
+        cache.network.add(input_to_interneuron_synapses)
+
     cache.network.run(duration * second)
 
     cache.network.remove(input_layer)
     cache.network.remove(input_to_hidden_synapses)
+
+    if cache.interneuron is not None:
+        cache.network.remove(input_to_interneuron_synapses)
 
     return cache.spike_monitors
