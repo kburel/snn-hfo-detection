@@ -11,7 +11,7 @@ from snn_hfo_ieeg.stages.snn.weight_generation import generate_weights
 from snn_hfo_ieeg.stages.snn.model_paths import ModelPaths, load_model_paths
 from snn_hfo_ieeg.stages.snn.concatenation import NeuronCount
 from snn_hfo_ieeg.user_facing_data import MeasurementMode
-from snn_hfo_ieeg.stages.snn.artifact_filter import add_artifact_filter_to_network_and_get_interneuron, add_input_to_artifact_filter_to_network
+from snn_hfo_ieeg.stages.snn.artifact_filter import add_artifact_filter_to_network_and_get_interneuron, add_input_to_artifact_filter_to_network, should_add_artifact_filter
 from snn_hfo_ieeg.stages.snn.creation import create_non_input_layer, create_synapses
 
 
@@ -82,10 +82,6 @@ class Cache(NamedTuple):
     network: Network
 
 
-def _should_add_artifact_filter(configuration):
-    return configuration.measurement_mode is MeasurementMode.ECOG or configuration.measurement_mode is MeasurementMode.SCALP
-
-
 def _create_cache(configuration):
     model_paths = load_model_paths()
     neuron_counts = _read_neuron_counts(configuration)
@@ -108,7 +104,7 @@ def _create_cache(configuration):
         hidden_to_output_synapses)
 
     interneuron = add_artifact_filter_to_network_and_get_interneuron(
-        model_paths, output_layer, network) if _should_add_artifact_filter(configuration) else None
+        model_paths, output_layer, network) if should_add_artifact_filter(configuration) else None
 
     network.store()
 
@@ -131,6 +127,7 @@ def snn_stage(filtered_spikes, duration, configuration, cache: Cache) -> SpikeMo
 
     input_layer = _create_input_layer(
         filtered_spikes, cache.neuron_counts.input)
+
     input_to_hidden_synapses = _create_input_to_hidden_synapses(
         input_layer,
         cache.hidden_layer,

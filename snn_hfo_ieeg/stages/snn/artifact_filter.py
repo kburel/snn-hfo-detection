@@ -2,6 +2,7 @@ import numpy as np
 from brian2.input.poissongroup import PoissonGroup
 from brian2.units import us, Hz
 from snn_hfo_ieeg.stages.snn.creation import create_synapses, create_non_input_layer
+from snn_hfo_ieeg.user_facing_data import MeasurementMode
 
 
 def _create_interneuron_to_inhibitor_synapses(interneuron_layer, inhibitor_layer, model_paths):
@@ -63,3 +64,7 @@ def add_input_to_artifact_filter_to_network(input_layer, cache):
         cache.model_paths)
     cache.network.add(input_to_interneuron_synapses)
     return input_to_interneuron_synapses
+
+
+def should_add_artifact_filter(configuration):
+    return configuration.measurement_mode is MeasurementMode.ECOG or configuration.measurement_mode is MeasurementMode.SCALP
