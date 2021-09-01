@@ -100,29 +100,29 @@ def _create_hidden_to_output_synapses(hidden_layer, output_layer, model_paths, h
 
 
 def _create_input_to_interneuron_synapses(input_layer, interneuron_layer, model_paths):
-    weights = [2_000]
-    taus = [5]
+    weights = np.array([2_000])
+    taus = np.array([5])
     return create_synapses(
         'input_to_interneuron', model_paths, input_layer, interneuron_layer, weights, taus)
 
 
 def _create_interneuron_to_inhibitor_synapses(interneuron_layer, inhibitor_layer, model_paths):
-    weights = [-10_000]
-    taus = [20]
+    weights = np.array([-10_000])
+    taus = np.array([20])
     return create_synapses(
         'interneuron_to_inhibitor', model_paths, interneuron_layer, inhibitor_layer, weights, taus)
 
 
 def _create_inhibitor_generator_to_inhibitor_synapses(inhibitor_generator, inhibitor_layer, model_paths):
-    weights = [50_000]
-    taus = [5]
+    weights = np.array([50_000])
+    taus = np.array([5])
     return create_synapses(
         'inhibitor_generator_to_inhibitor_layer', model_paths, inhibitor_generator, inhibitor_layer, weights, taus)
 
 
 def _create_inhibitor_layer_to_output_synapses(inhibitor_layer, output_layer, model_paths):
-    weights = [-10_000]
-    taus = [10]
+    weights = np.array([-10_000])
+    taus = np.array([10])
     return create_synapses(
         'inhibitor_layer_to_output', model_paths, inhibitor_layer, output_layer, weights, taus)
 
