@@ -91,8 +91,8 @@ def _create_hidden_to_output_synapses(hidden_layer, output_layer, model_paths, h
         hidden_layer, output_layer, equation_builder=equation_builder, name='hidden_to_output_synapses', verbose=False, dt=100*us)
     synapses.connect()
 
-    synapses.weight = np.repeat(1_000_000.0, hidden_neuron_count.hidden)
-    taus = np.repeat(0.01, hidden_neuron_count.hidden)
+    synapses.weight = np.repeat(300_000.0, hidden_neuron_count.hidden)
+    taus = np.repeat(2, hidden_neuron_count.hidden)
     synapses.I_tau = get_current(taus*1e-3) * amp
     return synapses
 
