@@ -82,6 +82,10 @@ class Cache(NamedTuple):
     network: Network
 
 
+def _should_add_artifact_filter(configuration):
+    return configuration.measurement_mode is MeasurementMode.ECOG or configuration.measurement_mode is MeasurementMode.SCALP
+
+
 def _create_cache(configuration):
     model_paths = load_model_paths()
     neuron_counts = _read_neuron_counts(configuration)
@@ -104,7 +108,7 @@ def _create_cache(configuration):
         hidden_to_output_synapses)
 
     interneuron = add_artifact_filter_to_network_and_get_interneuron(
-        model_paths, output_layer, network) if configuration.measurement_mode is MeasurementMode.ECOG else None
+        model_paths, output_layer, network) if _should_add_artifact_filter(configuration) else None
 
     network.store()
 
