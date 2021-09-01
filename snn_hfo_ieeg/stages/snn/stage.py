@@ -71,78 +71,60 @@ def _create_non_input_layer(model_paths, neuron_count, name, num_inputs=1):
         dt=100*us)
 
 
-def _create_input_to_hidden_synapses(input_layer, hidden_layer, model_paths, neuron_counts):
-    equation_builder = SynapseEquationBuilder.import_eq(model_paths.synapse)
-    synapses = Connections(
-        input_layer, hidden_layer, equation_builder=equation_builder, name='input_to_hidden_synapses', verbose=False, dt=100*us)
-
-    synapses.connect()
-
-    synapses.weight = generate_weights(neuron_counts)
-    taus = generate_concatenated_taus(neuron_counts)
-    synapses.I_tau = get_current(taus*1e-3) * amp
-
-    return synapses
-
-
-def _create_hidden_to_output_synapses(hidden_layer, output_layer, model_paths, hidden_neuron_count):
-    equation_builder = SynapseEquationBuilder.import_eq(model_paths.synapse)
-    synapses = Connections(
-        hidden_layer, output_layer, equation_builder=equation_builder, name='hidden_to_output_synapses', verbose=False, dt=100*us)
-    synapses.connect()
-
-    synapses.weight = np.repeat(3_000.0, hidden_neuron_count.hidden)
-    taus = np.repeat(10, hidden_neuron_count.hidden)
-    synapses.I_tau = get_current(taus*1e-3) * amp
-    return synapses
-
-
 def _create_inhibitor_generator():
     return PoissonGroup(1, 135*Hz, name='inhibitor_generator', dt=100*us)
 
 
-def _create_input_to_interneuron_synapses(input_layer, interneuron_layer, model_paths):
+def create_synapses(name, model_paths, from_layer, to_layer, weights, taus):
     equation_builder = SynapseEquationBuilder.import_eq(model_paths.synapse)
     synapses = Connections(
-        input_layer, interneuron_layer, equation_builder=equation_builder, name='input_to_interneuron_synapses', verbose=False, dt=100*us)
+        from_layer, to_layer, equation_builder=equation_builder, name=f'{name}synapses', verbose=False, dt=100*us)
     synapses.connect()
-    synapses.weight = 2_000
-    taus = 5
+    synapses.weight = weights
     synapses.I_tau = get_current(taus*1e-3) * amp
     return synapses
+
+
+def _create_input_to_hidden_synapses(input_layer, hidden_layer, model_paths, neuron_counts):
+    weights = generate_weights(neuron_counts)
+    taus = generate_concatenated_taus(neuron_counts)
+    return create_synapses(
+        'input_to_hidden', model_paths, input_layer, hidden_layer, weights, taus)
+
+
+def _create_hidden_to_output_synapses(hidden_layer, output_layer, model_paths, hidden_neuron_count):
+    weights = np.repeat(3_000.0, hidden_neuron_count.hidden)
+    taus = np.repeat(10, hidden_neuron_count.hidden)
+    return create_synapses(
+        'hidden_to_output', model_paths, hidden_layer, output_layer, weights, taus)
+
+
+def _create_input_to_interneuron_synapses(input_layer, interneuron_layer, model_paths):
+    weights = [2_000]
+    taus = [5]
+    return create_synapses(
+        'input_to_interneuron', model_paths, input_layer, interneuron_layer, weights, taus)
 
 
 def _create_interneuron_to_inhibitor_synapses(interneuron_layer, inhibitor_layer, model_paths):
-    equation_builder = SynapseEquationBuilder.import_eq(model_paths.synapse)
-    synapses = Connections(
-        interneuron_layer, inhibitor_layer, equation_builder=equation_builder, name='interneuron_to_inhibitor_synapses', verbose=False, dt=100*us)
-    synapses.connect()
-    synapses.weight = -10_000
-    taus = 20
-    synapses.I_tau = get_current(taus*1e-3) * amp
-    return synapses
+    weights = [-10_000]
+    taus = [20]
+    return create_synapses(
+        'interneuron_to_inhibitor', model_paths, interneuron_layer, inhibitor_layer, weights, taus)
 
 
 def _create_inhibitor_generator_to_inhibitor_synapses(inhibitor_generator, inhibitor_layer, model_paths):
-    equation_builder = SynapseEquationBuilder.import_eq(model_paths.synapse)
-    synapses = Connections(
-        inhibitor_generator, inhibitor_layer, equation_builder=equation_builder, name='inhibitor_generator_to_inhibitor_synapses', verbose=False, dt=100*us)
-    synapses.connect()
-    synapses.weight = 50_000
-    taus = 5
-    synapses.I_tau = get_current(taus*1e-3) * amp
-    return synapses
+    weights = [50_000]
+    taus = [5]
+    return create_synapses(
+        'inhibitor_generator_to_inhibitor_layer', model_paths, inhibitor_generator, inhibitor_layer, weights, taus)
 
 
 def _create_inhibitor_layer_to_output_synapses(inhibitor_layer, output_layer, model_paths):
-    equation_builder = SynapseEquationBuilder.import_eq(model_paths.synapse)
-    synapses = Connections(
-        inhibitor_layer, output_layer, equation_builder=equation_builder, name='inhibitor_layer_to_output_synapses', verbose=False, dt=100*us)
-    synapses.connect()
-    synapses.weight = -10_000
-    taus = 10
-    synapses.I_tau = get_current(taus*1e-3) * amp
-    return synapses
+    weights = [-10_000]
+    taus = [10]
+    return create_synapses(
+        'inhibitor_layer_to_output', model_paths, inhibitor_layer, output_layer, weights, taus)
 
 
 class Cache(NamedTuple):
