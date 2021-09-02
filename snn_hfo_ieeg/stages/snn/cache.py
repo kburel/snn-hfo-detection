@@ -64,7 +64,7 @@ def create_cache(configuration):
     output_layer = create_non_input_layer(
         model_paths, number_of_output_neurons, 'output', num_inputs=layers_connected_to_output)
     hidden_to_output_synapses = create_hidden_to_output_synapses(
-        hidden_layer, output_layer, model_paths, neuron_counts)
+        'main', hidden_layer, output_layer, model_paths, neuron_counts)
 
     spike_monitors = SpikeMonitors(
         hidden=SpikeMonitor(hidden_layer),

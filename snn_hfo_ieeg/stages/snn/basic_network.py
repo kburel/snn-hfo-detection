@@ -39,8 +39,8 @@ def create_input_to_hidden_synapses(name, input_layer, hidden_layer, cache):
         f'{name}_to_hidden', cache.model_paths, input_layer, hidden_layer, weights, taus)
 
 
-def create_hidden_to_output_synapses(hidden_layer, output_layer, model_paths, hidden_neuron_count):
+def create_hidden_to_output_synapses(name, hidden_layer, output_layer, model_paths, hidden_neuron_count):
     weights = np.repeat(3_000.0, hidden_neuron_count.hidden)
     taus = np.repeat(10, hidden_neuron_count.hidden)
     return create_synapses(
-        'hidden_to_output', model_paths, hidden_layer, output_layer, weights, taus)
+        f'{name}_hidden_to_{name}_output', model_paths, hidden_layer, output_layer, weights, taus)
