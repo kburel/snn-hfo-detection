@@ -150,6 +150,22 @@ def _create_cache(configuration):
     )
 
 
+def _add_input_to_signal_enhancer_to_network(cache, filtered_spikes):
+    signal_enhancer_filtered_bandwidths = get_signal_enhancer_input_bandwidth(
+        filtered_spikes)
+    signal_enhancer_input_layer = _create_input_layer(
+        signal_enhancer_filtered_bandwidths, cache.neuron_counts.input)
+
+    signal_enhancer_input_to_hidden_synapses = _create_input_to_hidden_synapses(
+        signal_enhancer_input_layer,
+        cache.signal_enhancer_hidden_layer,
+        cache.model_paths,
+        cache.neuron_counts)
+    cache.network.add(signal_enhancer_input_layer)
+    cache.network.add(signal_enhancer_input_to_hidden_synapses)
+    return signal_enhancer_input_layer, signal_enhancer_input_to_hidden_synapses
+
+
 def snn_stage(filtered_spikes, duration, configuration, cache: Cache) -> SpikeMonitors:
     warnings.simplefilter("ignore", DeprecationWarning)
     if cache is None:
@@ -176,18 +192,8 @@ def snn_stage(filtered_spikes, duration, configuration, cache: Cache) -> SpikeMo
             input_layer, cache)
 
     if cache.signal_enhancer_hidden_layer is not None:
-        signal_enhancer_filtered_bandwidths = get_signal_enhancer_input_bandwidth(
-            filtered_spikes)
-        signal_enhancer_input_layer = _create_input_layer(
-            signal_enhancer_filtered_bandwidths, cache.neuron_counts.input)
-
-        signal_enhancer_input_to_hidden_synapses = _create_input_to_hidden_synapses(
-            signal_enhancer_input_layer,
-            cache.signal_enhancer_hidden_layer,
-            cache.model_paths,
-            cache.neuron_counts)
-        cache.network.add(signal_enhancer_input_layer)
-        cache.network.add(signal_enhancer_input_to_hidden_synapses)
+        signal_enhancer_input_layer, signal_enhancer_input_to_hidden_synapses = _add_input_to_signal_enhancer_to_network(
+            cache, filtered_spikes)
 
     cache.network.run(duration * second)
 
