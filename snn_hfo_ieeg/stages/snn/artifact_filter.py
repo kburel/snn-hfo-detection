@@ -1,7 +1,7 @@
 import numpy as np
 from brian2.input.poissongroup import PoissonGroup
 from brian2.units import us, Hz
-from snn_hfo_ieeg.stages.snn.creation import create_synapses, create_non_input_layer
+from snn_hfo_ieeg.stages.snn.basic_network_creation import create_synapses, create_non_input_layer
 from snn_hfo_ieeg.user_facing_data import MeasurementMode
 
 

@@ -3,10 +3,9 @@ from brian2 import Network, SpikeMonitor
 from teili.core.groups import Neurons
 from snn_hfo_ieeg.stages.snn.model_paths import ModelPaths, load_model_paths
 from snn_hfo_ieeg.stages.snn.concatenation import NeuronCount
-from snn_hfo_ieeg.stages.snn.basic_network import create_hidden_to_output_synapses
+from snn_hfo_ieeg.stages.snn.basic_network_creation import create_hidden_to_output_synapses, create_non_input_layer
 from snn_hfo_ieeg.user_facing_data import MeasurementMode
 from snn_hfo_ieeg.stages.snn.artifact_filter import add_artifact_filter_to_network_and_get_interneuron, should_add_artifact_filter
-from snn_hfo_ieeg.stages.snn.creation import create_non_input_layer
 from snn_hfo_ieeg.stages.snn.advanced_artifact_filter import should_add_advanced_artifact_filter, add_advanced_artifact_filter_to_network
 
 

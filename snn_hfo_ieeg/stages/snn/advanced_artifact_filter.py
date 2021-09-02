@@ -1,6 +1,5 @@
 import numpy as np
-from snn_hfo_ieeg.stages.snn.creation import create_synapses, create_non_input_layer
-from snn_hfo_ieeg.stages.snn.basic_network import create_hidden_to_output_synapses, create_input_layer, create_input_to_hidden_synapses
+from snn_hfo_ieeg.stages.snn.basic_network_creation import create_synapses, create_non_input_layer, create_hidden_to_output_synapses, create_input_layer, create_input_to_hidden_synapses
 from snn_hfo_ieeg.user_facing_data import MeasurementMode
 
 NAME = 'advanced_artifact_filter'

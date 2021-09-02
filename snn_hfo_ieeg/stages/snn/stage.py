@@ -1,7 +1,7 @@
 from typing import List
 import warnings
 from brian2.units import second
-from snn_hfo_ieeg.stages.snn.basic_network import create_input_layer, create_input_to_hidden_synapses
+from snn_hfo_ieeg.stages.snn.basic_network_creation import create_input_layer, create_input_to_hidden_synapses
 from snn_hfo_ieeg.user_facing_data import Bandwidth, FilteredSpikes, MeasurementMode
 from snn_hfo_ieeg.stages.snn.artifact_filter import add_input_to_artifact_filter_to_network
 from snn_hfo_ieeg.stages.snn.cache import Cache, SpikeMonitors, create_cache
