@@ -66,8 +66,8 @@ def create_cache(configuration):
     interneuron = add_artifact_filter_to_network_and_get_interneuron(
         model_paths, output_layer, network) if should_add_artifact_filter(configuration) else None
 
-    signal_enhancer_hidden_layer = add_signal_enhancer_to_network if should_add_signal_enhancer(
-        configuration) else None
+    signal_enhancer_hidden_layer = add_signal_enhancer_to_network(
+        network, output_layer, model_paths, neuron_counts) if should_add_signal_enhancer(configuration) else None
 
     network.store()
 
