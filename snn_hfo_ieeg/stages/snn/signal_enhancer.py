@@ -28,6 +28,7 @@ def add_input_to_signal_enhancer_to_network(cache, filtered_spikes):
         cache.neuron_counts.input)
 
     signal_enhancer_input_to_hidden_synapses = create_input_to_hidden_synapses(
+        'signal_enhancer',
         signal_enhancer_input_layer,
         cache.signal_enhancer_hidden_layer,
         cache.model_paths,

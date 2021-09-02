@@ -32,11 +32,11 @@ def create_input_layer(name, bandwidths, input_count):
                                name=f'{name}_input_layer')
 
 
-def create_input_to_hidden_synapses(input_layer, hidden_layer, model_paths, neuron_counts):
+def create_input_to_hidden_synapses(name, input_layer, hidden_layer, model_paths, neuron_counts):
     weights = generate_weights(neuron_counts)
     taus = generate_concatenated_taus(neuron_counts)
     return create_synapses(
-        'input_to_hidden', model_paths, input_layer, hidden_layer, weights, taus)
+        f'{name}_to_hidden', model_paths, input_layer, hidden_layer, weights, taus)
 
 
 def create_hidden_to_output_synapses(hidden_layer, output_layer, model_paths, hidden_neuron_count):
