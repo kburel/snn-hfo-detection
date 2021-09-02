@@ -44,7 +44,7 @@ def add_signal_enhancer_to_network(network, output_layer, model_paths, neuron_co
     signal_enhancer_output_layer = create_non_input_layer(
         model_paths, number_of_output_neurons, 'signal_enhancer_output', num_inputs=2)
     signal_enhancer_to_output_synapses = create_signal_enhancer_to_output_synapses(
-        signal_enhancer_output_layer, output_layer, model_paths, neuron_counts.hidden)
+        signal_enhancer_output_layer, output_layer, model_paths, neuron_counts)
     network.add(
         hidden_layer,
         signal_enhancer_output_layer,
