@@ -1,30 +1,20 @@
-from functools import reduce
 from typing import NamedTuple, Optional, List
 import warnings
-from brian2 import Network, SpikeGeneratorGroup, SpikeMonitor
-from brian2.units import us, second
-import numpy as np
+from brian2 import Network, SpikeMonitor
+from brian2.units import second
 from teili.core.groups import Neurons
-from snn_hfo_ieeg.functions.signal_to_spike import concatenate_spikes
-from snn_hfo_ieeg.stages.snn.tau_generation import generate_concatenated_taus
-from snn_hfo_ieeg.stages.snn.weight_generation import generate_weights
 from snn_hfo_ieeg.stages.snn.model_paths import ModelPaths, load_model_paths
 from snn_hfo_ieeg.stages.snn.concatenation import NeuronCount
+from snn_hfo_ieeg.stages.snn.basic_network import create_input_layer, create_input_to_hidden_synapses, create_hidden_to_output_synapses
 from snn_hfo_ieeg.user_facing_data import Bandwidth, FilteredSpikes, MeasurementMode
 from snn_hfo_ieeg.stages.snn.artifact_filter import add_artifact_filter_to_network_and_get_interneuron, add_input_to_artifact_filter_to_network, should_add_artifact_filter
-from snn_hfo_ieeg.stages.snn.creation import create_non_input_layer, create_synapses
-from snn_hfo_ieeg.stages.snn.signal_enhancer import create_signal_enhancer_to_output_synapses, get_signal_enhancer_input_bandwidth, should_add_signal_enhancer
+from snn_hfo_ieeg.stages.snn.creation import create_non_input_layer
+from snn_hfo_ieeg.stages.snn.signal_enhancer import create_signal_enhancer_to_output_synapses, should_add_signal_enhancer, add_input_to_signal_enhancer_to_network
 
 
 class SpikeMonitors(NamedTuple):
     hidden: SpikeMonitor
     output: SpikeMonitor
-
-
-def _append_spikes(spikes, spike_train):
-    spikes.append(spike_train.up)
-    spikes.append(spike_train.down)
-    return spikes
 
 
 def _get_relevant_input_bandwidth(measurement_mode, filtered_spikes: FilteredSpikes) -> List[Bandwidth]:
@@ -36,13 +26,6 @@ def _get_relevant_input_bandwidth(measurement_mode, filtered_spikes: FilteredSpi
         return [filtered_spikes.ripple]
     raise ValueError(
         f'configuration.measurement_mode has an invalid value. Allowed values: {MeasurementMode}, instead got: {measurement_mode}')
-
-
-def _concatenate_filtered_spikes(bandwidths):
-    spike_trains = [
-        bandwidth.spike_trains for bandwidth in bandwidths if bandwidth is not None]
-    spikes = reduce(_append_spikes, spike_trains, [])
-    return concatenate_spikes(spikes)
 
 
 def _measurement_mode_to_input_count(measurement_mode):
@@ -60,29 +43,6 @@ def _read_neuron_counts(configuration):
     input_count = _measurement_mode_to_input_count(
         configuration.measurement_mode)
     return NeuronCount(input_count, configuration.hidden_neuron_count)
-
-
-def _create_input_layer(bandwidths, input_count):
-    input_spiketimes, input_neurons_id = _concatenate_filtered_spikes(
-        bandwidths)
-    return SpikeGeneratorGroup(input_count,
-                               input_neurons_id,
-                               input_spiketimes*second,
-                               dt=100*us, name='input')
-
-
-def _create_input_to_hidden_synapses(input_layer, hidden_layer, model_paths, neuron_counts):
-    weights = generate_weights(neuron_counts)
-    taus = generate_concatenated_taus(neuron_counts)
-    return create_synapses(
-        'input_to_hidden', model_paths, input_layer, hidden_layer, weights, taus)
-
-
-def _create_hidden_to_output_synapses(hidden_layer, output_layer, model_paths, hidden_neuron_count):
-    weights = np.repeat(3_000.0, hidden_neuron_count.hidden)
-    taus = np.repeat(10, hidden_neuron_count.hidden)
-    return create_synapses(
-        'hidden_to_output', model_paths, hidden_layer, output_layer, weights, taus)
 
 
 class Cache(NamedTuple):
@@ -118,7 +78,7 @@ def _create_cache(configuration):
     number_of_output_neurons = 1
     output_layer = create_non_input_layer(
         model_paths, number_of_output_neurons, 'output', num_inputs=2)
-    hidden_to_output_synapses = _create_hidden_to_output_synapses(
+    hidden_to_output_synapses = create_hidden_to_output_synapses(
         hidden_layer, output_layer, model_paths, neuron_counts)
 
     spike_monitors = SpikeMonitors(
@@ -150,22 +110,6 @@ def _create_cache(configuration):
     )
 
 
-def _add_input_to_signal_enhancer_to_network(cache, filtered_spikes):
-    signal_enhancer_filtered_bandwidths = get_signal_enhancer_input_bandwidth(
-        filtered_spikes)
-    signal_enhancer_input_layer = _create_input_layer(
-        signal_enhancer_filtered_bandwidths, cache.neuron_counts.input)
-
-    signal_enhancer_input_to_hidden_synapses = _create_input_to_hidden_synapses(
-        signal_enhancer_input_layer,
-        cache.signal_enhancer_hidden_layer,
-        cache.model_paths,
-        cache.neuron_counts)
-    cache.network.add(signal_enhancer_input_layer)
-    cache.network.add(signal_enhancer_input_to_hidden_synapses)
-    return signal_enhancer_input_layer, signal_enhancer_input_to_hidden_synapses
-
-
 def snn_stage(filtered_spikes, duration, configuration, cache: Cache) -> SpikeMonitors:
     warnings.simplefilter("ignore", DeprecationWarning)
     if cache is None:
@@ -175,10 +119,10 @@ def snn_stage(filtered_spikes, duration, configuration, cache: Cache) -> SpikeMo
 
     input_filtered_bandwidths = _get_relevant_input_bandwidth(
         configuration.measurement_mode, filtered_spikes)
-    input_layer = _create_input_layer(
+    input_layer = create_input_layer(
         input_filtered_bandwidths, cache.neuron_counts.input)
 
-    input_to_hidden_synapses = _create_input_to_hidden_synapses(
+    input_to_hidden_synapses = create_input_to_hidden_synapses(
         input_layer,
         cache.hidden_layer,
         cache.model_paths,
@@ -192,7 +136,7 @@ def snn_stage(filtered_spikes, duration, configuration, cache: Cache) -> SpikeMo
             input_layer, cache)
 
     if cache.signal_enhancer_hidden_layer is not None:
-        signal_enhancer_input_layer, signal_enhancer_input_to_hidden_synapses = _add_input_to_signal_enhancer_to_network(
+        signal_enhancer_input_layer, signal_enhancer_input_to_hidden_synapses = add_input_to_signal_enhancer_to_network(
             cache, filtered_spikes)
 
     cache.network.run(duration * second)
