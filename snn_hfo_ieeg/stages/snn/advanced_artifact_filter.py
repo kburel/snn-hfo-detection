@@ -3,6 +3,8 @@ from snn_hfo_ieeg.stages.snn.creation import create_synapses, create_non_input_l
 from snn_hfo_ieeg.stages.snn.basic_network import create_hidden_to_output_synapses, create_input_layer, create_input_to_hidden_synapses
 from snn_hfo_ieeg.user_facing_data import MeasurementMode
 
+NAME = 'advanced_artifact_filter'
+
 
 def should_add_advanced_artifact_filter(configuration):
     return configuration.measurement_mode is MeasurementMode.SCALP
@@ -12,7 +14,7 @@ def create_advanced_artifact_filter_output_to_output_synapses(advanced_artifact_
     weights = np.array([3_000])
     taus = np.array([5])
     return create_synapses(
-        'advanced_artifact_filter_output_to_output', model_paths, advanced_artifact_filter_output, output_layer, weights, taus)
+        f'{NAME}_output_to_output', model_paths, advanced_artifact_filter_output, output_layer, weights, taus)
 
 
 def get_advanced_artifact_filter_input_bandwidth(filtered_spikes):
@@ -23,12 +25,12 @@ def add_input_to_advanced_artifact_filter_to_network(cache, filtered_spikes):
     advanced_artifact_filter_filtered_bandwidths = get_advanced_artifact_filter_input_bandwidth(
         filtered_spikes)
     advanced_artifact_filter_input_layer = create_input_layer(
-        'advanced_artifact_filter',
+        NAME,
         advanced_artifact_filter_filtered_bandwidths,
         cache.neuron_counts.input)
 
     advanced_artifact_filter_input_to_hidden_synapses = create_input_to_hidden_synapses(
-        name='advanced_artifact_filter',
+        name=NAME,
         input_layer=advanced_artifact_filter_input_layer,
         hidden_layer=cache.advanced_artifact_filter_hidden_layer,
         cache=cache)
@@ -39,12 +41,12 @@ def add_input_to_advanced_artifact_filter_to_network(cache, filtered_spikes):
 
 def add_advanced_artifact_filter_to_network(network, output_layer, model_paths, neuron_counts):
     hidden_layer = create_non_input_layer(
-        model_paths, neuron_counts.hidden, 'advanced_artifact_filter_hidden')
+        model_paths, neuron_counts.hidden, f'{NAME}_hidden')
     number_of_output_neurons = 1
     advanced_artifact_filter_output_layer = create_non_input_layer(
-        model_paths, number_of_output_neurons, 'advanced_artifact_filter_output', num_inputs=2)
+        model_paths, number_of_output_neurons, '{NAME}_output', num_inputs=2)
     hidden_to_output_synapses = create_hidden_to_output_synapses(
-        'advanced_artifact_filter', hidden_layer, advanced_artifact_filter_output_layer, model_paths, neuron_counts)
+        NAME, hidden_layer, advanced_artifact_filter_output_layer, model_paths, neuron_counts)
     advanced_artifact_filter_output_to_output_synapses = create_advanced_artifact_filter_output_to_output_synapses(
         advanced_artifact_filter_output_layer, output_layer, model_paths)
     network.add(
