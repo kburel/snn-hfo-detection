@@ -27,9 +27,12 @@ def snn_stage(filtered_spikes, duration, configuration, cache: Cache) -> SpikeMo
     cache.network.restore()
 
     input_filtered_bandwidths = _get_relevant_input_bandwidth(
-        configuration.measurement_mode, filtered_spikes)
+        configuration.measurement_mode,
+        filtered_spikes)
     input_layer = create_input_layer(
-        input_filtered_bandwidths, cache.neuron_counts.input)
+        'main',
+        input_filtered_bandwidths,
+        cache.neuron_counts.input)
 
     input_to_hidden_synapses = create_input_to_hidden_synapses(
         input_layer,

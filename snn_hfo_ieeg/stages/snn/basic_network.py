@@ -14,20 +14,22 @@ def _append_spikes(spikes, spike_train):
     return spikes
 
 
-def _concatenate_filtered_spikes(bandwidths):
+def _concatenate_bandwidths(bandwidths):
     spike_trains = [
         bandwidth.spike_trains for bandwidth in bandwidths if bandwidth is not None]
     spikes = reduce(_append_spikes, spike_trains, [])
     return concatenate_spikes(spikes)
 
 
-def create_input_layer(bandwidths, input_count):
-    input_spiketimes, input_neurons_id = _concatenate_filtered_spikes(
+def create_input_layer(name, bandwidths, input_count):
+    input_spiketimes, input_neurons_id = _concatenate_bandwidths(
         bandwidths)
+
     return SpikeGeneratorGroup(input_count,
                                input_neurons_id,
                                input_spiketimes*second,
-                               dt=100*us, name='input')
+                               dt=100*us,
+                               name=f'{name}_input_layer')
 
 
 def create_input_to_hidden_synapses(input_layer, hidden_layer, model_paths, neuron_counts):

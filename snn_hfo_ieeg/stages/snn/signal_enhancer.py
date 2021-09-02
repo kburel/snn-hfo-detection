@@ -23,7 +23,9 @@ def add_input_to_signal_enhancer_to_network(cache, filtered_spikes):
     signal_enhancer_filtered_bandwidths = get_signal_enhancer_input_bandwidth(
         filtered_spikes)
     signal_enhancer_input_layer = create_input_layer(
-        signal_enhancer_filtered_bandwidths, cache.neuron_counts.input)
+        'signal_enhancer',
+        signal_enhancer_filtered_bandwidths, 
+        cache.neuron_counts.input)
 
     signal_enhancer_input_to_hidden_synapses = create_input_to_hidden_synapses(
         signal_enhancer_input_layer,
