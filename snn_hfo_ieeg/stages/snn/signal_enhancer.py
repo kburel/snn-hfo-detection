@@ -15,4 +15,4 @@ def create_signal_enhancer_to_output_synapses(signal_enhancer_layer, output_laye
 
 
 def get_signal_enhancer_input_bandwidth(filtered_spikes):
-    return [filtered_spikes.ripple, filtered_spikes.very_fast_ripple]
+    return [filtered_spikes.ripple, filtered_spikes.above_fast_ripple]

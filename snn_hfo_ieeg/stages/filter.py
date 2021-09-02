@@ -81,7 +81,7 @@ def filter_stage(channel_data, configuration) -> FilteredSpikes:
         scaling_factor=0.3,
         calibration_time=configuration.calibration_time
     ))
-    very_fast_ripple = _filter_signal_to_spike(_FilterParameters(
+    above_fast_ripple = _filter_signal_to_spike(_FilterParameters(
         channel_data=channel_data,
         lowcut=500,
         highcut=900,
@@ -92,4 +92,4 @@ def filter_stage(channel_data, configuration) -> FilteredSpikes:
     return FilteredSpikes(
         ripple=ripple,
         fast_ripple=fast_ripple,
-        very_fast_ripple=very_fast_ripple)
+        above_fast_ripple=above_fast_ripple)
