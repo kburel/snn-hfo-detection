@@ -5,7 +5,7 @@ from snn_hfo_ieeg.stages.snn.basic_network import create_input_layer, create_inp
 from snn_hfo_ieeg.user_facing_data import Bandwidth, FilteredSpikes, MeasurementMode
 from snn_hfo_ieeg.stages.snn.artifact_filter import add_input_to_artifact_filter_to_network
 from snn_hfo_ieeg.stages.snn.cache import Cache, SpikeMonitors, create_cache
-from snn_hfo_ieeg.stages.snn.signal_enhancer import add_input_to_signal_enhancer_to_network
+from snn_hfo_ieeg.stages.snn.advanced_artifact_filter import add_input_to_advanced_artifact_filter_to_network
 
 
 def _get_relevant_input_bandwidth(measurement_mode, filtered_spikes: FilteredSpikes) -> List[Bandwidth]:
@@ -47,8 +47,8 @@ def snn_stage(filtered_spikes, duration, configuration, cache: Cache) -> SpikeMo
         input_to_interneuron_synapses = add_input_to_artifact_filter_to_network(
             input_layer, cache)
 
-    if cache.signal_enhancer_hidden_layer is not None:
-        signal_enhancer_input_layer, signal_enhancer_input_to_hidden_synapses = add_input_to_signal_enhancer_to_network(
+    if cache.advanced_artifact_filter_hidden_layer is not None:
+        advanced_artifact_filter_input_layer, advanced_artifact_filter_input_to_hidden_synapses = add_input_to_advanced_artifact_filter_to_network(
             cache, filtered_spikes)
 
     cache.network.run(duration * second)
@@ -59,8 +59,8 @@ def snn_stage(filtered_spikes, duration, configuration, cache: Cache) -> SpikeMo
     if cache.interneuron is not None:
         cache.network.remove(input_to_interneuron_synapses)
 
-    if cache.signal_enhancer_hidden_layer is not None:
-        cache.network.remove(signal_enhancer_input_layer)
-        cache.network.remove(signal_enhancer_input_to_hidden_synapses)
+    if cache.advanced_artifact_filter_hidden_layer is not None:
+        cache.network.remove(advanced_artifact_filter_input_layer)
+        cache.network.remove(advanced_artifact_filter_input_to_hidden_synapses)
 
     return cache.spike_monitors

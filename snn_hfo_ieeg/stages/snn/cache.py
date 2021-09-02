@@ -7,7 +7,7 @@ from snn_hfo_ieeg.stages.snn.basic_network import create_hidden_to_output_synaps
 from snn_hfo_ieeg.user_facing_data import MeasurementMode
 from snn_hfo_ieeg.stages.snn.artifact_filter import add_artifact_filter_to_network_and_get_interneuron, should_add_artifact_filter
 from snn_hfo_ieeg.stages.snn.creation import create_non_input_layer
-from snn_hfo_ieeg.stages.snn.signal_enhancer import should_add_signal_enhancer, add_signal_enhancer_to_network
+from snn_hfo_ieeg.stages.snn.advanced_artifact_filter import should_add_advanced_artifact_filter, add_advanced_artifact_filter_to_network
 
 
 class SpikeMonitors(NamedTuple):
@@ -21,7 +21,7 @@ class Cache(NamedTuple):
     hidden_layer: Neurons
     spike_monitors: SpikeMonitors
     interneuron: Optional[Neurons]
-    signal_enhancer_hidden_layer: Optional[Neurons]
+    advanced_artifact_filter_hidden_layer: Optional[Neurons]
     network: Network
 
 
@@ -79,8 +79,8 @@ def create_cache(configuration):
     interneuron = add_artifact_filter_to_network_and_get_interneuron(
         model_paths, output_layer, network) if should_add_artifact_filter(configuration) else None
 
-    signal_enhancer_hidden_layer = add_signal_enhancer_to_network(
-        network, output_layer, model_paths, neuron_counts) if should_add_signal_enhancer(configuration) else None
+    advanced_artifact_filter_hidden_layer = add_advanced_artifact_filter_to_network(
+        network, output_layer, model_paths, neuron_counts) if should_add_advanced_artifact_filter(configuration) else None
 
     network.store()
 
@@ -91,5 +91,5 @@ def create_cache(configuration):
         spike_monitors=spike_monitors,
         interneuron=interneuron,
         network=network,
-        signal_enhancer_hidden_layer=signal_enhancer_hidden_layer
+        advanced_artifact_filter_hidden_layer=advanced_artifact_filter_hidden_layer
     )
