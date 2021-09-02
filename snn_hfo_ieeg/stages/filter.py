@@ -1,4 +1,5 @@
 from typing import NamedTuple
+from brian2.equations import refractory
 import numpy as np
 from snn_hfo_ieeg.stages.loading.patient_data import ChannelData
 from snn_hfo_ieeg.functions.filter import butter_bandpass_filter
@@ -23,12 +24,15 @@ class _FilterParameters(NamedTuple):
         new scaling factor
     calibration_time: float
         time that should be used to find thresholds
+    refractory_period: float
+        time for the refractory period
     '''
     channel_data: ChannelData
     lowcut: int
     highcut: int
     scaling_factor: float
     calibration_time: float
+    refractory_period: float
 
 
 def _get_signal_times_in_calibration_time(signal, filter_parameters):
@@ -59,7 +63,7 @@ def _filter_signal_to_spike(filter_parameters) -> Bandwidth:
                                               times=filter_parameters.channel_data.signal_time,
                                               amplitude=signal,
                                               thr_up=thresholds, thr_dn=thresholds,
-                                              refractory_period=3e-4)
+                                              refractory_period=filter_parameters.refractory_period)
     return Bandwidth(
         signal=signal,
         spike_trains=spike_trains
@@ -72,21 +76,24 @@ def filter_stage(channel_data, configuration) -> FilteredSpikes:
         lowcut=80,
         highcut=250,
         scaling_factor=0.6,
-        calibration_time=configuration.calibration_time
+        calibration_time=configuration.calibration_time,
+        refractory_period=3e-4
     ))
     fast_ripple = _filter_signal_to_spike(_FilterParameters(
         channel_data=channel_data,
         lowcut=250,
         highcut=500,
         scaling_factor=0.3,
-        calibration_time=configuration.calibration_time
+        calibration_time=configuration.calibration_time,
+        refractory_period=3e-4
     ))
     above_fast_ripple = _filter_signal_to_spike(_FilterParameters(
         channel_data=channel_data,
         lowcut=500,
         highcut=900,
         scaling_factor=0.3,
-        calibration_time=configuration.calibration_time
+        calibration_time=configuration.calibration_time,
+        refractory_period=1e-3
     ))
 
     return FilteredSpikes(
