@@ -12,14 +12,14 @@ def create_signal_enhancer_hidden_to_output_synapses(hidden_layer, output_layer,
     weights = np.repeat(3_000.0, hidden_neuron_count.hidden)
     taus = np.repeat(10, hidden_neuron_count.hidden)
     return create_synapses(
-        'signal_enhancer_to_output', model_paths, hidden_layer, output_layer, weights, taus)
+        'signal_enhancer_hidden_to_output', model_paths, hidden_layer, output_layer, weights, taus)
 
 
 def create_signal_enhancer_output_to_output_synapses(signal_enhancer_output, output_layer, model_paths):
     weights = np.array([3_000])
     taus = np.array([5])
     return create_synapses(
-        'signal_enhancer_to_output', model_paths, signal_enhancer_output, output_layer, weights, taus)
+        'signal_enhancer_output_to_output', model_paths, signal_enhancer_output, output_layer, weights, taus)
 
 
 def get_signal_enhancer_input_bandwidth(filtered_spikes):
