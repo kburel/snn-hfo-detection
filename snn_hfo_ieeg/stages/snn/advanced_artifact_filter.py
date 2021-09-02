@@ -10,8 +10,8 @@ def should_add_advanced_artifact_filter(configuration):
 
 
 def create_advanced_artifact_filter_output_to_output_synapses(advanced_artifact_filter_output, output_layer, model_paths):
-    weights = np.array([-10_000])
-    taus = np.array([10])
+    weights = np.array([-10_000]) * 0
+    taus = np.array([10]) * 0
     return create_synapses(
         f'{NAME}_output_to_output', model_paths, advanced_artifact_filter_output, output_layer, weights, taus)
 
@@ -43,7 +43,7 @@ def add_advanced_artifact_filter_to_network(network, output_layer, model_paths, 
         model_paths, neuron_counts.hidden, f'{NAME}_hidden')
     number_of_output_neurons = 1
     advanced_artifact_filter_output_layer = create_non_input_layer(
-        model_paths, number_of_output_neurons, '{NAME}_output', num_inputs=2)
+        model_paths, number_of_output_neurons, f'{NAME}_output', num_inputs=2)
     hidden_to_output_synapses = create_hidden_to_output_synapses(
         NAME, hidden_layer, advanced_artifact_filter_output_layer, model_paths, neuron_counts)
     advanced_artifact_filter_output_to_output_synapses = create_advanced_artifact_filter_output_to_output_synapses(
