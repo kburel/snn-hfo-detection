@@ -1,5 +1,5 @@
 import numpy as np
-from snn_hfo_ieeg.stages.snn.creation import create_synapses
+from snn_hfo_ieeg.stages.snn.creation import create_synapses, create_non_input_layer
 from snn_hfo_ieeg.stages.snn.basic_network import create_input_layer, create_input_to_hidden_synapses
 from snn_hfo_ieeg.user_facing_data import MeasurementMode
 
@@ -33,3 +33,18 @@ def add_input_to_signal_enhancer_to_network(cache, filtered_spikes):
     cache.network.add(signal_enhancer_input_layer)
     cache.network.add(signal_enhancer_input_to_hidden_synapses)
     return signal_enhancer_input_layer, signal_enhancer_input_to_hidden_synapses
+
+
+def add_signal_enhancer_to_network(network, output_layer, model_paths, neuron_counts):
+    hidden_layer = create_non_input_layer(
+        model_paths, neuron_counts.hidden, 'signal_enhancer_hidden')
+    number_of_output_neurons = 1
+    signal_enhancer_output_layer = create_non_input_layer(
+        model_paths, number_of_output_neurons, 'signal_enhancer_output', num_inputs=2)
+    signal_enhancer_to_output_synapses = create_signal_enhancer_to_output_synapses(
+        signal_enhancer_output_layer, output_layer, model_paths, neuron_counts.hidden)
+    network.add(
+        hidden_layer,
+        signal_enhancer_output_layer,
+        signal_enhancer_to_output_synapses)
+    return hidden_layer
