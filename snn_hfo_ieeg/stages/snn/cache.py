@@ -42,14 +42,27 @@ def _measurement_mode_to_input_count(measurement_mode):
         f'measurement_mode is outside valid range. Allowed values: {MeasurementMode}, instead got: {measurement_mode}')
 
 
+def _get_layers_connected_to_output_count(configuration):
+    if configuration.measurement_mode is MeasurementMode.IEEG:
+        return 1
+    if configuration.measurement_mode is MeasurementMode.ECOG:
+        return 2
+    if configuration.measurement_mode is MeasurementMode.SCALP:
+        return 3
+    raise ValueError(
+        f'measurement_mode is outside valid range. Allowed values: {MeasurementMode}, instead got: {configuration.measurement_mode}')
+
+
 def create_cache(configuration):
     model_paths = load_model_paths()
     neuron_counts = _read_neuron_counts(configuration)
     hidden_layer = create_non_input_layer(
         model_paths, neuron_counts.hidden, 'hidden')
     number_of_output_neurons = 1
+    layers_connected_to_output = _get_layers_connected_to_output_count(
+        configuration)
     output_layer = create_non_input_layer(
-        model_paths, number_of_output_neurons, 'output', num_inputs=2)
+        model_paths, number_of_output_neurons, 'output', num_inputs=layers_connected_to_output)
     hidden_to_output_synapses = create_hidden_to_output_synapses(
         hidden_layer, output_layer, model_paths, neuron_counts)
 
