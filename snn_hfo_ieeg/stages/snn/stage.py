@@ -35,11 +35,10 @@ def snn_stage(filtered_spikes, duration, configuration, cache: Cache) -> SpikeMo
         cache.neuron_counts.input)
 
     input_to_hidden_synapses = create_input_to_hidden_synapses(
-        'main',
-        input_layer,
-        cache.hidden_layer,
-        cache.model_paths,
-        cache.neuron_counts)
+        name='main',
+        input_layer=input_layer,
+        hidden_layer=cache.hidden_layer,
+        cache=cache)
 
     cache.network.add(input_layer)
     cache.network.add(input_to_hidden_synapses)
