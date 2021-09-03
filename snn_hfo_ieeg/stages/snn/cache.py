@@ -41,14 +41,7 @@ def _measurement_mode_to_input_count(measurement_mode):
 
 
 def _get_layers_connected_to_output_count(configuration):
-    if configuration.measurement_mode is MeasurementMode.IEEG:
-        return 1
-    if configuration.measurement_mode is MeasurementMode.ECOG:
-        return 2
-    if configuration.measurement_mode is MeasurementMode.SCALP:
-        return 3
-    raise ValueError(
-        f'measurement_mode is outside valid range. Allowed values: {MeasurementMode}, instead got: {configuration.measurement_mode}')
+    return 1 + int(should_add_artifact_filter(configuration)) + int(should_add_advanced_artifact_filter(configuration))
 
 
 def create_cache(configuration):
