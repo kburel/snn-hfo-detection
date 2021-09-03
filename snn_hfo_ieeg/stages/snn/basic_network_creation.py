@@ -9,19 +9,19 @@ from snn_hfo_ieeg.stages.snn.weight_generation import generate_weights
 from snn_hfo_ieeg.functions.dynapse_biases import get_current
 
 
-def create_input_layer(input_count):
+def create_input_layer(name, input_count):
     return SpikeGeneratorGroup(N=input_count,
                                indices=[0],
                                times=[0] * second,
                                dt=100*us,
-                               name='input_layer')
+                               name=f'{name}_input_layer')
 
 
 def create_input_to_hidden_synapses(name, input_layer, hidden_layer, model_paths, neuron_counts):
     weights = generate_weights(neuron_counts)
     taus = generate_concatenated_taus(neuron_counts)
     return create_synapses(
-        f'{name}_to_hidden', model_paths, input_layer, hidden_layer, weights, taus)
+        f'{name}_input_to_hidden', model_paths, input_layer, hidden_layer, weights, taus)
 
 
 def create_hidden_to_output_synapses(name, hidden_layer, output_layer, model_paths, hidden_neuron_count):

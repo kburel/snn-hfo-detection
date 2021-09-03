@@ -1,5 +1,4 @@
 from typing import NamedTuple
-from brian2.equations import refractory
 import numpy as np
 from snn_hfo_ieeg.stages.loading.patient_data import ChannelData
 from snn_hfo_ieeg.functions.filter import butter_bandpass_filter

@@ -1,4 +1,4 @@
-from typing import NamedTuple
+from typing import NamedTuple, Optional
 from brian2 import Network, SpikeMonitor
 from brian2.input.spikegeneratorgroup import SpikeGeneratorGroup
 from snn_hfo_ieeg.stages.snn.model_paths import ModelPaths, load_model_paths
@@ -20,6 +20,7 @@ class Cache(NamedTuple):
     neuron_counts: NeuronCount
     spike_monitors: SpikeMonitors
     network: Network
+    advanced_artifact_filter_input_layer: Optional[SpikeGeneratorGroup]
 
 
 def _read_neuron_counts(configuration):
@@ -63,7 +64,7 @@ def create_cache(configuration):
     hidden_to_output_synapses = create_hidden_to_output_synapses(
         'main', hidden_layer, output_layer, model_paths, neuron_counts)
 
-    input_layer = create_input_layer(neuron_counts.input)
+    input_layer = create_input_layer('main', neuron_counts.input)
 
     input_to_hidden_synapses = create_input_to_hidden_synapses(
         name='main',
@@ -88,9 +89,8 @@ def create_cache(configuration):
         add_artifact_filter_to_network_and_get_interneuron(
             model_paths, input_layer, output_layer, network)
 
-    if should_add_advanced_artifact_filter(configuration):
-        add_advanced_artifact_filter_to_network(
-            network, input_layer, output_layer, model_paths, neuron_counts)
+    advanced_artifact_filter_input_layer = add_advanced_artifact_filter_to_network(
+        network, output_layer, model_paths, neuron_counts) if should_add_advanced_artifact_filter(configuration) else None
 
     network.store()
 
@@ -99,5 +99,6 @@ def create_cache(configuration):
         neuron_counts=neuron_counts,
         spike_monitors=spike_monitors,
         network=network,
-        input_layer=input_layer
+        input_layer=input_layer,
+        advanced_artifact_filter_input_layer=advanced_artifact_filter_input_layer
     )
