@@ -14,7 +14,8 @@ def create_input_layer(name, input_count):
                                indices=[0],
                                times=[0] * second,
                                dt=100*us,
-                               name=f'{name}_input_layer')
+                               name=f'{name}_input_layer',
+                               sorted=True)
 
 
 def create_input_to_hidden_synapses(name, input_layer, hidden_layer, model_paths, neuron_counts):

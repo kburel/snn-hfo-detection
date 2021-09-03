@@ -30,16 +30,19 @@ def _concatenate_bandwidths(bandwidths):
     return concatenate_spikes(spikes)
 
 
+def _set_input_layer_to_bandwidths(input_layer, bandwidths):
+    input_spiketimes, input_neurons_id = _concatenate_bandwidths(bandwidths)
+    input_layer.set_spikes(
+        input_neurons_id, input_spiketimes * second, sorted=True)
+
+
 def set_input_spikes(filtered_spikes, input_layer, measurement_mode):
     bandwidths = _get_relevant_input_bandwidth(
         measurement_mode, filtered_spikes)
-    input_spiketimes, input_neurons_id = _concatenate_bandwidths(bandwidths)
-
-    input_layer.set_spikes(input_neurons_id, input_spiketimes * second)
+    _set_input_layer_to_bandwidths(input_layer, bandwidths)
 
 
 def set_advanced_artifact_filter_input_spikes(filtered_spikes, advanced_artifact_filter_input_layer):
     bandwidths = get_advanced_artifact_filter_input_bandwidth(filtered_spikes)
-    input_spiketimes, input_neurons_id = _concatenate_bandwidths(bandwidths)
-    advanced_artifact_filter_input_layer.set_spikes(
-        input_neurons_id, input_spiketimes * second)
+    _set_input_layer_to_bandwidths(
+        advanced_artifact_filter_input_layer, bandwidths)
