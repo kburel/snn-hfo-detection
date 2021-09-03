@@ -34,7 +34,7 @@ def add_advanced_artifact_filter_to_network(network, output_layer, model_paths, 
         neuron_counts=neuron_counts)
     number_of_output_neurons = 1
     advanced_artifact_filter_output_layer = create_non_input_layer(
-        model_paths, number_of_output_neurons, f'{NAME}_output', num_inputs=2)
+        model_paths, number_of_output_neurons, f'{NAME}_output')
     hidden_to_output_synapses = create_hidden_to_output_synapses(
         NAME, hidden_layer, advanced_artifact_filter_output_layer, model_paths, neuron_counts)
     advanced_artifact_filter_output_to_output_synapses = create_advanced_artifact_filter_output_to_output_synapses(
