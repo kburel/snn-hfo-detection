@@ -30,7 +30,14 @@ def _create_inhibitor_generator():
     return PoissonGroup(1, 135*Hz, name='inhibitor_generator', dt=100*us)
 
 
-def add_artifact_filter_to_network_and_get_interneuron(model_paths, output_layer, network):
+def _create_input_to_interneuron_synapses(input_layer, interneuron_layer, model_paths):
+    weights = np.array([2_000])
+    taus = np.array([5])
+    return create_synapses(
+        'input_to_interneuron', model_paths, input_layer, interneuron_layer, weights, taus)
+
+
+def add_artifact_filter_to_network_and_get_interneuron(model_paths, input_layer, output_layer, network):
     interneuron = create_non_input_layer(model_paths, 1, 'interneuron')
     inhibitor_generator = _create_inhibitor_generator()
     inhibitor_layer = create_non_input_layer(
@@ -41,29 +48,18 @@ def add_artifact_filter_to_network_and_get_interneuron(model_paths, output_layer
         inhibitor_generator, inhibitor_layer, model_paths)
     inhibitor_layer_to_output_synapses = _create_inhibitor_layer_to_output_synapses(
         inhibitor_layer, output_layer, model_paths)
+    input_to_interneuron_synapses = _create_input_to_interneuron_synapses(
+        input_layer=input_layer,
+        interneuron_layer=interneuron,
+        model_paths=model_paths)
     network.add(
         interneuron,
+        input_to_interneuron_synapses,
         inhibitor_generator,
         inhibitor_layer,
         interneuron_to_inhibitor_synapses,
         inhibitor_layer_to_output_synapses,
         inhibitor_generator_to_inhibitor_synapses)
-
-
-def _create_input_to_interneuron_synapses(input_layer, interneuron_layer, model_paths):
-    weights = np.array([2_000])
-    taus = np.array([5])
-    return create_synapses(
-        'input_to_interneuron', model_paths, input_layer, interneuron_layer, weights, taus)
-
-
-def add_input_to_artifact_filter_to_network(input_layer, cache):
-    input_to_interneuron_synapses = _create_input_to_interneuron_synapses(
-        input_layer,
-        cache.interneuron,
-        cache.model_paths)
-    cache.network.add(input_to_interneuron_synapses)
-    return input_to_interneuron_synapses
 
 
 def should_add_artifact_filter(configuration):

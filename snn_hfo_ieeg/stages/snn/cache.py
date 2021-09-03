@@ -1,9 +1,9 @@
-from typing import NamedTuple, Optional
+from typing import NamedTuple
 from brian2 import Network, SpikeMonitor
-from teili.core.groups import Neurons
+from brian2.input.spikegeneratorgroup import SpikeGeneratorGroup
 from snn_hfo_ieeg.stages.snn.model_paths import ModelPaths, load_model_paths
 from snn_hfo_ieeg.stages.snn.concatenation import NeuronCount
-from snn_hfo_ieeg.stages.snn.basic_network_creation import create_hidden_to_output_synapses, create_non_input_layer
+from snn_hfo_ieeg.stages.snn.basic_network_creation import create_hidden_to_output_synapses, create_non_input_layer, create_input_layer, create_input_to_hidden_synapses
 from snn_hfo_ieeg.user_facing_data import MeasurementMode
 from snn_hfo_ieeg.stages.snn.artifact_filter import add_artifact_filter_to_network_and_get_interneuron, should_add_artifact_filter
 from snn_hfo_ieeg.stages.snn.advanced_artifact_filter import should_add_advanced_artifact_filter, add_advanced_artifact_filter_to_network
@@ -15,12 +15,10 @@ class SpikeMonitors(NamedTuple):
 
 
 class Cache(NamedTuple):
+    input_layer: SpikeGeneratorGroup
     model_paths: ModelPaths
     neuron_counts: NeuronCount
-    hidden_layer: Neurons
     spike_monitors: SpikeMonitors
-    interneuron: Optional[Neurons]
-    advanced_artifact_filter_hidden_layer: Optional[Neurons]
     network: Network
 
 
@@ -65,30 +63,41 @@ def create_cache(configuration):
     hidden_to_output_synapses = create_hidden_to_output_synapses(
         'main', hidden_layer, output_layer, model_paths, neuron_counts)
 
+    input_layer = create_input_layer(neuron_counts.input)
+
+    input_to_hidden_synapses = create_input_to_hidden_synapses(
+        name='main',
+        input_layer=input_layer,
+        hidden_layer=hidden_layer,
+        model_paths=model_paths,
+        neuron_counts=neuron_counts)
+
     spike_monitors = SpikeMonitors(
         hidden=SpikeMonitor(hidden_layer),
         output=SpikeMonitor(output_layer))
     network = Network(
+        input_layer,
+        input_to_hidden_synapses,
         hidden_layer,
         spike_monitors.hidden,
         spike_monitors.output,
         output_layer,
         hidden_to_output_synapses)
 
-    interneuron = add_artifact_filter_to_network_and_get_interneuron(
-        model_paths, output_layer, network) if should_add_artifact_filter(configuration) else None
+    if should_add_artifact_filter(configuration):
+        add_artifact_filter_to_network_and_get_interneuron(
+            model_paths, input_layer, output_layer, network)
 
-    advanced_artifact_filter_hidden_layer = add_advanced_artifact_filter_to_network(
-        network, output_layer, model_paths, neuron_counts) if should_add_advanced_artifact_filter(configuration) else None
+    if should_add_advanced_artifact_filter(configuration):
+        add_advanced_artifact_filter_to_network(
+            network, input_layer, output_layer, model_paths, neuron_counts)
 
     network.store()
 
     return Cache(
         model_paths=model_paths,
         neuron_counts=neuron_counts,
-        hidden_layer=hidden_layer,
         spike_monitors=spike_monitors,
-        interneuron=interneuron,
         network=network,
-        advanced_artifact_filter_hidden_layer=advanced_artifact_filter_hidden_layer
+        input_layer=input_layer
     )

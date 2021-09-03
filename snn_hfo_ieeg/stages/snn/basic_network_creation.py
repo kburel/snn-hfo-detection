@@ -1,45 +1,27 @@
-from functools import reduce
 import numpy as np
 from brian2 import SpikeGeneratorGroup
-from brian2.units import us, second, amp
+from brian2.units import us, amp, second
 from teili.models.builder.neuron_equation_builder import NeuronEquationBuilder
 from teili.models.builder.synapse_equation_builder import SynapseEquationBuilder
 from teili.core.groups import Neurons, Connections
-from snn_hfo_ieeg.functions.signal_to_spike import concatenate_spikes
 from snn_hfo_ieeg.stages.snn.tau_generation import generate_concatenated_taus
 from snn_hfo_ieeg.stages.snn.weight_generation import generate_weights
 from snn_hfo_ieeg.functions.dynapse_biases import get_current
 
 
-def _append_spikes(spikes, spike_train):
-    spikes.append(spike_train.up)
-    spikes.append(spike_train.down)
-    return spikes
-
-
-def _concatenate_bandwidths(bandwidths):
-    spike_trains = [
-        bandwidth.spike_trains for bandwidth in bandwidths if bandwidth is not None]
-    spikes = reduce(_append_spikes, spike_trains, [])
-    return concatenate_spikes(spikes)
-
-
-def create_input_layer(name, bandwidths, input_count):
-    input_spiketimes, input_neurons_id = _concatenate_bandwidths(
-        bandwidths)
-
-    return SpikeGeneratorGroup(input_count,
-                               input_neurons_id,
-                               input_spiketimes*second,
+def create_input_layer(input_count):
+    return SpikeGeneratorGroup(N=input_count,
+                               indices=[0],
+                               times=[0] * second,
                                dt=100*us,
-                               name=f'{name}_input_layer')
+                               name='input_layer')
 
 
-def create_input_to_hidden_synapses(name, input_layer, hidden_layer, cache):
-    weights = generate_weights(cache.neuron_counts)
-    taus = generate_concatenated_taus(cache.neuron_counts)
+def create_input_to_hidden_synapses(name, input_layer, hidden_layer, model_paths, neuron_counts):
+    weights = generate_weights(neuron_counts)
+    taus = generate_concatenated_taus(neuron_counts)
     return create_synapses(
-        f'{name}_to_hidden', cache.model_paths, input_layer, hidden_layer, weights, taus)
+        f'{name}_to_hidden', model_paths, input_layer, hidden_layer, weights, taus)
 
 
 def create_hidden_to_output_synapses(name, hidden_layer, output_layer, model_paths, hidden_neuron_count):

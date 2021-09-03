@@ -1,11 +1,10 @@
 from typing import List
+from functools import reduce
 import warnings
 from brian2.units import second
-from snn_hfo_ieeg.stages.snn.basic_network_creation import create_input_layer, create_input_to_hidden_synapses
 from snn_hfo_ieeg.user_facing_data import Bandwidth, FilteredSpikes, MeasurementMode
-from snn_hfo_ieeg.stages.snn.artifact_filter import add_input_to_artifact_filter_to_network
 from snn_hfo_ieeg.stages.snn.cache import Cache, SpikeMonitors, create_cache
-from snn_hfo_ieeg.stages.snn.advanced_artifact_filter import add_input_to_advanced_artifact_filter_to_network
+from snn_hfo_ieeg.functions.signal_to_spike import concatenate_spikes
 
 
 def _get_relevant_input_bandwidth(measurement_mode, filtered_spikes: FilteredSpikes) -> List[Bandwidth]:
@@ -19,6 +18,19 @@ def _get_relevant_input_bandwidth(measurement_mode, filtered_spikes: FilteredSpi
         f'configuration.measurement_mode has an invalid value. Allowed values: {MeasurementMode}, instead got: {measurement_mode}')
 
 
+def _append_spikes(spikes, spike_train):
+    spikes.append(spike_train.up)
+    spikes.append(spike_train.down)
+    return spikes
+
+
+def _concatenate_bandwidths(bandwidths):
+    spike_trains = [
+        bandwidth.spike_trains for bandwidth in bandwidths if bandwidth is not None]
+    spikes = reduce(_append_spikes, spike_trains, [])
+    return concatenate_spikes(spikes)
+
+
 def snn_stage(filtered_spikes, duration, configuration, cache: Cache) -> SpikeMonitors:
     warnings.simplefilter("ignore", DeprecationWarning)
     if cache is None:
@@ -26,41 +38,12 @@ def snn_stage(filtered_spikes, duration, configuration, cache: Cache) -> SpikeMo
 
     cache.network.restore()
 
-    input_filtered_bandwidths = _get_relevant_input_bandwidth(
-        configuration.measurement_mode,
-        filtered_spikes)
-    input_layer = create_input_layer(
-        'main',
-        input_filtered_bandwidths,
-        cache.neuron_counts.input)
+    bandwidths = _get_relevant_input_bandwidth(
+        configuration.measurement_mode, filtered_spikes)
+    input_spiketimes, input_neurons_id = _concatenate_bandwidths(bandwidths)
 
-    input_to_hidden_synapses = create_input_to_hidden_synapses(
-        name='main',
-        input_layer=input_layer,
-        hidden_layer=cache.hidden_layer,
-        cache=cache)
-
-    cache.network.add(input_layer)
-    cache.network.add(input_to_hidden_synapses)
-
-    if cache.interneuron is not None:
-        input_to_interneuron_synapses = add_input_to_artifact_filter_to_network(
-            input_layer, cache)
-
-    if cache.advanced_artifact_filter_hidden_layer is not None:
-        advanced_artifact_filter_input_layer, advanced_artifact_filter_input_to_hidden_synapses = add_input_to_advanced_artifact_filter_to_network(
-            cache, filtered_spikes)
+    cache.input_layer.set_spikes(input_neurons_id, input_spiketimes * second)
 
     cache.network.run(duration * second)
-
-    cache.network.remove(input_layer)
-    cache.network.remove(input_to_hidden_synapses)
-
-    if cache.interneuron is not None:
-        cache.network.remove(input_to_interneuron_synapses)
-
-    if cache.advanced_artifact_filter_hidden_layer is not None:
-        cache.network.remove(advanced_artifact_filter_input_layer)
-        cache.network.remove(advanced_artifact_filter_input_to_hidden_synapses)
 
     return cache.spike_monitors

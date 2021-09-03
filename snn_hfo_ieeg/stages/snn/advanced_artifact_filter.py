@@ -1,5 +1,5 @@
 import numpy as np
-from snn_hfo_ieeg.stages.snn.basic_network_creation import create_synapses, create_non_input_layer, create_hidden_to_output_synapses, create_input_layer, create_input_to_hidden_synapses
+from snn_hfo_ieeg.stages.snn.basic_network_creation import create_synapses, create_non_input_layer, create_hidden_to_output_synapses
 from snn_hfo_ieeg.user_facing_data import MeasurementMode
 
 NAME = 'advanced_artifact_filter'
@@ -20,25 +20,7 @@ def get_advanced_artifact_filter_input_bandwidth(filtered_spikes):
     return [filtered_spikes.above_fast_ripple]
 
 
-def add_input_to_advanced_artifact_filter_to_network(cache, filtered_spikes):
-    advanced_artifact_filter_filtered_bandwidths = get_advanced_artifact_filter_input_bandwidth(
-        filtered_spikes)
-    advanced_artifact_filter_input_layer = create_input_layer(
-        NAME,
-        advanced_artifact_filter_filtered_bandwidths,
-        cache.neuron_counts.input)
-
-    advanced_artifact_filter_input_to_hidden_synapses = create_input_to_hidden_synapses(
-        name=NAME,
-        input_layer=advanced_artifact_filter_input_layer,
-        hidden_layer=cache.advanced_artifact_filter_hidden_layer,
-        cache=cache)
-    cache.network.add(advanced_artifact_filter_input_layer)
-    cache.network.add(advanced_artifact_filter_input_to_hidden_synapses)
-    return advanced_artifact_filter_input_layer, advanced_artifact_filter_input_to_hidden_synapses
-
-
-def add_advanced_artifact_filter_to_network(network, output_layer, model_paths, neuron_counts):
+def add_advanced_artifact_filter_to_network(network, input_layer, output_layer, model_paths, neuron_counts):
     hidden_layer = create_non_input_layer(
         model_paths, neuron_counts.hidden, f'{NAME}_hidden')
     number_of_output_neurons = 1
@@ -48,9 +30,13 @@ def add_advanced_artifact_filter_to_network(network, output_layer, model_paths, 
         NAME, hidden_layer, advanced_artifact_filter_output_layer, model_paths, neuron_counts)
     advanced_artifact_filter_output_to_output_synapses = create_advanced_artifact_filter_output_to_output_synapses(
         advanced_artifact_filter_output_layer, output_layer, model_paths)
+
+    advanced_artifact_filter_input_to_hidden_synapses = None
+
     network.add(
         hidden_layer,
         advanced_artifact_filter_output_layer,
         hidden_to_output_synapses,
-        advanced_artifact_filter_output_to_output_synapses)
+        advanced_artifact_filter_output_to_output_synapses,
+        advanced_artifact_filter_input_to_hidden_synapses)
     return hidden_layer
