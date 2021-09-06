@@ -1,8 +1,8 @@
-from snn_hfo_ieeg.stages.snn.weight_generation import generate_weights
 import numpy as np
 from snn_hfo_ieeg.stages.snn.basic_network_creation import create_synapses, create_non_input_layer, create_input_layer
 from snn_hfo_ieeg.user_facing_data import MeasurementMode
 from snn_hfo_ieeg.stages.snn.tau_generation import generate_concatenated_taus
+from snn_hfo_ieeg.stages.snn.weight_generation import generate_weights
 
 NAME = 'advanced_artifact_filter'
 
