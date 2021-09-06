@@ -23,7 +23,6 @@ class Cache(NamedTuple):
     spike_monitors: SpikeMonitors
     network: Network
     advanced_artifact_filter_input_layer: Optional[SpikeGeneratorGroup]
-    debug_monitor: SpikeMonitor
 
 
 def _read_neuron_counts(configuration):
@@ -87,7 +86,7 @@ def create_cache(configuration):
             model_paths, input_layer, output_layer, network)
 
     advanced_artifact_filter_input_layer = add_advanced_artifact_filter_to_network(
-        network, output_layer, model_paths, neuron_counts) if should_add_advanced_artifact_filter(configuration) else (None, None)
+        network, output_layer, model_paths, neuron_counts) if should_add_advanced_artifact_filter(configuration) else None
 
     network.store()
 
