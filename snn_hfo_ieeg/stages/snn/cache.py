@@ -1,5 +1,6 @@
 from typing import NamedTuple, Optional
 from brian2 import Network, SpikeMonitor
+from brian2.units import amp
 from brian2.input.spikegeneratorgroup import SpikeGeneratorGroup
 from snn_hfo_ieeg.stages.snn.model_paths import ModelPaths, load_model_paths
 from snn_hfo_ieeg.stages.snn.concatenation import NeuronCount
@@ -7,6 +8,7 @@ from snn_hfo_ieeg.stages.snn.basic_network_creation import create_hidden_to_outp
 from snn_hfo_ieeg.user_facing_data import MeasurementMode
 from snn_hfo_ieeg.stages.snn.artifact_filter import add_artifact_filter_to_network_and_get_interneuron, should_add_artifact_filter
 from snn_hfo_ieeg.stages.snn.advanced_artifact_filter import should_add_advanced_artifact_filter, add_advanced_artifact_filter_to_network
+from snn_hfo_ieeg.functions.dynapse_biases import get_current
 
 
 class SpikeMonitors(NamedTuple):
@@ -49,6 +51,7 @@ def create_cache(configuration):
     neuron_counts = _read_neuron_counts(configuration)
     hidden_layer = create_non_input_layer(
         model_paths, neuron_counts.hidden, 'hidden')
+    hidden_layer.Itau = get_current(15.3e-3) * amp
     number_of_output_neurons = 1
     layers_connected_to_output = _get_layers_connected_to_output_count(
         configuration)
