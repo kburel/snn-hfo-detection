@@ -1,3 +1,4 @@
+from snn_hfo_ieeg.stages.snn.weight_generation import generate_weights
 import numpy as np
 from snn_hfo_ieeg.stages.snn.basic_network_creation import create_synapses, create_non_input_layer, create_input_layer
 from snn_hfo_ieeg.user_facing_data import MeasurementMode
@@ -22,7 +23,7 @@ def get_advanced_artifact_filter_input_bandwidth(filtered_spikes):
 
 
 def _create_input_to_hidden_synapses(name, input_layer, hidden_layer, model_paths, neuron_counts):
-    weights = np.repeat(2_000, neuron_counts.hidden * neuron_counts.input)
+    weights = generate_weights(neuron_counts) * 2.0
     taus = generate_concatenated_taus(neuron_counts)
     return create_synapses(
         f'{name}_input_to_hidden', model_paths, input_layer, hidden_layer, weights, taus)
