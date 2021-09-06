@@ -3,7 +3,7 @@ import numpy as np
 from snn_hfo_ieeg.stages.loading.patient_data import ChannelData
 from snn_hfo_ieeg.functions.filter import butter_bandpass_filter
 from snn_hfo_ieeg.functions.signal_to_spike import find_thresholds, signal_to_spike_refractory
-from snn_hfo_ieeg.user_facing_data import Bandwidth, FilteredSpikes
+from snn_hfo_ieeg.user_facing_data import Bandwidth, FilteredSpikes, MeasurementMode
 
 
 SAMPLING_FREQUENCY = 2000
@@ -69,12 +69,42 @@ def _filter_signal_to_spike(filter_parameters) -> Bandwidth:
     )
 
 
+class _ScalingFactors(NamedTuple):
+    ripple: float
+    fast_ripple: float
+    above_fast_ripple: float
+
+
+def _get_scaling_factors(configuration):
+    base_factors = _ScalingFactors(
+        ripple=0.6,
+        fast_ripple=0.3,
+        above_fast_ripple=0.3)
+    if configuration.measurement_mode is MeasurementMode.IEEG:
+        return _ScalingFactors(
+            ripple=base_factors.ripple,
+            fast_ripple=base_factors.fast_ripple,
+            above_fast_ripple=base_factors.above_fast_ripple)
+    if configuration.measurement_mode is MeasurementMode.ECOG:
+        return _ScalingFactors(
+            ripple=base_factors.ripple,
+            fast_ripple=0.5,
+            above_fast_ripple=base_factors.above_fast_ripple)
+    if configuration.measurement_mode is MeasurementMode.SCALP:
+        return _ScalingFactors(
+            ripple=0.3,
+            fast_ripple=base_factors.fast_ripple,
+            above_fast_ripple=base_factors.above_fast_ripple)
+    raise ValueError("Unknown measurement mode")
+
+
 def filter_stage(channel_data, configuration) -> FilteredSpikes:
+    scaling_factors = _get_scaling_factors(configuration)
     ripple = _filter_signal_to_spike(_FilterParameters(
         channel_data=channel_data,
         lowcut=80,
         highcut=250,
-        scaling_factor=0.6,
+        scaling_factor=scaling_factors.ripple,
         calibration_time=configuration.calibration_time,
         refractory_period=3e-4
     ))
@@ -82,7 +112,7 @@ def filter_stage(channel_data, configuration) -> FilteredSpikes:
         channel_data=channel_data,
         lowcut=250,
         highcut=500,
-        scaling_factor=0.3,
+        scaling_factor=scaling_factors.fast_ripple,
         calibration_time=configuration.calibration_time,
         refractory_period=3e-4
     ))
@@ -90,7 +120,7 @@ def filter_stage(channel_data, configuration) -> FilteredSpikes:
         channel_data=channel_data,
         lowcut=500,
         highcut=900,
-        scaling_factor=0.3,
+        scaling_factor=scaling_factors.above_fast_ripple,
         calibration_time=configuration.calibration_time,
         refractory_period=1e-3
     ))
