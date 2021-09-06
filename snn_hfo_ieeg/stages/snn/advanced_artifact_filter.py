@@ -14,7 +14,7 @@ def should_add_advanced_artifact_filter(configuration):
 
 def create_advanced_artifact_filter_output_to_output_synapses(advanced_artifact_filter_output, output_layer, model_paths):
     weights = np.array([-100_000])
-    taus = np.array([5])
+    taus = np.array([100])
     return create_synapses(
         f'{NAME}_output_to_output', model_paths, advanced_artifact_filter_output, output_layer, weights, taus)
 
