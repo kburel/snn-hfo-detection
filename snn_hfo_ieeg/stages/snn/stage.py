@@ -19,6 +19,4 @@ def snn_stage(filtered_spikes, duration, configuration, cache: Cache) -> SpikeMo
 
     cache.network.run(duration * second)
 
-    print(cache.debug_monitor.t / second)
-
     return cache.spike_monitors
