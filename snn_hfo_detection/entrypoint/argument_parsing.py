@@ -3,6 +3,7 @@ import sys
 from snn_hfo_detection.user_facing_data import Configuration, MeasurementMode, PlotMode
 from snn_hfo_detection.entrypoint.hfo_detection import CustomOverrides
 from snn_hfo_detection.plotting.plot_loader import find_plotting_functions
+from snn_hfo_detection.functions.signal_to_spike.selector import SignalToSpikeAlgorithm
 
 
 def parse_arguments():
@@ -11,6 +12,7 @@ def parse_arguments():
     default_saving_path = 'saved_data/'
     default_plot_path = 'plots/'
     default_plot_mode = PlotMode.BOTH.name
+    default_signal_to_spike_algorithm = SignalToSpikeAlgorithm.DEFAULT
     default_hidden_neurons = 86
     default_calibration = 10
     parser.add_argument('mode', type=str,
@@ -35,6 +37,8 @@ def parse_arguments():
                         help='Which plots should be generated during the HFO detection. Possible values: raster, hfo_samples, mean_hfo_rate')
     parser.add_argument('--plot-mode', type=str, default=default_plot_mode,
                         help=f'How to handle plots. Possible values: save, show, both. Default is {default_plot_mode}')
+    parser.add_argument('--signal-to-spike-algorithm', type=str, default=default_signal_to_spike_algorithm,
+                        help=f'How to convert the signals to spikes. Possible values: default, realistic. Default is {default_signal_to_spike_algorithm}')
     parser.add_argument('--plot-path', type=str, default=default_plot_path,
                         help=f'Location to save plots to when --plot-mode is set to "save". Default is {default_plot_path}')
 
@@ -66,6 +70,8 @@ def convert_arguments_to_config(arguments):
         loading_path=arguments.load,
         plot_path=arguments.plot_path,
         plot_mode=PlotMode[arguments.plot_mode.upper()],
+        signal_to_spike_algorithm=SignalToSpikeAlgorithm[arguments.signal_to_spike_algorithm.upper(
+        )],
     )
 
 

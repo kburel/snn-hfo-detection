@@ -1,4 +1,5 @@
 
+from snn_hfo_detection.functions.signal_to_spike.selector import SignalToSpikeAlgorithm
 import pytest
 from snn_hfo_detection.plotting.persistence import PlotMode
 from snn_hfo_detection.plotting.plot_loader import find_plotting_functions
@@ -30,6 +31,7 @@ def _run_hfo_detection_with_plot_and_cb(plot_name, hfo_cb):
             loading_path=None,
             plot_mode=PlotMode.SAVE,
             plot_path='plots/',
+            signal_to_spike_algorithm=SignalToSpikeAlgorithm.DEFAULT,
         ),
         custom_overrides=EMPTY_CUSTOM_OVERRIDES,
         hfo_cb=hfo_cb)

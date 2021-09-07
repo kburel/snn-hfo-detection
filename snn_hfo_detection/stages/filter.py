@@ -1,9 +1,10 @@
 from typing import NamedTuple
 import numpy as np
 from snn_hfo_detection.stages.loading.patient_data import ChannelData
-from snn_hfo_detection.functions.filter import butter_bandpass_filter
-from snn_hfo_detection.functions.signal_to_spike import find_thresholds, signal_to_spike, get_sampling_frequency
 from snn_hfo_detection.user_facing_data import Bandwidth, FilteredSpikes, MeasurementMode
+from snn_hfo_detection.functions.filter import butter_bandpass_filter
+from snn_hfo_detection.functions.signal_to_spike.utility import find_thresholds, get_sampling_frequency, SignalToSpikeParameters
+from snn_hfo_detection.functions.signal_to_spike.selector import signal_to_spike, SignalToSpikeAlgorithm
 
 
 class _FilterParameters(NamedTuple):
@@ -22,6 +23,8 @@ class _FilterParameters(NamedTuple):
         time that should be used to find thresholds
     refractory_period: float
         time for the refractory period
+    signal_to_spike_algorithm: SignalToSpikeAlgorithm
+        the underlying algorithm
     '''
     channel_data: ChannelData
     lowcut: int
@@ -29,6 +32,7 @@ class _FilterParameters(NamedTuple):
     scaling_factor: float
     calibration_time: float
     refractory_period: float
+    signal_to_spike_algorithm: SignalToSpikeAlgorithm
 
 
 def _get_signal_times_in_calibration_time(signal, filter_parameters):
@@ -57,11 +61,16 @@ def _filter_signal_to_spike(filter_parameters: _FilterParameters) -> Bandwidth:
                                          window_size=0.5,
                                          sample_ratio=1/6,
                                          scaling_factor=filter_parameters.scaling_factor))
-    spike_trains = signal_to_spike(input_signal=signal,
-                                   threshold_up=thresholds,
-                                   threshold_down=thresholds,
-                                   times=filter_parameters.channel_data.signal_time,
-                                   refractory_period_duration=filter_parameters.refractory_period)
+    signal_to_spike_parameters = SignalToSpikeParameters(
+        signal=signal,
+        threshold_up=thresholds,
+        threshold_down=thresholds,
+        times=filter_parameters.channel_data.signal_time,
+        refractory_period=filter_parameters.refractory_period,
+        interpolation_factor=35_000
+    )
+    spike_trains = signal_to_spike(parameters=signal_to_spike_parameters,
+                                   algorithm=filter_parameters.signal_to_spike_algorithm)
     return Bandwidth(
         signal=signal,
         spike_trains=spike_trains
@@ -105,7 +114,8 @@ def filter_stage(channel_data, configuration) -> FilteredSpikes:
         highcut=250,
         scaling_factor=scaling_factors.ripple,
         calibration_time=configuration.calibration_time,
-        refractory_period=3e-4
+        refractory_period=3e-4,
+        signal_to_spike_algorithm=configuration.signal_to_spike_algorithm,
     ))
     fast_ripple = _filter_signal_to_spike(_FilterParameters(
         channel_data=channel_data,
@@ -113,7 +123,8 @@ def filter_stage(channel_data, configuration) -> FilteredSpikes:
         highcut=500,
         scaling_factor=scaling_factors.fast_ripple,
         calibration_time=configuration.calibration_time,
-        refractory_period=3e-4
+        refractory_period=3e-4,
+        signal_to_spike_algorithm=configuration.signal_to_spike_algorithm,
     ))
     above_fast_ripple = _filter_signal_to_spike(_FilterParameters(
         channel_data=channel_data,
@@ -121,7 +132,8 @@ def filter_stage(channel_data, configuration) -> FilteredSpikes:
         highcut=900,
         scaling_factor=scaling_factors.above_fast_ripple,
         calibration_time=configuration.calibration_time,
-        refractory_period=1e-3
+        refractory_period=1e-3,
+        signal_to_spike_algorithm=configuration.signal_to_spike_algorithm,
     ))
 
     return FilteredSpikes(

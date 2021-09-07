@@ -2,7 +2,7 @@ from typing import List
 from functools import reduce
 from brian2.units import second
 from snn_hfo_detection.user_facing_data import Bandwidth, FilteredSpikes, MeasurementMode
-from snn_hfo_detection.functions.signal_to_spike import concatenate_spikes
+from snn_hfo_detection.functions.signal_to_spike.utility import concatenate_spikes
 from snn_hfo_detection.stages.snn.advanced_artifact_filter import get_advanced_artifact_filter_input_bandwidth
 
 

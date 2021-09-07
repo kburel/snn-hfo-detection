@@ -1,3 +1,4 @@
+from snn_hfo_detection.functions.signal_to_spike.selector import SignalToSpikeAlgorithm
 import pytest
 from snn_hfo_detection.plotting.persistence import PlotMode
 from snn_hfo_detection.user_facing_data import HfoDetection, Periods, Analytics, HfoDetectionWithAnalytics
@@ -28,6 +29,7 @@ def _generate_test_configuration(dataset_name, measurement_mode=MeasurementMode.
         loading_path=None,
         plot_mode=PlotMode.SAVE,
         plot_path='plots/',
+        signal_to_spike_algorithm=SignalToSpikeAlgorithm.DEFAULT
     )
 
 

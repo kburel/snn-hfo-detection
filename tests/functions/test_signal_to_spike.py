@@ -1,5 +1,6 @@
 import pytest
-from snn_hfo_detection.functions.signal_to_spike import *
+from snn_hfo_detection.functions.signal_to_spike.default import signal_to_spike
+from snn_hfo_detection.functions.signal_to_spike.utility import find_thresholds, SpikeTrains, SignalToSpikeParameters, concatenate_spikes
 from tests.utility import *
 
 
@@ -33,28 +34,48 @@ def test_find_thresholds_does_not_accept_invalid_percentages(sample_ratio):
 
 
 @pytest.mark.parametrize(
-    'input_signal, threshold_up, threshold_down, times, refractory_period_duration, expected_spike_trains',
-    [([1, 0], 3, 0.5, 1, [0, 1], SpikeTrains(up=[], down=[])),
-     ([0, 10, -20], 3, 0.5, [0, 1, 2], 0.01, SpikeTrains(up=[0.3157894736842105, 0.631578947368421, 0.9473684210526315],
-                                                         down=[1.0526315789473684, 1.1578947368421053,
-                                                               1.263157894736842, 1.3684210526315788, 1.4736842105263157,
-                                                               1.5789473684210527, 1.6842105263157894, 1.789473684210526,
-                                                               1.894736842105263, 2.0])),
-     (np.arange(-20, 20, 0.1), 3, -5, np.arange(0, 4, 0.01), 0.6, SpikeTrains(up=[0.6015075376884422, 1.2030150753768845,
-                                                                                  1.8045226130653267, 2.406030150753769,
-                                                                                  3.007537688442211, 3.6090452261306534],
-                                                                              down=[0.0]))]
+    'parameters, expected_spike_trains',
+    [(SignalToSpikeParameters(
+        signal=[1, 0],
+        threshold_up=3,
+        threshold_down=0.5,
+        times=[0, 1],
+        refractory_period=0.01,
+        interpolation_factor=1),
+      SpikeTrains(up=[], down=[])),
+     (SignalToSpikeParameters(
+         signal=[0, 10, -20],
+         threshold_up=3,
+         threshold_down=0.5,
+         times=[0, 1, 2],
+         refractory_period=0.01,
+         interpolation_factor=10),
+      SpikeTrains(up=[0.3157894736842105, 0.631578947368421, 0.9473684210526315],
+                  down=[1.0526315789473684, 1.1578947368421053,
+                        1.263157894736842, 1.3684210526315788, 1.4736842105263157,
+                        1.5789473684210527, 1.6842105263157894, 1.789473684210526,
+                        1.894736842105263, 2.0])),
+     (SignalToSpikeParameters(
+         signal=np.arange(-20, 20, 0.1),
+         threshold_up=3,
+         threshold_down=-5,
+         times=np.arange(0, 4, 0.01),
+         refractory_period=0.6,
+         interpolation_factor=100),
+      SpikeTrains(up=[0.6015075376884422, 1.2030150753768845,
+                      1.8045226130653267, 2.406030150753769,
+                      3.007537688442211, 3.6090452261306534],
+                  down=[0.0]))]
 )
-def test_signal_to_spike_refractory(input_signal, threshold_up, threshold_down, times, refractory_period_duration, expected_spike_trains):
-    spike_trains = signal_to_spike(
-        input_signal, threshold_up, threshold_down, times, refractory_period_duration)
+def test_signal_to_spike_refractory(parameters, expected_spike_trains):
+    spike_trains = signal_to_spike(parameters)
     assert_are_lists_approximately_equal(
         spike_trains.up, expected_spike_trains.up)
     assert_are_lists_approximately_equal(
         spike_trains.down, expected_spike_trains.down)
 
 
-@pytest.mark.parametrize(
+@ pytest.mark.parametrize(
     'spikes, expected_concatenation',
     [([np.array([1, 2, 3])], ([1, 2, 3], [0, 0, 0])),
      ([np.array([1, 2, 3]), np.array([4, 5, 6])], ([1, 2, 3, 4, 5, 6], [0, 0, 0, 1, 1, 1]))])
