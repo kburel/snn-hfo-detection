@@ -177,7 +177,7 @@ def concatenate_spikes(spikes):
     # spike_idx_dn (array of shape times_interpolated): closest times to DOWN spikes in times_interpolated are set to 1; rest is 0
 
 
-def ADM(input_signal, threshold_UP, threshold_DOWN, sampling_frequency, refractory_period_duration, return_indices=True, index_dt=1e-4):
+def ADM(input_signal, threshold_UP, threshold_DOWN, sampling_frequency, refractory_period_duration):
     dt = 1/sampling_frequency
     end_time = len(input_signal)*dt
     times = np.arange(0, end_time, dt)
@@ -191,13 +191,12 @@ def ADM(input_signal, threshold_UP, threshold_DOWN, sampling_frequency, refracto
         times = np.concatenate((np.arange(0, times[-1], dt), [times[-1]]))
         input_signal = f(times)
         sampling_frequency = 1/times[1]
-    spike_t_up, spike_t_dn, times_interpolated, spike_idx_up, spike_idx_dn = ADM_numba(
-        input_signal, threshold_UP, threshold_DOWN, sampling_frequency, refractory_period_duration, return_indices, index_dt)
-    return (spike_t_up, spike_t_dn, times_interpolated, spike_idx_up, spike_idx_dn)
+    return ADM_numba(
+        input_signal, threshold_UP, threshold_DOWN, sampling_frequency, refractory_period_duration)
 
 
 @njit(fastmath=True, parallel=True)
-def ADM_numba(input_signal, threshold_UP, threshold_DOWN, sampling_frequency, refractory_period_duration, return_indices, index_dt):
+def ADM_numba(input_signal, threshold_UP, threshold_DOWN, sampling_frequency, refractory_period_duration) -> SpikeTrains:
     dt = 1/sampling_frequency
     end_time = len(input_signal)*dt
     times = np.linspace(0, end_time, len(input_signal)).astype(np.float64)
@@ -260,12 +259,7 @@ def ADM_numba(input_signal, threshold_UP, threshold_DOWN, sampling_frequency, re
     spike_t_up = np.delete(spike_t_up, index)
     spike_t_dn = np.delete(spike_t_dn, index)
 
-    if return_indices:
-        times_interpolated = np.arange(0, end_time, index_dt)
-        spike_idx_up = np.zeros_like(times_interpolated)
-        spike_idx_dn = np.zeros_like(times_interpolated)
-        idxdn = np.searchsorted(times_interpolated, spike_t_dn)
-        spike_idx_dn[idxdn] = 1
-        idxup = np.searchsorted(times_interpolated, spike_t_up)
-        spike_idx_up[idxup] = 1
-    return (spike_t_up, spike_t_dn, times_interpolated, spike_idx_up, spike_idx_dn)
+    return SpikeTrains(
+        up=spike_t_up,
+        down=spike_t_dn,
+    )
