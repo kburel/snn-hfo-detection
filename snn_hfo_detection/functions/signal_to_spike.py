@@ -130,7 +130,7 @@ def get_sampling_frequency(times) -> float:
     # spike_t_up (array): list of precise UP spike times
     # spike_t_dn (array): list of precise DOWN spike times
 
-@njit(fastmath=True, parallel=True)
+
 def signal_to_spike(input_signal, threshold_up, threshold_down, times, refractory_period_duration) -> SpikeTrains:
     sampling_frequency = get_sampling_frequency(times)
     delta_time = 1/sampling_frequency
@@ -144,7 +144,12 @@ def signal_to_spike(input_signal, threshold_up, threshold_down, times, refractor
             (np.arange(0, times[-1], delta_time), [times[-1]]))
         input_signal = interpolation(times)
         sampling_frequency = 1/times[1]
+    return _signal_to_spike(input_signal, threshold_up, threshold_down, times, refractory_period_duration)
 
+
+@njit(fastmath=True, parallel=True)
+def _signal_to_spike(input_signal, threshold_up, threshold_down, times, refractory_period_duration) -> SpikeTrains:
+    delta_time = times[1] - times[0]
     dc_voltage = input_signal[0]
     remainder_of_refractory = 0
     spike_t_up = times[0:2]
