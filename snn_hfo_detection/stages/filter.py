@@ -2,7 +2,7 @@ from typing import NamedTuple
 import numpy as np
 from snn_hfo_detection.stages.loading.patient_data import ChannelData
 from snn_hfo_detection.functions.filter import butter_bandpass_filter
-from snn_hfo_detection.functions.signal_to_spike import find_thresholds, signal_to_spike
+from snn_hfo_detection.functions.signal_to_spike import find_thresholds, signal_to_spike, get_sampling_frequency
 from snn_hfo_detection.user_facing_data import Bandwidth, FilteredSpikes, MeasurementMode
 
 
@@ -41,14 +41,9 @@ def _get_signal_times_in_calibration_time(signal, filter_parameters):
     return signals, times
 
 
-def _get_sampling_frequency(filter_parameters: _FilterParameters) -> float:
-    times = filter_parameters.channel_data.signal_time
-    return 1 / (times[1] - times[0])
-
-
 def _filter_signal_to_spike(filter_parameters: _FilterParameters) -> Bandwidth:
-    sampling_frequency = _get_sampling_frequency(filter_parameters)
-
+    sampling_frequency = get_sampling_frequency(
+        filter_parameters.channel_data.signal_time)
     signal = butter_bandpass_filter(data=filter_parameters.channel_data.wideband_signal,
                                     lowcut=filter_parameters.lowcut,
                                     highcut=filter_parameters.highcut,
@@ -65,7 +60,7 @@ def _filter_signal_to_spike(filter_parameters: _FilterParameters) -> Bandwidth:
     spike_trains = signal_to_spike(input_signal=signal,
                                    threshold_up=thresholds,
                                    threshold_down=thresholds,
-                                   sampling_frequency=sampling_frequency,
+                                   times=filter_parameters.channel_data.signal_time,
                                    refractory_period_duration=filter_parameters.refractory_period)
     return Bandwidth(
         signal=signal,

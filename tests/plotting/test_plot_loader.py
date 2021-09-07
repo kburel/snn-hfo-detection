@@ -32,7 +32,6 @@ def test_return_scorrect_plot_fn():
     plots = find_plotting_functions([VALID_PLOT_NAME])
     assert len(plots.channel) == 1
     assert len(plots.patient) == 0
-    print(plots.channel[0].function)
     with pytest.raises(ChannelDebugError):
         plots.channel[0].function(None)
 

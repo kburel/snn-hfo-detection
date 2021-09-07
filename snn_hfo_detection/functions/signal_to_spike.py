@@ -1,8 +1,6 @@
 from typing import NamedTuple
-import scipy as sc
 import numpy as np
 from numba import njit
-from scipy.interpolate import interp1d
 
 # ========================================================================================
 # Threshold calculation based on the noise floor
@@ -112,6 +110,10 @@ def concatenate_spikes(spikes):
     return all_spiketimes_new, all_neuron_ids_new
 
 
+def get_sampling_frequency(times) -> float:
+    return 1 / (times[1] - times[0])
+
+
 # Usage:
     # converts signal into UP and DOWN spikes using the Adaptive Delta Modulation scheme.
     # spike times are determined through linear interpolation between the current and the next sampling point
@@ -122,35 +124,18 @@ def concatenate_spikes(spikes):
     # threshold_down (float): threshold for DOWN spikes to occur
     # sampling_frequency (float): sampling frequency of the input signal (1/dt)
     # refractory_period_duration (float): refractory period in which spikes can not occur (NEEDS TO BE AT LEAST 1/sampling_frequency)
-    # or whether the integration is reset and signal needs to integrate the full threshold after the refractory period (True)
 
 # Output Parameters:
     # spike_t_up (array): list of precise UP spike times
     # spike_t_dn (array): list of precise DOWN spike times
-def signal_to_spike(input_signal, threshold_up, threshold_down, sampling_frequency, refractory_period_duration) -> SpikeTrains:
-    dt = 1/sampling_frequency
-    end_time = len(input_signal)*dt
-    times = np.arange(0, end_time, dt)
-
-    if refractory_period_duration < dt:
-        interpolation_factor = 1
-        while dt > refractory_period_duration:
-            interpolation_factor += 1
-            dt = 1/(sampling_frequency*interpolation_factor)
-        f = interp1d(times, input_signal)
-        times = np.concatenate((np.arange(0, times[-1], dt), [times[-1]]))
-        input_signal = f(times)
-        sampling_frequency = 1/times[1]
-    return _signal_to_spike_numba(
-        input_signal, threshold_up, threshold_down, sampling_frequency, refractory_period_duration)
-
-
 @njit(fastmath=True, parallel=True)
-def _signal_to_spike_numba(input_signal, threshold_up, threshold_down, sampling_frequency, refractory_period_duration) -> SpikeTrains:
-    dt = 1/sampling_frequency
-    end_time = len(input_signal)*dt
-    times = np.linspace(0, end_time, len(input_signal)).astype(np.float64)
-    DC_Voltage = input_signal[0]
+def signal_to_spike(input_signal, threshold_up, threshold_down, times, refractory_period_duration) -> SpikeTrains:
+    sampling_frequency = get_sampling_frequency(times)
+    if refractory_period_duration < sampling_frequency:
+        raise ValueError(
+            f'Refractory period ({refractory_period_duration}) is smaller than sampling frequency ({sampling_frequency})')
+    delta_time = 1/sampling_frequency
+    dc_voltage = input_signal[0]
     remainder_of_refractory = 0
     spike_t_up = times[0:2]
     spike_t_dn = times[0:2]
@@ -158,52 +143,47 @@ def _signal_to_spike_numba(input_signal, threshold_up, threshold_down, sampling_
     interpolation_activation = 0
     intercept_point = 0
 
-    for i in range(len(times)):
-        t = i * dt
-        if i == 0:
+    for i, time in enumerate(times[1:]):
+        slope = ((input_signal[i]-input_signal[i-1])/delta_time)
+        if remainder_of_refractory >= 2*delta_time:
+            remainder_of_refractory = remainder_of_refractory-delta_time
+            interpolation_activation = 1
             continue
 
-        slope = ((input_signal[i]-input_signal[i-1])/dt)
-        if remainder_of_refractory >= 2*dt:
-            remainder_of_refractory = remainder_of_refractory-dt
-            interpolation_activation = 1
+        if interpolation_activation == 1:
+            interpolate_from = (interpolate_from+remainder_of_refractory)
+            remainder_of_refractory = 0
+            if interpolate_from >= 2*delta_time:
+                interpolate_from = interpolate_from-delta_time
+                continue
+            interpolate_from = (
+                interpolate_from+remainder_of_refractory) % delta_time
+            voltage_below = (input_signal[i-1] + interpolate_from*slope)
+            dc_voltage = voltage_below
 
         else:
+            voltage_below = input_signal[i-1]
+            interpolate_from = 0
 
-            if interpolation_activation == 1:
-                interpolate_from = (interpolate_from+remainder_of_refractory)
-                remainder_of_refractory = 0
-                if interpolate_from >= 2*dt:
-                    interpolate_from = interpolate_from-dt
-                    continue
-                interpolate_from = (
-                    interpolate_from+remainder_of_refractory) % dt
-                Vbelow = (input_signal[i-1] + interpolate_from*slope)
-                DC_Voltage = Vbelow
+        if dc_voltage + threshold_up <= input_signal[i]:
+            intercept_point = time - delta_time + interpolate_from + \
+                ((threshold_up+dc_voltage-voltage_below)/slope)
+            spike_t_up = np.append(spike_t_up, intercept_point)
+            interpolate_from = delta_time+intercept_point-time
+            remainder_of_refractory = refractory_period_duration
+            interpolation_activation = 1
+            continue
 
-            else:
-                Vbelow = input_signal[i-1]
-                interpolate_from = 0
+        if dc_voltage - threshold_down >= input_signal[i]:
+            intercept_point = time - delta_time + interpolate_from + \
+                ((-threshold_down+dc_voltage-voltage_below)/slope)
+            spike_t_dn = np.append(spike_t_dn, intercept_point)
+            interpolate_from = delta_time+intercept_point-time
+            remainder_of_refractory = refractory_period_duration
+            interpolation_activation = 1
+            continue
 
-            if DC_Voltage + threshold_up <= input_signal[i]:
-                intercept_point = t - dt + interpolate_from + \
-                    ((threshold_up+DC_Voltage-Vbelow)/slope)
-                spike_t_up = np.append(spike_t_up, intercept_point)
-                interpolate_from = dt+intercept_point-t
-                remainder_of_refractory = refractory_period_duration
-                interpolation_activation = 1
-                continue
-
-            elif DC_Voltage - threshold_down >= input_signal[i]:
-                intercept_point = t - dt + interpolate_from + \
-                    ((-threshold_down+DC_Voltage-Vbelow)/slope)
-                spike_t_dn = np.append(spike_t_dn, intercept_point)
-                interpolate_from = dt+intercept_point-t
-                remainder_of_refractory = refractory_period_duration
-                interpolation_activation = 1
-                continue
-
-            interpolation_activation = 0
+        interpolation_activation = 0
 
     index = [0, 1]
     spike_t_up = np.delete(spike_t_up, index)
