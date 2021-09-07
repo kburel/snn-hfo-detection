@@ -181,22 +181,18 @@ def ADM(input_signal, threshold_UP, threshold_DOWN, sampling_frequency, refracto
     dt = 1/sampling_frequency
     end_time = len(input_signal)*dt
     times = np.arange(0, end_time, dt)
-    if not refractory_period_duration:
-        spike_t_up, spike_t_dn, times_interpolated, spike_idx_up, spike_idx_dn = ADM_numba_noRFR(
-            input_signal, threshold_UP, threshold_DOWN, sampling_frequency, return_indices, index_dt)
 
-    else:
-        if refractory_period_duration < dt:
-            interpolation_factor = 1
-            while dt > refractory_period_duration:
-                interpolation_factor += 1
-                dt = 1/(sampling_frequency*interpolation_factor)
-            f = interp1d(times, input_signal)
-            times = np.concatenate((np.arange(0, times[-1], dt), [times[-1]]))
-            input_signal = f(times)
-            sampling_frequency = 1/times[1]
-        spike_t_up, spike_t_dn, times_interpolated, spike_idx_up, spike_idx_dn = ADM_numba(
-            input_signal, threshold_UP, threshold_DOWN, sampling_frequency, refractory_period_duration, return_indices, index_dt)
+    if refractory_period_duration < dt:
+        interpolation_factor = 1
+        while dt > refractory_period_duration:
+            interpolation_factor += 1
+            dt = 1/(sampling_frequency*interpolation_factor)
+        f = interp1d(times, input_signal)
+        times = np.concatenate((np.arange(0, times[-1], dt), [times[-1]]))
+        input_signal = f(times)
+        sampling_frequency = 1/times[1]
+    spike_t_up, spike_t_dn, times_interpolated, spike_idx_up, spike_idx_dn = ADM_numba(
+        input_signal, threshold_UP, threshold_DOWN, sampling_frequency, refractory_period_duration, return_indices, index_dt)
     return (spike_t_up, spike_t_dn, times_interpolated, spike_idx_up, spike_idx_dn)
 
 
@@ -259,54 +255,6 @@ def ADM_numba(input_signal, threshold_UP, threshold_DOWN, sampling_frequency, re
                 continue
 
             interpolation_activation = 0
-
-    index = [0, 1]
-    spike_t_up = np.delete(spike_t_up, index)
-    spike_t_dn = np.delete(spike_t_dn, index)
-
-    if return_indices:
-        times_interpolated = np.arange(0, end_time, index_dt)
-        spike_idx_up = np.zeros_like(times_interpolated)
-        spike_idx_dn = np.zeros_like(times_interpolated)
-        idxdn = np.searchsorted(times_interpolated, spike_t_dn)
-        spike_idx_dn[idxdn] = 1
-        idxup = np.searchsorted(times_interpolated, spike_t_up)
-        spike_idx_up[idxup] = 1
-    return (spike_t_up, spike_t_dn, times_interpolated, spike_idx_up, spike_idx_dn)
-
-
-@njit(fastmath=True, parallel=True)
-def ADM_numba_noRFR(input_signal, threshold_UP, threshold_DOWN, sampling_frequency, return_indices, index_dt):
-    dt = 1/sampling_frequency
-    end_time = len(input_signal)*dt
-    times = np.linspace(0, end_time, len(input_signal)).astype(np.float64)
-    DC_Voltage = input_signal[0]
-    spike_t_up = times[0:2]
-    spike_t_dn = times[0:2]
-    intercept_point = 0
-    for i in range(len(times)):
-        t = i * dt
-        if i == 0:
-            continue
-
-        slope = ((input_signal[i]-input_signal[i-1])/dt)
-
-        V_above = input_signal[i]
-        V_below = input_signal[i-1]
-
-        if V_above >= DC_Voltage + threshold_UP:
-            while V_above >= DC_Voltage + threshold_UP:
-                intercept_point = t - dt + \
-                    ((threshold_UP+DC_Voltage-V_below)/slope)
-                spike_t_up = np.append(spike_t_up, intercept_point)
-                DC_Voltage = DC_Voltage + threshold_UP
-
-        elif V_above <= DC_Voltage - threshold_DOWN:
-            while V_above <= DC_Voltage - threshold_DOWN:
-                intercept_point = t - dt + \
-                    ((-threshold_DOWN+DC_Voltage-V_below)/slope)
-                spike_t_dn = np.append(spike_t_dn, intercept_point)
-                DC_Voltage = DC_Voltage - threshold_DOWN
 
     index = [0, 1]
     spike_t_up = np.delete(spike_t_up, index)
