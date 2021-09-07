@@ -22,7 +22,8 @@ SAVED_HFO_DETECTION = HfoDetectionWithAnalytics(
             fast_ripple=SpikeTrains(
                 up=np.array([1.5, 2.1]),
                 down=np.array([2.4, 3])
-            )),
+            ),
+            above_fast_ripple=None),
         spike_times=np.array([1, 2, 2.3, 3]),
         neuron_ids=np.array([0, 1, 2, 2])
     ))

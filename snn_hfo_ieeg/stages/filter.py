@@ -3,7 +3,7 @@ import numpy as np
 from snn_hfo_ieeg.stages.loading.patient_data import ChannelData
 from snn_hfo_ieeg.functions.filter import butter_bandpass_filter
 from snn_hfo_ieeg.functions.signal_to_spike import find_thresholds, signal_to_spike_refractory
-from snn_hfo_ieeg.user_facing_data import MeasurementMode, Bandwidth, FilteredSpikes
+from snn_hfo_ieeg.user_facing_data import Bandwidth, FilteredSpikes, MeasurementMode
 
 
 SAMPLING_FREQUENCY = 2000
@@ -23,12 +23,15 @@ class _FilterParameters(NamedTuple):
         new scaling factor
     calibration_time: float
         time that should be used to find thresholds
+    refractory_period: float
+        time for the refractory period
     '''
     channel_data: ChannelData
     lowcut: int
     highcut: int
     scaling_factor: float
     calibration_time: float
+    refractory_period: float
 
 
 def _get_signal_times_in_calibration_time(signal, filter_parameters):
@@ -59,41 +62,70 @@ def _filter_signal_to_spike(filter_parameters) -> Bandwidth:
                                               times=filter_parameters.channel_data.signal_time,
                                               amplitude=signal,
                                               thr_up=thresholds, thr_dn=thresholds,
-                                              refractory_period=3e-4)
+                                              refractory_period=filter_parameters.refractory_period)
     return Bandwidth(
         signal=signal,
         spike_trains=spike_trains
     )
 
 
-def _filter_spikes_according_to_measurement_mode(measurement_mode, ripple, fast_ripple) -> FilteredSpikes:
-    if measurement_mode is MeasurementMode.IEEG:
-        return FilteredSpikes(ripple=ripple, fast_ripple=fast_ripple)
-    if measurement_mode is MeasurementMode.ECOG:
-        return FilteredSpikes(ripple=None, fast_ripple=fast_ripple)
-    if measurement_mode is MeasurementMode.SCALP:
-        return FilteredSpikes(ripple=ripple, fast_ripple=None)
-    raise ValueError(
-        f'configuration.measurement_mode has an invalid value. Allowed values: {MeasurementMode}, instead got: {measurement_mode}')
+class _ScalingFactors(NamedTuple):
+    ripple: float
+    fast_ripple: float
+    above_fast_ripple: float
 
 
-def filter_stage(channel_data, configuration):
+def _get_scaling_factors(configuration):
+    base_factors = _ScalingFactors(
+        ripple=0.6,
+        fast_ripple=0.3,
+        above_fast_ripple=0.3)
+    if configuration.measurement_mode is MeasurementMode.IEEG:
+        return _ScalingFactors(
+            ripple=base_factors.ripple,
+            fast_ripple=base_factors.fast_ripple,
+            above_fast_ripple=base_factors.above_fast_ripple)
+    if configuration.measurement_mode is MeasurementMode.ECOG:
+        return _ScalingFactors(
+            ripple=base_factors.ripple,
+            fast_ripple=0.5,
+            above_fast_ripple=base_factors.above_fast_ripple)
+    if configuration.measurement_mode is MeasurementMode.SCALP:
+        return _ScalingFactors(
+            ripple=0.3,
+            fast_ripple=base_factors.fast_ripple,
+            above_fast_ripple=base_factors.above_fast_ripple)
+    raise ValueError("Unknown measurement mode")
+
+
+def filter_stage(channel_data, configuration) -> FilteredSpikes:
+    scaling_factors = _get_scaling_factors(configuration)
     ripple = _filter_signal_to_spike(_FilterParameters(
         channel_data=channel_data,
         lowcut=80,
         highcut=250,
-        scaling_factor=0.6,
-        calibration_time=configuration.calibration_time
+        scaling_factor=scaling_factors.ripple,
+        calibration_time=configuration.calibration_time,
+        refractory_period=3e-4
     ))
     fast_ripple = _filter_signal_to_spike(_FilterParameters(
         channel_data=channel_data,
         lowcut=250,
         highcut=500,
-        scaling_factor=0.3,
-        calibration_time=configuration.calibration_time
+        scaling_factor=scaling_factors.fast_ripple,
+        calibration_time=configuration.calibration_time,
+        refractory_period=3e-4
+    ))
+    above_fast_ripple = _filter_signal_to_spike(_FilterParameters(
+        channel_data=channel_data,
+        lowcut=500,
+        highcut=900,
+        scaling_factor=scaling_factors.above_fast_ripple,
+        calibration_time=configuration.calibration_time,
+        refractory_period=1e-3
     ))
 
-    return _filter_spikes_according_to_measurement_mode(
-        measurement_mode=configuration.measurement_mode,
+    return FilteredSpikes(
         ripple=ripple,
-        fast_ripple=fast_ripple)
+        fast_ripple=fast_ripple,
+        above_fast_ripple=above_fast_ripple)

@@ -10,10 +10,16 @@ def _print_hfo(hfo_detection_run: HfoDetectionRun):
     print(
         f'Interval {metadata.interval}, channel # {metadata.channel}: {metadata.channel_label}')
     print(f'SNN simulation will run for {metadata.duration} seconds')
-    hfo_detection = hfo_detection_run.detector.run()
-    print('Number of HFO events: ', hfo_detection.total_amount)
+    hfo_detection = hfo_detection_run.detector.run_with_analytics()
+    print('Number of HFO events: ', hfo_detection.result.total_amount)
     print('Rate of HFO (event/min)',
-          np.around(hfo_detection.frequency * 60, decimals=2))
+          np.around(hfo_detection.result.frequency * 60, decimals=2))
+    print('Perios:')
+    periods = zip(hfo_detection.analytics.periods.start,
+                  hfo_detection.analytics.periods.stop)
+    for start, stop in periods:
+        print(f'- {start} : {stop}')
+
     print('------')
 
 
