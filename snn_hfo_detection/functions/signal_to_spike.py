@@ -1,6 +1,7 @@
 from typing import NamedTuple
 import numpy as np
 from numba import njit
+from scipy.interpolate import interp1d
 
 # ========================================================================================
 # Threshold calculation based on the noise floor
@@ -129,17 +130,21 @@ def get_sampling_frequency(times) -> float:
     # spike_t_up (array): list of precise UP spike times
     # spike_t_dn (array): list of precise DOWN spike times
 
+@njit(fastmath=True, parallel=True)
 def signal_to_spike(input_signal, threshold_up, threshold_down, times, refractory_period_duration) -> SpikeTrains:
     sampling_frequency = get_sampling_frequency(times)
-    if refractory_period_duration < sampling_frequency:
-        raise ValueError(
-            f'Refractory period ({refractory_period_duration}) is smaller than sampling frequency ({sampling_frequency})')
-    return _signal_to_spike(input_signal, threshold_up, threshold_down, times, refractory_period_duration)
+    delta_time = 1/sampling_frequency
+    if refractory_period_duration < delta_time:
+        interpolation_factor = 1
+        while delta_time > refractory_period_duration:
+            interpolation_factor += 1
+            delta_time = 1/(sampling_frequency*interpolation_factor)
+        interpolation = interp1d(times, input_signal)
+        times = np.concatenate(
+            (np.arange(0, times[-1], delta_time), [times[-1]]))
+        input_signal = interpolation(times)
+        sampling_frequency = 1/times[1]
 
-
-@njit(fastmath=True, parallel=True)
-def _signal_to_spike(input_signal, threshold_up, threshold_down, times, refractory_period_duration) -> SpikeTrains:
-    delta_time = times[1] - times[0]
     dc_voltage = input_signal[0]
     remainder_of_refractory = 0
     spike_t_up = times[0:2]
