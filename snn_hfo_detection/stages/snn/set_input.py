@@ -1,9 +1,9 @@
 from typing import List
 from functools import reduce
 from brian2.units import second
-from snn_hfo_ieeg.user_facing_data import Bandwidth, FilteredSpikes, MeasurementMode
-from snn_hfo_ieeg.functions.signal_to_spike import concatenate_spikes
-from snn_hfo_ieeg.stages.snn.advanced_artifact_filter import get_advanced_artifact_filter_input_bandwidth
+from snn_hfo_detection.user_facing_data import Bandwidth, FilteredSpikes, MeasurementMode
+from snn_hfo_detection.functions.signal_to_spike import concatenate_spikes
+from snn_hfo_detection.stages.snn.advanced_artifact_filter import get_advanced_artifact_filter_input_bandwidth
 
 
 def _get_relevant_input_bandwidth(measurement_mode, filtered_spikes: FilteredSpikes) -> List[Bandwidth]:

@@ -1,9 +1,9 @@
 from typing import NamedTuple
 import numpy as np
-from snn_hfo_ieeg.stages.loading.patient_data import ChannelData
-from snn_hfo_ieeg.functions.filter import butter_bandpass_filter
-from snn_hfo_ieeg.functions.signal_to_spike import find_thresholds, signal_to_spike_refractory
-from snn_hfo_ieeg.user_facing_data import Bandwidth, FilteredSpikes, MeasurementMode
+from snn_hfo_detection.stages.loading.patient_data import ChannelData
+from snn_hfo_detection.functions.filter import butter_bandpass_filter
+from snn_hfo_detection.functions.signal_to_spike import find_thresholds, signal_to_spike_refractory
+from snn_hfo_detection.user_facing_data import Bandwidth, FilteredSpikes, MeasurementMode
 
 
 SAMPLING_FREQUENCY = 2000

@@ -1,7 +1,7 @@
 import os
 import pytest
 from tests.utility import get_tests_path
-from snn_hfo_ieeg.stages.loading.folder_discovery import get_interval_paths
+from snn_hfo_detection.stages.loading.folder_discovery import get_interval_paths
 
 
 def _get_test_data_path():

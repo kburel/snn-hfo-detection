@@ -1,6 +1,6 @@
 import os
 from typing import NamedTuple
-_PACKAGE_NAME = 'snn_hfo_ieeg'
+_PACKAGE_NAME = 'snn_hfo_detection'
 
 
 class ModelPaths(NamedTuple):

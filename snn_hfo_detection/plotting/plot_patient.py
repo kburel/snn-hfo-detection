@@ -1,5 +1,5 @@
-from snn_hfo_ieeg.plotting.persistence import Intervals, save_or_show_patient_plot
-from snn_hfo_ieeg.plotting.plot_mean_hfo_rate import plot_mean_hfo_rate as inner_plot_mean_hfo_rate
+from snn_hfo_detection.plotting.persistence import Intervals, save_or_show_patient_plot
+from snn_hfo_detection.plotting.plot_mean_hfo_rate import plot_mean_hfo_rate as inner_plot_mean_hfo_rate
 
 
 class PatientDebugError(Exception):

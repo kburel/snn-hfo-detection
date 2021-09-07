@@ -1,8 +1,8 @@
 from os import path, makedirs
 from typing import List, TypedDict
 import matplotlib.pyplot as plt
-from snn_hfo_ieeg.user_facing_data import HfoDetectionRun
-from snn_hfo_ieeg.user_facing_data import HfoDetectionWithAnalytics, PlotMode
+from snn_hfo_detection.user_facing_data import HfoDetectionRun
+from snn_hfo_detection.user_facing_data import HfoDetectionWithAnalytics, PlotMode
 
 
 class Intervals(TypedDict):

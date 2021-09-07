@@ -1,8 +1,8 @@
 #!/usr/bin/env python3
 
 import numpy as np
-from snn_hfo_ieeg.run import run_hfo_detection
-from snn_hfo_ieeg.user_facing_data import HfoDetectionRun
+from snn_hfo_detection.run import run_hfo_detection
+from snn_hfo_detection.user_facing_data import HfoDetectionRun
 
 
 def _print_hfo(hfo_detection_run: HfoDetectionRun):

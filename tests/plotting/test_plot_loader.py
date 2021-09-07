@@ -1,6 +1,6 @@
 import pytest
-from snn_hfo_ieeg.plotting.plot_loader import find_plotting_functions
-from snn_hfo_ieeg.plotting.plot_channel import ChannelDebugError
+from snn_hfo_detection.plotting.plot_loader import find_plotting_functions
+from snn_hfo_detection.plotting.plot_channel import ChannelDebugError
 
 VALID_PLOT_NAME = 'internal_channel_debug'
 

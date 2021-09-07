@@ -1,5 +1,5 @@
 [tool.poetry]
-name = "snn_hfo_ieeg"
+name = "snn_hfo_detection"
 version = "0.1.0"
 description = "HFO detection with a Spiking Neural Network"
 authors = ["Karla Burelo <kburel@ini.uzh.ch>"]

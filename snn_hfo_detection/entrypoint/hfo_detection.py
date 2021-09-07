@@ -1,12 +1,12 @@
 from copy import deepcopy
 from typing import List, NamedTuple, Optional
 import numpy as np
-from snn_hfo_ieeg.stages.all import run_all_hfo_detection_stages
-from snn_hfo_ieeg.user_facing_data import Metadata, HfoDetectionRun, HfoDetector
-from snn_hfo_ieeg.stages.loading.patient_data import load_patient_data, extract_channel_data
-from snn_hfo_ieeg.stages.loading.folder_discovery import get_interval_paths
-from snn_hfo_ieeg.stages.persistence.loading import load_hfo_detection
-from snn_hfo_ieeg.plotting.plot_patient import Intervals
+from snn_hfo_detection.stages.all import run_all_hfo_detection_stages
+from snn_hfo_detection.user_facing_data import Metadata, HfoDetectionRun, HfoDetector
+from snn_hfo_detection.stages.loading.patient_data import load_patient_data, extract_channel_data
+from snn_hfo_detection.stages.loading.folder_discovery import get_interval_paths
+from snn_hfo_detection.stages.persistence.loading import load_hfo_detection
+from snn_hfo_detection.plotting.plot_patient import Intervals
 
 
 class CustomOverrides(NamedTuple):

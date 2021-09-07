@@ -1,8 +1,8 @@
 import json
 from os import path
 from types import SimpleNamespace
-from snn_hfo_ieeg.user_facing_data import HfoDetectionWithAnalytics
-from snn_hfo_ieeg.stages.persistence.utility import get_persistence_path
+from snn_hfo_detection.user_facing_data import HfoDetectionWithAnalytics
+from snn_hfo_detection.stages.persistence.utility import get_persistence_path
 
 
 def load_hfo_detection(loading_path, metadata) -> HfoDetectionWithAnalytics:

@@ -2,8 +2,8 @@ import matplotlib.pyplot as plt
 from matplotlib import gridspec
 from matplotlib.widgets import Slider
 import numpy as np
-from snn_hfo_ieeg.user_facing_data import HfoDetectionRun
-from snn_hfo_ieeg.plotting.persistence import save_or_show_channel_plot, should_save_plot, should_show_plot
+from snn_hfo_detection.user_facing_data import HfoDetectionRun
+from snn_hfo_detection.plotting.persistence import save_or_show_channel_plot, should_save_plot, should_show_plot
 
 
 def _get_start_to_stop_indices(times: np.array, start, stop):

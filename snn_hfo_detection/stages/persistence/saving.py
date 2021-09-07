@@ -2,7 +2,7 @@ import os
 import json
 from pathlib import Path
 import numpy as np
-from snn_hfo_ieeg.stages.persistence.utility import get_persistence_path
+from snn_hfo_detection.stages.persistence.utility import get_persistence_path
 
 
 def _create_parent_directory(path):
