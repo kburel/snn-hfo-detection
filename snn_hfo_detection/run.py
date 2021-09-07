@@ -1,5 +1,6 @@
-from snn_hfo_ieeg.entrypoint.hfo_detection import run_hfo_detection_with_configuration
-from snn_hfo_ieeg.entrypoint.argument_parsing import parse_arguments, convert_arguments_to_config, convert_arguments_to_custom_overrides
+from snn_hfo_detection.entrypoint.hfo_detection import run_hfo_detection_with_configuration
+from snn_hfo_detection.entrypoint.argument_parsing import parse_arguments, convert_arguments_to_config, convert_arguments_to_custom_overrides
+
 
 def run_hfo_detection(hfo_cb):
     arguments = parse_arguments()

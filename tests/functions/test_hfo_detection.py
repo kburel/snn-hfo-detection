@@ -1,5 +1,5 @@
 import pytest
-from snn_hfo_ieeg.functions.hfo_detection import Periods, detect_hfo, HfoDetectionWithAnalytics, HfoDetection, Analytics
+from snn_hfo_detection.functions.hfo_detection import Periods, detect_hfo, HfoDetectionWithAnalytics, HfoDetection, Analytics
 from tests.utility import *
 
 

@@ -1,8 +1,8 @@
 import argparse
 import sys
-from snn_hfo_ieeg.user_facing_data import Configuration, MeasurementMode, PlotMode
-from snn_hfo_ieeg.entrypoint.hfo_detection import CustomOverrides
-from snn_hfo_ieeg.plotting.plot_loader import find_plotting_functions
+from snn_hfo_detection.user_facing_data import Configuration, MeasurementMode, PlotMode
+from snn_hfo_detection.entrypoint.hfo_detection import CustomOverrides
+from snn_hfo_detection.plotting.plot_loader import find_plotting_functions
 
 
 def parse_arguments():

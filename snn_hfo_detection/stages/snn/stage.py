@@ -1,7 +1,7 @@
 import warnings
 from brian2.units import second
-from snn_hfo_ieeg.stages.snn.cache import Cache, SpikeMonitors, create_cache
-from snn_hfo_ieeg.stages.snn.set_input import set_input_spikes, set_advanced_artifact_filter_input_spikes
+from snn_hfo_detection.stages.snn.cache import Cache, SpikeMonitors, create_cache
+from snn_hfo_detection.stages.snn.set_input import set_input_spikes, set_advanced_artifact_filter_input_spikes
 
 
 def snn_stage(filtered_spikes, duration, configuration, cache: Cache) -> SpikeMonitors:

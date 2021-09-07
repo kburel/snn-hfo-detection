@@ -1,5 +1,5 @@
 import scipy.io as sio
-from snn_hfo_ieeg.user_facing_data import PatientData, ChannelData
+from snn_hfo_detection.user_facing_data import PatientData, ChannelData
 
 
 def load_patient_data(full_intervals_path):

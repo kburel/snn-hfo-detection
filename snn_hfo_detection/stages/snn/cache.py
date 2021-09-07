@@ -2,13 +2,13 @@ from typing import NamedTuple, Optional
 from brian2 import Network, SpikeMonitor
 from brian2.units import amp
 from brian2.input.spikegeneratorgroup import SpikeGeneratorGroup
-from snn_hfo_ieeg.stages.snn.model_paths import ModelPaths, load_model_paths
-from snn_hfo_ieeg.stages.snn.concatenation import NeuronCount
-from snn_hfo_ieeg.stages.snn.basic_network_creation import create_hidden_to_output_synapses, create_non_input_layer, create_input_layer, create_input_to_hidden_synapses
-from snn_hfo_ieeg.user_facing_data import MeasurementMode
-from snn_hfo_ieeg.stages.snn.artifact_filter import add_artifact_filter_to_network_and_get_interneuron, should_add_artifact_filter
-from snn_hfo_ieeg.stages.snn.advanced_artifact_filter import should_add_advanced_artifact_filter, add_advanced_artifact_filter_to_network
-from snn_hfo_ieeg.functions.dynapse_biases import get_current
+from snn_hfo_detection.stages.snn.model_paths import ModelPaths, load_model_paths
+from snn_hfo_detection.stages.snn.concatenation import NeuronCount
+from snn_hfo_detection.stages.snn.basic_network_creation import create_hidden_to_output_synapses, create_non_input_layer, create_input_layer, create_input_to_hidden_synapses
+from snn_hfo_detection.user_facing_data import MeasurementMode
+from snn_hfo_detection.stages.snn.artifact_filter import add_artifact_filter_to_network_and_get_interneuron, should_add_artifact_filter
+from snn_hfo_detection.stages.snn.advanced_artifact_filter import should_add_advanced_artifact_filter, add_advanced_artifact_filter_to_network
+from snn_hfo_detection.functions.dynapse_biases import get_current
 
 
 class SpikeMonitors(NamedTuple):

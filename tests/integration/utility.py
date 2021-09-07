@@ -1,5 +1,5 @@
 import os
-from snn_hfo_ieeg.entrypoint.hfo_detection import CustomOverrides
+from snn_hfo_detection.entrypoint.hfo_detection import CustomOverrides
 from tests.utility import get_tests_path
 
 EMPTY_CUSTOM_OVERRIDES = CustomOverrides(

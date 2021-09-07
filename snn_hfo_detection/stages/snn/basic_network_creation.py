@@ -4,9 +4,9 @@ from brian2.units import us, amp, second
 from teili.models.builder.neuron_equation_builder import NeuronEquationBuilder
 from teili.models.builder.synapse_equation_builder import SynapseEquationBuilder
 from teili.core.groups import Neurons, Connections
-from snn_hfo_ieeg.stages.snn.tau_generation import generate_concatenated_taus
-from snn_hfo_ieeg.stages.snn.weight_generation import generate_weights
-from snn_hfo_ieeg.functions.dynapse_biases import get_current
+from snn_hfo_detection.stages.snn.tau_generation import generate_concatenated_taus
+from snn_hfo_detection.stages.snn.weight_generation import generate_weights
+from snn_hfo_detection.functions.dynapse_biases import get_current
 
 
 def create_input_layer(name, input_count):

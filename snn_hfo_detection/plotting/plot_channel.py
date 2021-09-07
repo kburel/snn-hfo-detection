@@ -1,7 +1,7 @@
 import matplotlib.pyplot as plt
-from snn_hfo_ieeg.user_facing_data import HfoDetectionRun
-from snn_hfo_ieeg.plotting.persistence import save_or_show_channel_plot
-from snn_hfo_ieeg.plotting.plot_hfo_samples import plot_hfo_samples as inner_plot_hfo_samples
+from snn_hfo_detection.user_facing_data import HfoDetectionRun
+from snn_hfo_detection.plotting.persistence import save_or_show_channel_plot
+from snn_hfo_detection.plotting.plot_hfo_samples import plot_hfo_samples as inner_plot_hfo_samples
 
 
 class ChannelDebugError(Exception):

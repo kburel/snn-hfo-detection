@@ -1,5 +1,5 @@
 import pytest
-from snn_hfo_ieeg.functions.filter import *
+from snn_hfo_detection.functions.filter import *
 from tests.utility import *
 
 _CUT_TO_FS_RATIO_LIMIT = 0.5

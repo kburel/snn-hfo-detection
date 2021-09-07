@@ -1,5 +1,5 @@
 import numpy as np
-from snn_hfo_ieeg.stages.snn.concatenation import concatenate_excitatory_and_inhibitory_with_generator_function
+from snn_hfo_detection.stages.snn.concatenation import concatenate_excitatory_and_inhibitory_with_generator_function
 
 MIN_TAU = 3
 MAX_TAU = 6

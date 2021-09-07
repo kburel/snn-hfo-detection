@@ -1,10 +1,10 @@
 from brian2.units import second
 import numpy as np
-from snn_hfo_ieeg.stages.filter import filter_stage
-from snn_hfo_ieeg.stages.snn.stage import snn_stage
-from snn_hfo_ieeg.functions.hfo_detection import detect_hfo
-from snn_hfo_ieeg.user_facing_data import HfoDetection, HfoDetectionWithAnalytics, Analytics
-from snn_hfo_ieeg.stages.persistence.saving import save_hfo_detection
+from snn_hfo_detection.stages.filter import filter_stage
+from snn_hfo_detection.stages.snn.stage import snn_stage
+from snn_hfo_detection.functions.hfo_detection import detect_hfo
+from snn_hfo_detection.user_facing_data import HfoDetection, HfoDetectionWithAnalytics, Analytics
+from snn_hfo_detection.stages.persistence.saving import save_hfo_detection
 
 HFO_DETECTION_STEP_SIZE = 0.01
 HFO_DETECTION_WINDOW_SIZE = 0.05

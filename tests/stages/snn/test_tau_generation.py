@@ -1,8 +1,8 @@
 import numpy as np
 import pytest
 from tests.stages.snn.utility import quarter
-from snn_hfo_ieeg.stages.snn.tau_generation import generate_taus, generate_concatenated_taus, OUTLIER_FRACTION, MIN_TAU, MAX_TAU, MIN_DELTA_TAU, MAX_DELTA_TAU
-from snn_hfo_ieeg.stages.snn.concatenation import NeuronCount
+from snn_hfo_detection.stages.snn.tau_generation import generate_taus, generate_concatenated_taus, OUTLIER_FRACTION, MIN_TAU, MAX_TAU, MIN_DELTA_TAU, MAX_DELTA_TAU
+from snn_hfo_detection.stages.snn.concatenation import NeuronCount
 
 ARBITRARY_BIG_NUMBER = 1000000
 ARBITRARY_ACCURACY = 0.01
