@@ -1,10 +1,10 @@
-from snn_hfo_detection.functions.signal_to_spike.selector import SignalToSpikeAlgorithm
 import pytest
 from snn_hfo_detection.plotting.persistence import PlotMode
 from snn_hfo_detection.user_facing_data import HfoDetection, Periods, Analytics, HfoDetectionWithAnalytics
 from snn_hfo_detection.user_facing_data import Configuration, MeasurementMode
 from snn_hfo_detection.entrypoint.hfo_detection import run_hfo_detection_with_configuration
 from snn_hfo_detection.plotting.plot_loader import PlottingFunctions
+from snn_hfo_detection.functions.signal_to_spike.selector import SignalToSpikeAlgorithm
 from tests.utility import assert_are_hfo_detections_equal
 from tests.integration.utility import get_hfo_directory, EMPTY_CUSTOM_OVERRIDES
 

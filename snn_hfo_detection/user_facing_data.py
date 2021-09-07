@@ -1,4 +1,3 @@
-from snn_hfo_detection.functions.signal_to_spike.default import signal_to_spike
 from typing import NamedTuple, Optional, Callable, List
 from enum import Enum, auto
 import numpy as np

@@ -1,6 +1,6 @@
 
-from snn_hfo_detection.functions.signal_to_spike.selector import SignalToSpikeAlgorithm
 import pytest
+from snn_hfo_detection.functions.signal_to_spike.selector import SignalToSpikeAlgorithm
 from snn_hfo_detection.plotting.persistence import PlotMode
 from snn_hfo_detection.plotting.plot_loader import find_plotting_functions
 from snn_hfo_detection.user_facing_data import Configuration, MeasurementMode
