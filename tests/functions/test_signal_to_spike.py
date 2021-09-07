@@ -46,7 +46,7 @@ def test_find_thresholds_does_not_accept_invalid_percentages(sample_ratio):
                                                                                    down=[0.0]))]
 )
 def test_signal_to_spike_refractory(interpolation_factor, time, amplitude, thr_up, thr_dn, refractory_period, expected_spike_trains):
-    spike_trains = signal_to_spike_refractory(
+    spike_trains = signal_to_spike(
         interpolation_factor, time, amplitude, thr_up, thr_dn, refractory_period)
     assert_are_lists_approximately_equal(
         spike_trains.up, expected_spike_trains.up)

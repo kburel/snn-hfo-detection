@@ -2,11 +2,8 @@ from typing import NamedTuple
 import numpy as np
 from snn_hfo_detection.stages.loading.patient_data import ChannelData
 from snn_hfo_detection.functions.filter import butter_bandpass_filter
-from snn_hfo_detection.functions.signal_to_spike import find_thresholds, signal_to_spike_refractory
+from snn_hfo_detection.functions.signal_to_spike import find_thresholds, signal_to_spike
 from snn_hfo_detection.user_facing_data import Bandwidth, FilteredSpikes, MeasurementMode
-
-
-SAMPLING_FREQUENCY = 2000
 
 
 class _FilterParameters(NamedTuple):
@@ -44,11 +41,18 @@ def _get_signal_times_in_calibration_time(signal, filter_parameters):
     return signals, times
 
 
-def _filter_signal_to_spike(filter_parameters) -> Bandwidth:
+def _get_sampling_frequency(filter_parameters: _FilterParameters) -> float:
+    times = filter_parameters.channel_data.signal_time
+    return 1 / (times[1] - times[0])
+
+
+def _filter_signal_to_spike(filter_parameters: _FilterParameters) -> Bandwidth:
+    sampling_frequency = _get_sampling_frequency(filter_parameters)
+
     signal = butter_bandpass_filter(data=filter_parameters.channel_data.wideband_signal,
                                     lowcut=filter_parameters.lowcut,
                                     highcut=filter_parameters.highcut,
-                                    sampling_frequency=SAMPLING_FREQUENCY,
+                                    sampling_frequency=sampling_frequency,
                                     order=2)
 
     calibration_signals, calibration_times = _get_signal_times_in_calibration_time(
@@ -58,11 +62,11 @@ def _filter_signal_to_spike(filter_parameters) -> Bandwidth:
                                          window_size=0.5,
                                          sample_ratio=1/6,
                                          scaling_factor=filter_parameters.scaling_factor))
-    spike_trains = signal_to_spike_refractory(interpolation_factor=35000,
-                                              times=filter_parameters.channel_data.signal_time,
-                                              amplitude=signal,
-                                              thr_up=thresholds, thr_dn=thresholds,
-                                              refractory_period=filter_parameters.refractory_period)
+    spike_trains = signal_to_spike(input_signal=signal,
+                                   threshold_up=thresholds,
+                                   threshold_down=thresholds,
+                                   sampling_frequency=sampling_frequency,
+                                   refractory_period_duration=filter_parameters.refractory_period)
     return Bandwidth(
         signal=signal,
         spike_trains=spike_trains
