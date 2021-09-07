@@ -161,23 +161,16 @@ def concatenate_spikes(spikes):
 
 # Input Parameters:
     # input_signal (array): input signal
-    # threshold_UP (float): threshold for UP spikes to occur
-    # threshold_DOWN (float): threshold for DOWN spikes to occur
+    # threshold_up (float): threshold for UP spikes to occur
+    # threshold_down (float): threshold for DOWN spikes to occur
     # sampling_frequency (float): sampling frequency of the input signal (1/dt)
     # refractory_period_duration (float): refractory period in which spikes can not occur (NEEDS TO BE AT LEAST 1/sampling_frequency)
-    # return_indices (bool): if False, returns only spike times. If True, retuns a new time array along with UP and DOWN indices arrays which indicate when respective spikes occured
-    # index_dt (float): dt of ouput indices (for higher accuracy, use non-numba ADM as it will be faster)
     # or whether the integration is reset and signal needs to integrate the full threshold after the refractory period (True)
 
 # Output Parameters:
     # spike_t_up (array): list of precise UP spike times
     # spike_t_dn (array): list of precise DOWN spike times
-    # times_interpolated (array): time array for spike indices arrays (dt = index_dt)
-    # spike_idx_up (array of shape times_interpolated): closest times to UP spikes in times_interpolated are set to 1; rest is 0
-    # spike_idx_dn (array of shape times_interpolated): closest times to DOWN spikes in times_interpolated are set to 1; rest is 0
-
-
-def ADM(input_signal, threshold_UP, threshold_DOWN, sampling_frequency, refractory_period_duration):
+def signal_to_spike(input_signal, threshold_up, threshold_down, sampling_frequency, refractory_period_duration) -> SpikeTrains:
     dt = 1/sampling_frequency
     end_time = len(input_signal)*dt
     times = np.arange(0, end_time, dt)
@@ -191,12 +184,12 @@ def ADM(input_signal, threshold_UP, threshold_DOWN, sampling_frequency, refracto
         times = np.concatenate((np.arange(0, times[-1], dt), [times[-1]]))
         input_signal = f(times)
         sampling_frequency = 1/times[1]
-    return ADM_numba(
-        input_signal, threshold_UP, threshold_DOWN, sampling_frequency, refractory_period_duration)
+    return signal_to_spike_numba(
+        input_signal, threshold_up, threshold_down, sampling_frequency, refractory_period_duration)
 
 
 @njit(fastmath=True, parallel=True)
-def ADM_numba(input_signal, threshold_UP, threshold_DOWN, sampling_frequency, refractory_period_duration) -> SpikeTrains:
+def signal_to_spike_numba(input_signal, threshold_up, threshold_down, sampling_frequency, refractory_period_duration) -> SpikeTrains:
     dt = 1/sampling_frequency
     end_time = len(input_signal)*dt
     times = np.linspace(0, end_time, len(input_signal)).astype(np.float64)
@@ -235,18 +228,18 @@ def ADM_numba(input_signal, threshold_UP, threshold_DOWN, sampling_frequency, re
                 Vbelow = input_signal[i-1]
                 interpolate_from = 0
 
-            if DC_Voltage + threshold_UP <= input_signal[i]:
+            if DC_Voltage + threshold_up <= input_signal[i]:
                 intercept_point = t - dt + interpolate_from + \
-                    ((threshold_UP+DC_Voltage-Vbelow)/slope)
+                    ((threshold_up+DC_Voltage-Vbelow)/slope)
                 spike_t_up = np.append(spike_t_up, intercept_point)
                 interpolate_from = dt+intercept_point-t
                 remainder_of_refractory = refractory_period_duration
                 interpolation_activation = 1
                 continue
 
-            elif DC_Voltage - threshold_DOWN >= input_signal[i]:
+            elif DC_Voltage - threshold_down >= input_signal[i]:
                 intercept_point = t - dt + interpolate_from + \
-                    ((-threshold_DOWN+DC_Voltage-Vbelow)/slope)
+                    ((-threshold_down+DC_Voltage-Vbelow)/slope)
                 spike_t_dn = np.append(spike_t_dn, intercept_point)
                 interpolate_from = dt+intercept_point-t
                 remainder_of_refractory = refractory_period_duration
