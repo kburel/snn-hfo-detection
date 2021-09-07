@@ -6,11 +6,12 @@ authors = ["Karla Burelo <kburel@ini.uzh.ch>"]
 
 [tool.poetry.dependencies]
 python = ">=3.8,<3.10"
-numpy = "^1.21.1"
+numpy = "^1.20.0"
 Brian2 = "^2.4.2"
 scipy = "^1.7.0"
 seaborn = "^0.11.1"
 teili = { git="https://gitlab.com/neuroinf/teili.git", branch="dev" }
+numba = "^0.54.0"
 
 [tool.poetry.dev-dependencies]
 pytest-xdist = "^2.3.0"

@@ -1,10 +1,14 @@
-from typing import NamedTuple
-import scipy as sc
+from typing import NamedTuple, Optional
 import numpy as np
 
-# ========================================================================================
-# Threshold calculation based on the noise floor
-# ========================================================================================
+
+class SignalToSpikeParameters(NamedTuple):
+    signal: np.ndarray
+    threshold_up: float
+    threshold_down: float
+    times: np.ndarray
+    refractory_period: float
+    interpolation_factor: Optional[float]
 
 
 class SpikeTrains(NamedTuple):
@@ -78,49 +82,6 @@ def find_thresholds(signals, times, window_size, sample_ratio, scaling_factor):
 
 
 # ========================================================================================
-# Signal to spike conversion with refractory period
-# ========================================================================================
-def signal_to_spike_refractory(interpolation_factor, times, amplitude, thr_up, thr_dn, refractory_period):
-    '''
-    This functions retuns two spike trains, when the signal crosses the specified threshold in
-    a rising direction (UP spikes) and when it crosses the specified threshold in a falling
-    direction (DOWN spikes)
-
-    :times (array): time vector
-    :amplitude (array): amplitude of the signal
-    :interpolation_factor (int): upsampling factor, new sampling frequency
-    :thr_up (float): threshold crossing in a rising direction
-    :thr_dn (float): threshold crossing in a falling direction
-    :refractory_period (float): period in which no spike will be generated [same units as time vector]
-    '''
-    actual_dc = 0
-    spike_up = []
-    spike_dn = []
-
-    intepolated_time = sc.interpolate.interp1d(times, amplitude)
-    rangeint = np.round((np.max(times) - np.min(times))*interpolation_factor)
-    xnew = np.linspace(np.min(times), np.max(
-        times), num=int(rangeint), endpoint=True)
-    data = np.reshape([xnew, intepolated_time(xnew)], (2, len(xnew))).T
-
-    i = 0
-    while i < (len(data)):
-        if((actual_dc + thr_up) < data[i, 1]):
-            spike_up.append(data[i, 0])  # spike up
-            actual_dc = data[i, 1]        # update current dc value
-            i += int(refractory_period * interpolation_factor)
-        elif((actual_dc - thr_dn) > data[i, 1]):
-            spike_dn.append(data[i, 0])  # spike dn
-            actual_dc = data[i, 1]        # update curre
-            i += int(refractory_period * interpolation_factor)
-        else:
-            i += 1
-
-    return SpikeTrains(up=spike_up,
-                       down=spike_dn)
-
-
-# ========================================================================================
 # List of spiketimes for the SNN input
 # ========================================================================================
 def concatenate_spikes(spikes):
@@ -151,3 +112,7 @@ def concatenate_spikes(spikes):
     all_spiketimes_new = all_spiketimes[sorted_index]
     all_neuron_ids_new = all_neuron_ids[sorted_index]
     return all_spiketimes_new, all_neuron_ids_new
+
+
+def get_sampling_frequency(times) -> float:
+    return 1 / (times[1] - times[0])

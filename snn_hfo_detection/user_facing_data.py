@@ -1,6 +1,7 @@
 from typing import NamedTuple, Optional, Callable, List
 from enum import Enum, auto
 import numpy as np
+from snn_hfo_detection.functions.signal_to_spike.selector import SignalToSpikeAlgorithm
 
 
 class SpikeTrains(NamedTuple):
@@ -180,6 +181,7 @@ class Configuration(NamedTuple):
     loading_path: Optional[str]
     plot_path: str
     plot_mode: PlotMode
+    signal_to_spike_algorithm: SignalToSpikeAlgorithm
 
 
 class HfoDetectionRun(NamedTuple):
