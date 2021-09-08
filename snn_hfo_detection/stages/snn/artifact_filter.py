@@ -38,7 +38,7 @@ def _create_input_to_interneuron_synapses(input_layer, interneuron_layer, model_
         'input_to_interneuron', model_paths, input_layer, interneuron_layer, weights, taus)
 
 
-def add_artifact_filter_to_network_and_get_interneuron(model_paths, input_layer, output_layer, network):
+def add_artifact_filter_to_network(model_paths, input_layer, output_layer, network):
     interneuron = create_non_input_layer(model_paths, 1, 'interneuron')
     interneuron.Itau = get_current(2.5e-3) * amp
     inhibitor_generator = _create_inhibitor_generator()

@@ -6,7 +6,7 @@ from snn_hfo_detection.stages.snn.model_paths import ModelPaths, load_model_path
 from snn_hfo_detection.stages.snn.concatenation import NeuronCount
 from snn_hfo_detection.stages.snn.basic_network_creation import create_hidden_to_output_synapses, create_non_input_layer, create_input_layer, create_input_to_hidden_synapses
 from snn_hfo_detection.user_facing_data import MeasurementMode
-from snn_hfo_detection.stages.snn.artifact_filter import add_artifact_filter_to_network_and_get_interneuron, should_add_artifact_filter
+from snn_hfo_detection.stages.snn.artifact_filter import add_artifact_filter_to_network, should_add_artifact_filter
 from snn_hfo_detection.stages.snn.advanced_artifact_filter import should_add_advanced_artifact_filter, add_advanced_artifact_filter_to_network
 from snn_hfo_detection.functions.dynapse_biases import get_current
 
@@ -82,7 +82,7 @@ def create_cache(configuration):
         hidden_to_output_synapses)
 
     if should_add_artifact_filter(configuration):
-        add_artifact_filter_to_network_and_get_interneuron(
+        add_artifact_filter_to_network(
             model_paths, input_layer, output_layer, network)
 
     advanced_artifact_filter_input_layer = add_advanced_artifact_filter_to_network(
