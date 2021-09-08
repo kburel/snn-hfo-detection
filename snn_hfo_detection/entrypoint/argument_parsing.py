@@ -12,7 +12,7 @@ def parse_arguments():
     default_saving_path = 'saved_data/'
     default_plot_path = 'plots/'
     default_plot_mode = PlotMode.BOTH.name
-    default_signal_to_spike_algorithm = SignalToSpikeAlgorithm.DEFAULT
+    default_signal_to_spike_algorithm = SignalToSpikeAlgorithm.DEFAULT.name
     default_hidden_neurons = 86
     default_calibration = 10
     parser.add_argument('mode', type=str,
